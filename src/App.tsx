@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArtworkItem, BlogPost, Persona, ProjectItem, ResumeData, ThemeId } from './types';
 import { BLOG_POSTS, INITIAL_RESUME_DATA } from './data/initialData';
 import { INITIAL_ARTWORKS } from './data/artData';
+import { LandingPage } from './components/LandingPage';
 import { Navbar, NavTab } from './components/Navbar';
 import { PersonaSwitcher } from './components/PersonaSwitcher';
 import { ResumeDocument } from './components/ResumeDocument';
@@ -18,7 +19,23 @@ import { deployToGitHubPages, DeployResult } from './utils/githubDeployService';
 import { Github, ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, X } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<NavTab>('resume');
+  const [activeTab, updateActiveTab] = useState<NavTab>('home');
+  const setActiveTab = (tab: NavTab) => { window.location.hash = tab; };
+
+  useEffect(() => {
+    const syncRoute = () => {
+      const route = window.location.hash.slice(1) || 'home';
+      const tab = route.startsWith('resume-') ? 'resume' : route;
+      updateActiveTab(['home', 'resume', 'projects', 'art', 'blog'].includes(tab) ? tab as NavTab : 'home');
+      requestAnimationFrame(() => {
+        if (route.startsWith('resume-')) document.getElementById(route)?.scrollIntoView({ block: 'start' });
+        else window.scrollTo(0, 0);
+      });
+    };
+    syncRoute();
+    window.addEventListener('hashchange', syncRoute);
+    return () => window.removeEventListener('hashchange', syncRoute);
+  }, []);
 
   // Dark Mode state: DEFAULT IS TRUE (Softened Dark Mode by default)
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -530,6 +547,7 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1">
+        {activeTab === 'home' && <LandingPage data={resumeData} artworks={artworks} isDarkMode={isDarkMode} />}
         {activeTab === 'resume' && (
           <div className="py-6 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-4">
             {/* Resume Admin Toolbar - OWNER ONLY (hidden when in preview mode) */}
@@ -597,6 +615,7 @@ export default function App() {
         )}
       </main>
 
+      {activeTab !== 'resume' && <div className="hidden print-only"><ResumeDocument data={resumeData} persona={currentPersona} theme={theme} fontSize={fontSize} visibleSections={visibleSections} /></div>}
       {/* Bottom Footer */}
       <footer
         className={`border-t py-8 px-4 sm:px-6 lg:px-8 text-xs transition-colors no-print ${

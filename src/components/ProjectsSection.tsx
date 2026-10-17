@@ -84,7 +84,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   const activeProject = projects.find((p) => p.id === selectedProjectId);
 
   return (
-    <section className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 no-print">
+    <section className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 projects-layout no-print">
       {/* Section Header with Add Project button for Owner */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -302,7 +302,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
         </div>
 
         {/* Sidebar: Popular Repositories on GitHub */}
-        <div className="w-full lg:w-80 xl:w-96 shrink-0 lg:sticky lg:top-24">
+        <div className="repo-sidebar w-full lg:w-80 xl:w-96 shrink-0 lg:sticky lg:top-24">
           <PopularReposWidget isDarkMode={isDarkMode} />
         </div>
       </div>

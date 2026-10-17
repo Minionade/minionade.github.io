@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { GitHubUser } from './GitHubAuthModal';
 
-export type NavTab = 'resume' | 'projects' | 'blog' | 'art';
+export type NavTab = 'home' | 'resume' | 'projects' | 'blog' | 'art';
 
 interface NavbarProps {
   activeTab: NavTab;
@@ -78,7 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Distinctive Graphic Brand Emblem using the uploaded site icon */}
           <button
-            onClick={() => setActiveTab('resume')}
+            onClick={() => setActiveTab('home')}
             className={`group text-left flex items-center gap-2 px-2 py-1.5 sm:px-2.5 rounded-xl border transition-all duration-200 ${
               isDarkMode
                 ? 'bg-gradient-to-r from-slate-900/90 via-slate-800/80 to-slate-900/90 border-slate-700/80 hover:border-blue-500/60 shadow-sm'
@@ -268,10 +268,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Zone 2: Navigation Links (Desktop Only: Resume, Projects, Art Portfolio, Blog) */}
         <nav
-          className={`hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium ${
+          className={`hidden xl:flex items-center gap-4 lg:gap-6 text-sm font-medium ${
             isDarkMode ? 'text-slate-300' : 'text-stone-700'
           }`}
         >
+          <a href="#home" onClick={(e) => { e.preventDefault(); setActiveTab('home'); }}
+            aria-current={activeTab === 'home' ? 'page' : undefined}
+            className={`whitespace-nowrap px-2 py-1.5 rounded-md transition-colors ${activeTab === 'home' ? (isDarkMode ? 'text-amber-300 bg-white/5' : 'text-amber-900 bg-black/5') : 'hover:underline'}`}>
+            Home
+          </a>
           <a
             href="#resume"
             onClick={(e) => {
@@ -459,12 +464,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Nav Row (Clean, dedicated tab row; no sign-in or admin clutter) */}
       <div
-        className={`md:hidden flex items-center justify-around border-t px-2 py-2 text-xs font-medium ${
+        className={`xl:hidden flex items-center justify-between gap-1 overflow-x-auto border-t px-2 py-2 text-xs font-medium [&>a]:shrink-0 ${
           isDarkMode
             ? 'bg-[#181e2b] border-slate-700/80 text-slate-300'
             : 'bg-[#f4efe6] border-[#ded7ca] text-stone-700'
         }`}
       >
+        <a href="#home" onClick={(e) => { e.preventDefault(); setActiveTab('home'); }}
+            aria-current={activeTab === 'home' ? 'page' : undefined}
+            className={`whitespace-nowrap px-2 py-1.5 rounded-md transition-colors ${activeTab === 'home' ? (isDarkMode ? 'text-amber-300 bg-white/5' : 'text-amber-900 bg-black/5') : 'hover:underline'}`}>
+            Home
+          </a>
         <a
           href="#resume"
           onClick={(e) => {

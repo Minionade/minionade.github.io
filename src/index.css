@@ -68,3 +68,18 @@
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
+
+/* Use the viewport edge for the repository rail only when there is room for
+   both the centered project content and an independent sidebar. */
+@media (min-width: 1720px) {
+  .projects-layout { max-width: 1120px; }
+  .repo-sidebar {
+    position: fixed;
+    top: 6rem;
+    right: 1.5rem;
+    width: 264px;
+    max-height: calc(100dvh - 7.5rem);
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+}

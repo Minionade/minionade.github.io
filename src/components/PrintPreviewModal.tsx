@@ -55,7 +55,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
       }}
     >
       <div
-        className={`rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] flex flex-col border overflow-hidden ${
+        className={`rounded-2xl shadow-2xl max-w-4xl w-full h-[95dvh] flex flex-col border overflow-hidden ${
           isDarkMode
             ? 'bg-[#1a202c] border-slate-700/80 text-slate-100'
             : 'bg-[#faf8f4] border-[#ded7ca] text-stone-900'
@@ -63,7 +63,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
       >
         {/* Modal Toolbar */}
         <div
-          className={`px-4 sm:px-6 py-3.5 border-b flex flex-wrap items-center justify-between gap-3 sticky top-0 z-20 ${
+          className={`px-4 sm:px-6 py-3.5 shrink-0 border-b flex flex-wrap items-center justify-between gap-3 sticky top-0 z-20 ${
             isDarkMode ? 'bg-[#151a24] border-slate-700/80' : 'bg-[#f4efe6] border-[#ded7ca]'
           }`}
         >
@@ -135,10 +135,10 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
         )}
 
         {/* Modal Scrollable Canvas */}
-        <div className={`flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center ${
+        <div className={`flex-1 min-h-0 overflow-auto p-4 sm:p-8 ${
           isDarkMode ? 'bg-slate-950/60' : 'bg-[#eae4d8]'
         }`}>
-          <div className="w-full max-w-[820px] shadow-2xl rounded-sm overflow-hidden bg-white text-slate-900 border border-black/10">
+          <div className="w-full max-w-[820px] mx-auto shadow-2xl rounded-sm bg-white text-slate-900 border border-black/10">
             <ResumeDocument
               data={data}
               persona={persona}

@@ -196,7 +196,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
 
       {/* 2. Professional Summary */}
       {visibleSections.summary && currentSummary && (
-        <section className={fontClasses.sectionMargin}>
+        <section id="resume-summary" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
             className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
@@ -216,7 +216,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
 
       {/* 3. Core Competencies & Technical Skills (Clean Unboxed Grouping) */}
       {visibleSections.skills && currentSkills.length > 0 && (
-        <section className={fontClasses.sectionMargin}>
+        <section id="resume-skills" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
             className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
@@ -245,7 +245,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
 
       {/* 4. Technical & Software Projects */}
       {visibleSections.projects && displayedProjects.length > 0 && (
-        <section className={fontClasses.sectionMargin}>
+        <section id="resume-projects" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
             className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2.5 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
@@ -255,7 +255,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
           </h2>
           <div className="space-y-3">
             {displayedProjects.map((project) => (
-              <div key={project.id} className="resume-section-item">
+              <div key={project.id} id={`resume-project-${project.id}`} className="resume-section-item scroll-mt-28">
                 <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
                   <div className="flex items-baseline gap-2 flex-wrap">
                     <h3
@@ -318,7 +318,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
 
       {/* 5. Professional Work Experience */}
       {visibleSections.experience && experience.length > 0 && (
-        <section className={fontClasses.sectionMargin}>
+        <section id="resume-experience" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
             className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2.5 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
@@ -375,7 +375,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
 
       {/* 6. Education */}
       {visibleSections.education && education && (
-        <section className="resume-section-item">
+        <section id="resume-education" className="resume-section-item scroll-mt-28">
           <h2
             className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
