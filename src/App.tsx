@@ -14,6 +14,7 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { BlogSection } from './components/BlogSection';
 import { ArtPortfolioSection } from './components/ArtPortfolioSection';
 import { PrintPreviewModal } from './components/PrintPreviewModal';
+import { loadResumeData, RESUME_STORAGE_KEY } from './utils/resumeStorage';
 import { generateResumePdf } from './utils/generateResumePdf';
 import { deployToGitHubPages, DeployResult } from './utils/githubDeployService';
 import { Github, ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, X } from 'lucide-react';
@@ -136,10 +137,7 @@ export default function App() {
   // Load resume data from localStorage or initial state
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
     try {
-      const saved = localStorage.getItem('trevor_resume_data_v5');
-      if (saved) {
-        return JSON.parse(saved);
-      }
+      return loadResumeData(localStorage, INITIAL_RESUME_DATA);
     } catch {
       // ignore
     }
@@ -262,7 +260,7 @@ export default function App() {
   const handleSaveData = (newData: ResumeData) => {
     setResumeData(newData);
     try {
-      localStorage.setItem('trevor_resume_data_v5', JSON.stringify(newData));
+      localStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(newData));
     } catch {
       // ignore
     }
@@ -276,7 +274,7 @@ export default function App() {
         : [project, ...prev.projects];
       const nextData = { ...prev, projects: updated };
       try {
-        localStorage.setItem('trevor_resume_data_v5', JSON.stringify(nextData));
+        localStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(nextData));
       } catch {
         // ignore
       }
@@ -289,7 +287,7 @@ export default function App() {
       const updated = prev.projects.filter((p) => p.id !== projectId);
       const nextData = { ...prev, projects: updated };
       try {
-        localStorage.setItem('trevor_resume_data_v5', JSON.stringify(nextData));
+        localStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(nextData));
       } catch {
         // ignore
       }
@@ -366,7 +364,7 @@ export default function App() {
   const handleSaveChangesAndDeploy = async () => {
     // 1. Persist everything locally
     try {
-      localStorage.setItem('trevor_resume_data_v5', JSON.stringify(resumeData));
+      localStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(resumeData));
       localStorage.setItem('trevor_blog_posts_v2', JSON.stringify(blogPosts));
       localStorage.setItem('trevor_artworks_v2', JSON.stringify(artworks));
     } catch {
@@ -416,16 +414,16 @@ export default function App() {
     if (resumeData.profile.github) text += ` | https://${resumeData.profile.github.replace(/^https?:\/\//, '')}`;
     text += `\n\n`;
 
-    text += `PROFESSIONAL SUMMARY\n`;
+    text += `PROFILE\n`;
     text += `${summary}\n\n`;
 
-    text += `CORE COMPETENCIES\n`;
+    text += `SKILLS\n`;
     skills.forEach((g) => {
       text += `• ${g.category}: ${g.items.join(', ')}\n`;
     });
     text += `\n`;
 
-    text += `ENGINEERING & TECHNICAL PROJECTS\n`;
+    text += `PERSONAL PROJECTS\n`;
     resumeData.projects.forEach((p) => {
       text += `${p.title} (${p.period})\n`;
       text += `Role: ${p.roleSubtitle} | Technologies: ${p.stack.join(', ')}\n`;
@@ -435,7 +433,7 @@ export default function App() {
       text += `\n`;
     });
 
-    text += `PROFESSIONAL EXPERIENCE\n`;
+    text += `WORK EXPERIENCE\n`;
     resumeData.experience.forEach((e) => {
       text += `${e.role} - ${e.company}, ${e.location} (${e.period})\n`;
       e.highlights.forEach((h) => {

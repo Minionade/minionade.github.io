@@ -30,14 +30,14 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
   const getPersonaTitle = () => {
     switch (persona) {
       case 'gamedev':
-        return 'Game Engine & Systems Programmer';
+        return 'Game & Systems Developer';
       case 'hardware':
-        return 'PC Hardware Technician & Systems Specialist';
+        return 'PC Building & Troubleshooting';
       case 'equipment':
-        return 'Commercial Grounds & Equipment Specialist';
+        return 'Grounds Maintenance & Equipment Operation';
       case 'hybrid':
       default:
-        return 'Systems Programmer & Technical Operations Specialist';
+        return 'Software Development & Technical Work';
     }
   };
 
@@ -144,7 +144,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
           >
             {profile.name}
           </h1>
-          <p className={`${fontClasses.title} font-medium tracking-wide ${themeStyles.accentText} uppercase`}>
+          <p className={`${fontClasses.title} font-medium ${themeStyles.accentText}`}>
             {getPersonaTitle()}
           </p>
         </div>
@@ -198,14 +198,14 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
       {visibleSections.summary && currentSummary && (
         <section id="resume-summary" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
-            className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2 ${
+            className={`${fontClasses.sectionHeading} font-semibold tracking-normal border-b ${themeStyles.divider} pb-1 mb-2 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
             }`}
           >
-            Professional Profile
+            Profile
           </h2>
           <p
-            className={`${fontClasses.body} text-justify ${
+            className={`${fontClasses.body} text-left ${
               isDarkMode ? 'text-slate-300 print:text-slate-700' : 'text-slate-700'
             }`}
           >
@@ -214,15 +214,15 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
         </section>
       )}
 
-      {/* 3. Core Competencies & Technical Skills (Clean Unboxed Grouping) */}
+      {/* 3. Skills (Clean Unboxed Grouping) */}
       {visibleSections.skills && currentSkills.length > 0 && (
         <section id="resume-skills" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
-            className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2 ${
+            className={`${fontClasses.sectionHeading} font-semibold tracking-normal border-b ${themeStyles.divider} pb-1 mb-2 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
             }`}
           >
-            Core Competencies & Technical Skills
+            Skills
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
             {currentSkills.map((group, idx) => (
@@ -247,11 +247,11 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
       {visibleSections.projects && displayedProjects.length > 0 && (
         <section id="resume-projects" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
-            className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2.5 ${
+            className={`${fontClasses.sectionHeading} font-semibold tracking-normal border-b ${themeStyles.divider} pb-1 mb-2.5 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
             }`}
           >
-            Engineering & Technical Projects
+            Personal Projects
           </h2>
           <div className="space-y-3">
             {displayedProjects.map((project) => (
@@ -293,7 +293,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
                       isDarkMode ? 'text-slate-200 print:text-slate-800' : 'text-slate-800'
                     }`}
                   >
-                    Technologies & Methodologies:{' '}
+                    Tools:{' '}
                   </span>
                   <span>{project.stack.join(' · ')}</span>
                 </div>
@@ -320,11 +320,11 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
       {visibleSections.experience && experience.length > 0 && (
         <section id="resume-experience" className={`scroll-mt-28 ${fontClasses.sectionMargin}`}>
           <h2
-            className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2.5 ${
+            className={`${fontClasses.sectionHeading} font-semibold tracking-normal border-b ${themeStyles.divider} pb-1 mb-2.5 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
             }`}
           >
-            Work Experience & Field Operations
+            Work Experience
           </h2>
           <div className="space-y-3">
             {experience.map((job) => (
@@ -377,7 +377,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
       {visibleSections.education && education && (
         <section id="resume-education" className="resume-section-item scroll-mt-28">
           <h2
-            className={`${fontClasses.sectionHeading} font-bold uppercase tracking-wider border-b ${themeStyles.divider} pb-1 mb-2 ${
+            className={`${fontClasses.sectionHeading} font-semibold tracking-normal border-b ${themeStyles.divider} pb-1 mb-2 ${
               isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900'
             }`}
           >

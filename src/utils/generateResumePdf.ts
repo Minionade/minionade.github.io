@@ -29,14 +29,14 @@ export const generateResumePdf = ({
   const getPersonaTitle = () => {
     switch (persona) {
       case 'gamedev':
-        return 'Game Engine & Systems Programmer';
+        return 'Game & Systems Developer';
       case 'hardware':
-        return 'PC Hardware Technician & Systems Specialist';
+        return 'PC Building & Troubleshooting';
       case 'equipment':
-        return 'Commercial Grounds & Equipment Specialist';
+        return 'Grounds Maintenance & Equipment Operation';
       case 'hybrid':
       default:
-        return 'Systems Programmer & Technical Operations Specialist';
+        return 'Software Development & Technical Work';
     }
   };
 
@@ -52,7 +52,7 @@ export const generateResumePdf = ({
   const contentWidth = pageWidth - marginX * 2; // 552 pt
   let y = 26; // Start 26 pt from top
 
-  // Executive Typography & Palette
+  // Typography and colors
   const colorDark: [number, number, number] = [15, 23, 42]; // Slate 950
   const colorAccent: [number, number, number] = [30, 64, 175]; // Navy Blue 800
   const colorBody: [number, number, number] = [30, 41, 59]; // Slate 800
@@ -76,19 +76,20 @@ export const generateResumePdf = ({
 
   // Contact line
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7.5);
+  doc.setFontSize(9);
   doc.setTextColor(...colorMuted);
   const contactParts = [
     profile.location,
     profile.phone,
     profile.email,
-    profile.github ? `github.com/minionade` : null,
-    profile.portfolio || null,
+    profile.github?.replace(/^https?:\/\//, '') || null,
+
   ].filter(Boolean) as string[];
 
-  doc.text(contactParts.join('   •   '), marginX, y);
+  const contactLines = doc.splitTextToSize(contactParts.join('  |  '), contentWidth);
+  doc.text(contactLines, marginX, y);
 
-  y += 8;
+  y += contactLines.length * 10 + 2;
   // Header rule
   doc.setDrawColor(...colorAccent);
   doc.setLineWidth(1.0);
@@ -98,7 +99,7 @@ export const generateResumePdf = ({
   // Helper for section headings
   const renderSectionHeader = (title: string) => {
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.setTextColor(...colorAccent);
     doc.text(title.toUpperCase(), marginX, y);
 
@@ -113,13 +114,13 @@ export const generateResumePdf = ({
   if (visibleSections.summary) {
     const summary = summaryByPersona[persona] || summaryByPersona.hybrid;
     if (summary) {
-      renderSectionHeader('Professional Profile');
+      renderSectionHeader('Profile');
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(10);
       doc.setTextColor(...colorBody);
       const splitSummary = doc.splitTextToSize(summary, contentWidth);
       doc.text(splitSummary, marginX, y);
-      y += splitSummary.length * 9.2 + 6;
+      y += splitSummary.length * 12 + 6;
     }
   }
 
@@ -127,7 +128,7 @@ export const generateResumePdf = ({
   if (visibleSections.skills) {
     const skills = skillsByPersona[persona] || skillsByPersona.hybrid;
     if (skills && skills.length > 0) {
-      renderSectionHeader('Core Competencies & Technical Skills');
+      renderSectionHeader('Skills');
 
       const colWidth = (contentWidth - 16) / 2;
       const leftColX = marginX;
@@ -141,7 +142,7 @@ export const generateResumePdf = ({
         let currY = isLeft ? leftY : rightY;
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(7.5);
+        doc.setFontSize(10);
         doc.setTextColor(...colorDark);
         doc.text(`${group.category}: `, colX, currY);
 
@@ -153,11 +154,11 @@ export const generateResumePdf = ({
         const splitItems = doc.splitTextToSize(itemsStr, colWidth - catW);
 
         doc.text(splitItems[0], colX + catW, currY);
-        currY += 9;
+        currY += 12;
 
         for (let i = 1; i < splitItems.length; i++) {
           doc.text(splitItems[i], colX + 8, currY);
-          currY += 9;
+          currY += 12;
         }
 
         if (isLeft) {
@@ -171,9 +172,9 @@ export const generateResumePdf = ({
     }
   }
 
-  // 4. Engineering & Technical Projects (Top 3 prioritized for exact 1-page fit)
+  // 4. Personal Projects (Top 3 prioritized for exact 1-page fit)
   if (visibleSections.projects && projects && projects.length > 0) {
-    renderSectionHeader('Key Engineering Projects');
+    renderSectionHeader('Personal Projects');
 
     const sortedProjects = [...projects]
       .sort((a, b) => {
@@ -192,29 +193,30 @@ export const generateResumePdf = ({
         }
         return 0;
       })
-      .slice(0, 3); // Top 3 selected for single-page presentation
+      ;
 
     sortedProjects.forEach((project) => {
-      // Title + Subtitle
+      // Title and project context
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(10);
       doc.setTextColor(...colorDark);
       doc.text(project.title, marginX, y);
 
       const titleW2 = doc.getTextWidth(project.title);
       doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
       doc.setTextColor(...colorMuted);
       doc.text(`  |  ${project.roleSubtitle}`, marginX + titleW2, y);
 
       // Date right-aligned
       const periodW = doc.getTextWidth(project.period);
       doc.text(project.period, pageWidth - marginX - periodW, y);
-      y += 9.5;
+      y += 11;
 
       // Tech line
       if (project.stack && project.stack.length > 0) {
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(7);
+        doc.setFontSize(8);
         doc.setTextColor(...colorAccent);
         doc.text('Tech: ', marginX, y);
 
@@ -223,20 +225,20 @@ export const generateResumePdf = ({
         doc.setTextColor(...colorMuted);
         const stackStr = project.stack.slice(0, 6).join('  •  ');
         doc.text(stackStr, marginX + techLabelW, y);
-        y += 8.5;
+        y += 10;
       }
 
-      // Top 2 impact bullets per project
+      // Project details
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(10);
       doc.setTextColor(...colorBody);
 
-      const topBullets = project.accomplishments.slice(0, 2);
+      const topBullets = project.accomplishments;
       topBullets.forEach((bullet) => {
         const bulletText = `•   ${bullet}`;
         const splitBullet = doc.splitTextToSize(bulletText, contentWidth - 8);
         doc.text(splitBullet, marginX + 4, y);
-        y += splitBullet.length * 8.8 + 1;
+        y += splitBullet.length * 12 + 1;
       });
 
       y += 2.5;
@@ -245,37 +247,38 @@ export const generateResumePdf = ({
     y += 3;
   }
 
-  // 5. Professional Experience
+  // 5. Work Experience
   if (visibleSections.experience && experience && experience.length > 0) {
-    renderSectionHeader('Professional Experience');
+    renderSectionHeader('Work Experience');
 
     experience.forEach((exp) => {
       // Role & Company
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
+      doc.setFontSize(10);
       doc.setTextColor(...colorDark);
       doc.text(exp.role, marginX, y);
 
-      const roleW2 = doc.getTextWidth(exp.role);
+      y += 11;
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(...colorMuted);
-      doc.text(`  |  ${exp.company} (${exp.location})`, marginX + roleW2, y);
+      doc.setFontSize(9);
+      doc.text(`${exp.company} | ${exp.location}`, marginX, y);
 
       // Period on right
       const expPeriodW = doc.getTextWidth(exp.period);
-      doc.text(exp.period, pageWidth - marginX - expPeriodW, y);
-      y += 9;
+      doc.text(exp.period, pageWidth - marginX - expPeriodW, y - 11);
+      y += 11;
 
-      // 2 clean accomplishment bullets
+      // Work experience details
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(10);
       doc.setTextColor(...colorBody);
-      const topHighlights = exp.highlights.slice(0, 2);
+      const topHighlights = exp.highlights;
       topHighlights.forEach((hl) => {
         const bulletText = `•   ${hl}`;
         const splitHl = doc.splitTextToSize(bulletText, contentWidth - 8);
         doc.text(splitHl, marginX + 4, y);
-        y += splitHl.length * 8.8 + 1;
+        y += splitHl.length * 12 + 1;
       });
 
       y += 2.5;
@@ -286,24 +289,25 @@ export const generateResumePdf = ({
 
   // 6. Education
   if (visibleSections.education && education) {
-    renderSectionHeader('Education & Credentials');
+    renderSectionHeader('Education');
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.setTextColor(...colorDark);
     doc.text(education.degree, marginX, y);
 
-    const degW2 = doc.getTextWidth(education.degree);
+    y += 11;
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...colorMuted);
-    doc.text(`  |  ${education.institution} (${education.location})`, marginX + degW2, y);
+    doc.setFontSize(9);
+    doc.text(`${education.institution} | ${education.location}`, marginX, y);
 
     const yearW2 = doc.getTextWidth(education.year);
-    doc.text(education.year, pageWidth - marginX - yearW2, y);
-    y += 9;
+    doc.text(education.year, pageWidth - marginX - yearW2, y - 11);
+    y += 11;
 
     if (education.notes) {
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(10);
       doc.setTextColor(...colorBody);
       const splitNotes = doc.splitTextToSize(education.notes, contentWidth);
       doc.text(splitNotes, marginX, y);
