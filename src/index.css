@@ -231,18 +231,14 @@ html.landing-scroll .landing-slice[data-landing-slice="3"] {
   }
 }
 
-@media (max-width: 1023px) {
-  .landing-wrench { display: none; }
-}
 
+.landing-portfolio-layout { width: 100%; }
 @media (min-width: 1280px) {
   .landing-portfolio-layout {
-    width: min(1440px, calc(100vw - 6rem));
-    grid-template-columns: 16rem minmax(0, 1fr);
-    gap: 3rem;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1280px, calc(100vw - 8rem));
   }
 }
 
-@media (min-width: 1024px) {
-  .landing-wrench { width: 75%; justify-self: center; }
-}

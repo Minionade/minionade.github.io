@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ArrowRight, ChevronDown } from 'lucide-react';
 import { artworkHref } from '../utils/routes';
 import grassBlock from '../assets/images/home-grass-block.webp';
-import crescentHammer from '../assets/images/home-crescent-hammer.webp';
 import { ArtworkItem, ResumeData } from '../types';
 import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 
@@ -125,20 +124,19 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
       </section>
       <section data-landing-slice="2" className={`landing-slice border-t ${border}`} aria-labelledby="portfolio-preview-heading">
         <div className="landing-slice-content w-full">
-        <div className="landing-illustrated-layout landing-portfolio-layout">
-        <img src={crescentHammer} alt="" aria-hidden="true" width="640" height="640" loading="lazy" decoding="async" className="landing-decoration landing-wrench image-pixelated" />
+        <div className="landing-portfolio-layout">
         <div className="min-w-0">
-        <h2 id="portfolio-preview-heading" className="text-3xl lg:text-4xl font-semibold tracking-tight mb-6">Explore the portfolios</h2>
+        <h2 id="portfolio-preview-heading" className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-6">Explore the portfolios</h2>
         <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
           <div className="min-w-0">
             <div className="flex items-center justify-between gap-3 mb-3">
-              <h3 className="text-xl font-medium">Projects</h3>
+              <h3 className="text-xl lg:text-2xl font-medium">Projects</h3>
               <a href="#projects" className={`text-sm inline-flex items-center gap-1 hover:underline ${accent}`}>View all <ArrowUpRight className="w-3.5 h-3.5" /></a>
             </div>
             <div className="space-y-6">
               {portfolio.slice(0, 2).map(project => <a key={project.id} href="#projects" className={`block border-l-2 pl-4 group ${border}`}>
-                <h4 className="text-base lg:text-lg font-semibold leading-relaxed group-hover:underline underline-offset-4">{project.title}</h4>
-                <p className={`text-sm lg:text-base leading-relaxed mt-1.5 line-clamp-3 ${muted}`}>{project.summary}</p>
+                <h4 className="text-lg lg:text-xl font-semibold leading-relaxed group-hover:underline underline-offset-4">{project.title}</h4>
+                <p className={`text-base lg:text-lg leading-relaxed mt-1.5 line-clamp-3 ${muted}`}>{project.summary}</p>
                 <p className={`mt-2 text-sm leading-relaxed ${accent}`}>{project.stack.slice(0, 3).join(' · ')}</p>
               </a>)}
               {portfolio.length === 0 && <p className={`text-sm ${muted}`}>New projects will appear here as they’re added.</p>}
@@ -146,7 +144,7 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
           </div>
           <div className="min-w-0">
             <div className="flex items-center justify-between gap-3 mb-3">
-              <h3 className="text-xl font-medium">Art & visual work</h3>
+              <h3 className="text-xl lg:text-2xl font-medium">Art & visual work</h3>
               <a href="#art" className={`text-sm inline-flex items-center gap-1 hover:underline ${accent}`}>View all <ArrowUpRight className="w-3.5 h-3.5" /></a>
             </div>
             {artworks.length > 0 ? <div className="grid grid-cols-2 gap-4">
@@ -154,12 +152,12 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
                 <div className={`aspect-square rounded-lg overflow-hidden border ${border} ${isDarkMode ? 'bg-slate-900/40' : 'bg-stone-200/40'}`}>
                   <img src={art.imageUrl} alt={art.title} loading="lazy" decoding="async" className={`w-full h-full object-contain p-2 ${getArtworkCategories(art).includes('pixel-art') ? 'image-pixelated' : ''}`} />
                 </div>
-                <h4 className="text-sm lg:text-base font-medium mt-3 break-words group-hover:underline underline-offset-4">{art.title}</h4>
+                <h4 className="text-base lg:text-lg font-medium mt-3 break-words group-hover:underline underline-offset-4">{art.title}</h4>
                 <p className={`text-xs lg:text-sm mt-1.5 ${muted}`}>{getArtworkCategories(art).map(formatArtworkCategory).join(' · ')}</p>
               </a>)}
             </div> : <a href="#art" className={`block rounded-lg border p-4 ${border} hover:border-amber-500/50 transition-colors`}>
               <p className="text-base font-medium">Art portfolio <ArrowUpRight className="inline w-4 h-4" /></p>
-              <p className={`text-sm lg:text-base leading-relaxed mt-2 ${muted}`}>New artwork will be featured here as it’s added to the portfolio.</p>
+              <p className={`text-base lg:text-lg leading-relaxed mt-2 ${muted}`}>New artwork will be featured here as it’s added to the portfolio.</p>
             </a>}
           </div>
         </div>
