@@ -257,6 +257,9 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
                 />
 
 
+                {/* Preview-card vignette; full-size artwork remains unfiltered. */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
+
                 {/* Category badges */}
                 <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-1">
                   {getArtworkCategories(item).map(category => <span key={category}
