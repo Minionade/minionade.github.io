@@ -89,7 +89,8 @@ export interface BlogPost {
 export interface ArtworkItem {
   id: string;
   title: string;
-  category: 'pixel-art' | 'modpack-logo' | 'illustration' | string;
+  category: string;
+  categories?: string[];
   imageUrl: string;
   description: string;
   promptNotes?: string;

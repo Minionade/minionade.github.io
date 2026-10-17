@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ArtworkItem } from '../types';
+import { getArtworkCategories, parseArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 import { X, Sparkles, Image, Check, AlertCircle } from 'lucide-react';
 
 interface ArtworkEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
   artworkToEdit: ArtworkItem | null;
+  knownCategories?: string[];
   onSave: (art: ArtworkItem) => void;
   isDarkMode: boolean;
 }
@@ -14,12 +16,13 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
   isOpen,
   onClose,
   artworkToEdit,
+  knownCategories = [],
   onSave,
   isDarkMode,
 }) => {
   const [title, setTitle] = useState(artworkToEdit?.title || '');
   const [category, setCategory] = useState<string>(
-    artworkToEdit?.category || 'pixel-art'
+    artworkToEdit ? getArtworkCategories(artworkToEdit).join(', ') : ''
   );
   const [imageUrl, setImageUrl] = useState(artworkToEdit?.imageUrl || '');
   const [description, setDescription] = useState(artworkToEdit?.description || '');
@@ -38,7 +41,7 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
   React.useEffect(() => {
     if (artworkToEdit) {
       setTitle(artworkToEdit.title);
-      setCategory(artworkToEdit.category);
+      setCategory(getArtworkCategories(artworkToEdit).join(', '));
       setImageUrl(artworkToEdit.imageUrl);
       setDescription(artworkToEdit.description);
       setPromptNotes(artworkToEdit.promptNotes || '');
@@ -50,7 +53,7 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
       setIterationCycles(artworkToEdit.iterationCycles || 15);
     } else {
       setTitle('');
-      setCategory('pixel-art');
+      setCategory('');
       setImageUrl('');
       setDescription('');
       setPromptNotes('');
@@ -64,6 +67,9 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
     setError(null);
   }, [artworkToEdit, isOpen]);
 
+  const categories = parseArtworkCategories(category);
+  const isLogo = categories.includes('modpack-logo');
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -74,6 +80,11 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
     }
     if (!imageUrl.trim()) {
       setError('Image URL is required.');
+      return;
+    }
+
+    if (!categories.length) {
+      setError('Add at least one category tag.');
       return;
     }
 
@@ -90,17 +101,19 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
     const updatedArt: ArtworkItem = {
       id: artworkToEdit ? artworkToEdit.id : `art-${Date.now()}`,
       title: title.trim(),
-      category,
+      category: categories[0],
+      categories,
+      tags: artworkToEdit?.tags,
       imageUrl: imageUrl.trim(),
       description: description.trim(),
-      promptNotes: category === 'modpack-logo' || promptNotes ? promptNotes.trim() : undefined,
+      promptNotes: isLogo || promptNotes ? promptNotes.trim() : undefined,
       tools: tools.length > 0 ? tools : ['Digital Art'],
       resolution: resolution.trim() || undefined,
       year: year.trim() || new Date().getFullYear().toString(),
       clientOrProject: clientOrProject.trim() || undefined,
       featured: artworkToEdit ? artworkToEdit.featured : false,
       colorPalette: colorPalette.length > 0 ? colorPalette : undefined,
-      iterationCycles: category === 'modpack-logo' ? iterationCycles : undefined,
+      iterationCycles: isLogo ? iterationCycles : undefined,
     };
 
     onSave(updatedArt);
@@ -168,20 +181,19 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-1 text-slate-300">Category</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as any)}
-                className={`w-full px-3 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                  isDarkMode
-                    ? 'bg-slate-800/80 border-slate-700 text-white'
-                    : 'bg-slate-50 border-slate-300 text-slate-900'
-                }`}
-              >
-                <option value="pixel-art">Handcrafted Pixel Art</option>
-                <option value="modpack-logo">Minecraft Modpack Logo (Iterative AI)</option>
-                <option value="illustration">Concept & Worldbuilding</option>
-              </select>
+              <label htmlFor="artwork-category-tags" className={`block text-xs font-semibold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-stone-700'}`}>Category tags</label>
+              <input id="artwork-category-tags" type="text" value={category}
+                onChange={e => setCategory(e.target.value)} list="artwork-category-suggestions"
+                placeholder="e.g. pixel-art, portraits, game-assets" required
+                aria-describedby="artwork-category-help"
+                className={`w-full px-3 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500 focus:outline-none ${isDarkMode ? 'bg-slate-800/80 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`} />
+              <datalist id="artwork-category-suggestions">
+                {knownCategories.map(tag => <option key={tag} value={tag} />)}
+              </datalist>
+              <p id="artwork-category-help" className={`mt-1.5 text-xs ${isDarkMode ? 'text-slate-400' : 'text-stone-600'}`}>Separate tags with commas. Use an existing tag or create your own.</p>
+              <div className="flex flex-wrap gap-1 mt-2">
+                {categories.map(tag => <span key={tag} className="px-2 py-1 rounded-md text-[11px] bg-blue-500/15 text-blue-400">{formatArtworkCategory(tag)}</span>)}
+              </div>
             </div>
           </div>
 
@@ -226,7 +238,7 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
           {/* Iteration & AI Prompting Notes (Especially for logos) */}
           <div
             className={`p-3.5 rounded-xl border ${
-              category === 'modpack-logo'
+              isLogo
                 ? isDarkMode
                   ? 'bg-purple-950/20 border-purple-800/50'
                   : 'bg-purple-50 border-purple-200'
@@ -240,7 +252,7 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
                 <Sparkles className="w-3.5 h-3.5" />
                 Prompt Iteration & Post-Processing Notes
               </label>
-              {category === 'modpack-logo' && (
+              {isLogo && (
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs text-slate-400">Cycles:</span>
                   <input

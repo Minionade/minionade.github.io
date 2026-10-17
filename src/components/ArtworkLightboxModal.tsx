@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArtworkItem } from '../types';
+import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 import {
   X,
   ChevronLeft,
@@ -77,7 +78,7 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
     setTimeout(() => setCopiedColor(null), 2000);
   };
 
-  const isAiAssisted = artwork.category === 'modpack-logo' || Boolean(artwork.promptNotes);
+  const isAiAssisted = getArtworkCategories(artwork).includes('modpack-logo') || Boolean(artwork.promptNotes);
 
   return (
     <div
@@ -100,13 +101,13 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <span
-              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider shrink-0 ${
-                artwork.category === 'pixel-art'
+              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wider max-w-[50%] truncate ${
+                getArtworkCategories(artwork).includes('pixel-art')
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                   : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
               }`}
             >
-              {artwork.category === 'pixel-art' ? 'Handcrafted Pixel Art' : 'Iterative AI Modpack Logo'}
+              {getArtworkCategories(artwork).map(formatArtworkCategory).join(' · ')}
             </span>
             <h2 className="text-sm sm:text-base font-bold truncate">{artwork.title}</h2>
           </div>

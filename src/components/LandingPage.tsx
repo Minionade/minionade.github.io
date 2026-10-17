@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ArrowRight, ChevronDown } from 'lucide-react';
 import { ArtworkItem, ResumeData } from '../types';
+import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 
 export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; artworks: ArtworkItem[]; isDarkMode: boolean }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -134,10 +135,10 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
             {artworks.length > 0 ? <div className="grid grid-cols-2 gap-4">
               {[...artworks].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))).slice(0, 2).map(art => <a key={art.id} href="#art" className="min-w-0 group">
                 <div className={`aspect-square rounded-lg overflow-hidden border ${border} ${isDarkMode ? 'bg-slate-900/40' : 'bg-stone-200/40'}`}>
-                  <img src={art.imageUrl} alt={art.title} loading="lazy" className={`w-full h-full object-contain p-2 ${art.category === 'pixel-art' ? 'image-pixelated' : ''}`} />
+                  <img src={art.imageUrl} alt={art.title} loading="lazy" className={`w-full h-full object-contain p-2 ${getArtworkCategories(art).includes('pixel-art') ? 'image-pixelated' : ''}`} />
                 </div>
                 <h4 className="text-xs font-medium mt-2 break-words group-hover:underline underline-offset-4">{art.title}</h4>
-                <p className={`text-[11px] mt-1 ${muted}`}>{art.category.replaceAll('-', ' ')}</p>
+                <p className={`text-[11px] mt-1 ${muted}`}>{getArtworkCategories(art).map(formatArtworkCategory).join(' · ')}</p>
               </a>)}
             </div> : <a href="#art" className={`block rounded-lg border p-4 ${border} hover:border-amber-500/50 transition-colors`}>
               <p className="text-sm font-medium">Art portfolio <ArrowUpRight className="inline w-4 h-4" /></p>

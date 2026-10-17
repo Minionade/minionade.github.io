@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArtworkItem } from '../types';
+import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 import {
   Sparkles,
   Plus,
@@ -41,27 +42,22 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [showIterativePhilosophy, setShowIterativePhilosophy] = useState(true);
 
-  // Helper to format category names into readable labels
-  const formatCategoryLabel = (cat: string) => {
-    if (cat === 'pixel-art') return 'Pixel Art';
-    if (cat === 'modpack-logo') return 'Modpack Logos';
-    if (cat === 'illustration') return 'Illustration';
-    return cat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  };
-
   // Dynamically derive categories and counts from artworks
   const dynamicCategories = React.useMemo(() => {
     const map = new Map<string, number>();
     artworks.forEach((art) => {
-      const cat = art.category || 'other';
-      map.set(cat, (map.get(cat) || 0) + 1);
+      getArtworkCategories(art).forEach(cat => map.set(cat, (map.get(cat) || 0) + 1));
     });
     return Array.from(map.entries()).map(([key, count]) => ({
       key,
-      label: formatCategoryLabel(key),
+      label: formatArtworkCategory(key),
       count,
     }));
   }, [artworks]);
+
+  React.useEffect(() => {
+    if (activeCategory !== 'all' && !dynamicCategories.some(cat => cat.key === activeCategory)) setActiveCategory('all');
+  }, [activeCategory, dynamicCategories]);
 
   // Dynamically derive unique tools and tags from artworks
   const dynamicTags = React.useMemo(() => {
@@ -84,7 +80,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
   // Filter artworks dynamically based on active category and active tag
   const filteredArtworks = React.useMemo(() => {
     return artworks.filter((item) => {
-      const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+      const matchesCategory = activeCategory === 'all' || getArtworkCategories(item).includes(activeCategory);
       const matchesTag =
         !activeTag ||
         item.tools?.some((t) => t.toLowerCase() === activeTag.toLowerCase()) ||
@@ -227,7 +223,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
       {/* Dynamic Filter Tabs (Only shown when there are artworks) */}
       {artworks.length > 0 && (
         <div className="space-y-3">
-          {/* Category Tabs */}
+          {/* Category tags derived from the artwork collection */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button
               onClick={() => {
@@ -259,8 +255,9 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
             {dynamicCategories.map((cat) => (
               <button
                 key={cat.key}
+                aria-pressed={activeCategory === cat.key}
                 onClick={() => {
-                  setActiveCategory(cat.key);
+                  setActiveCategory(activeCategory === cat.key ? 'all' : cat.key);
                   setActiveTag(null);
                 }}
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 ${
@@ -385,24 +382,19 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
                   alt={item.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   style={{
-                    imageRendering: item.category === 'pixel-art' ? 'pixelated' : 'auto',
+                    imageRendering: getArtworkCategories(item).includes('pixel-art') ? 'pixelated' : 'auto',
                   }}
                 />
 
                 {/* Gradient vignette */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
 
-                {/* Category Badge */}
-                <div className="absolute top-3 left-3 z-10">
-                  <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shadow-sm ${
-                      item.category === 'pixel-art'
-                        ? 'bg-amber-950/80 text-amber-300 border border-amber-600/60'
-                        : 'bg-purple-950/80 text-purple-300 border border-purple-600/60'
-                    }`}
-                  >
-                    {item.category === 'pixel-art' ? 'Pixel Art' : 'Modpack Logo (Iterative)'}
-                  </span>
+                {/* Category badges */}
+                <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-1">
+                  {getArtworkCategories(item).map(category => <span key={category}
+                    className={`max-w-full truncate inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider backdrop-blur-md shadow-sm ${category === 'pixel-art' ? 'bg-amber-950/80 text-amber-300 border border-amber-600/60' : 'bg-purple-950/80 text-purple-300 border border-purple-600/60'}`}>
+                    {formatArtworkCategory(category)}
+                  </span>)}
                 </div>
 
                 {/* Inspect Hint Button */}
@@ -508,6 +500,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
         artworkToEdit={editingArtwork}
+        knownCategories={dynamicCategories.map(cat => cat.key)}
         onSave={handleSaveArtwork}
         isDarkMode={isDarkMode}
       />
