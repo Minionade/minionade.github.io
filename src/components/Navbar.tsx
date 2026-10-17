@@ -263,7 +263,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Zone 2: Navigation Links (Desktop Only: Resume, Projects, Art Portfolio, Blog) */}
         <nav
-          className={`hidden xl:flex items-center gap-1 divide-x divide-current/15 text-sm font-medium ${
+          className={`hidden xl:flex items-center gap-2 text-sm font-medium ${
             isDarkMode ? 'text-slate-300' : 'text-stone-700'
           }`}
         >
@@ -373,7 +373,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Nav Row (Clean, dedicated tab row; no sign-in or admin clutter) */}
       <div
-        className={`xl:hidden flex items-center justify-between gap-0 divide-x divide-current/15 overflow-x-auto border-t px-2 py-2 text-xs font-medium [&>a]:shrink-0 ${
+        className={`xl:hidden flex items-center justify-between gap-1 overflow-x-auto border-t px-2 py-2 text-xs font-medium [&>a]:shrink-0 ${
           isDarkMode
             ? 'bg-[#181e2b] border-slate-700/80 text-slate-300'
             : 'bg-[#f4efe6] border-[#ded7ca] text-stone-700'
