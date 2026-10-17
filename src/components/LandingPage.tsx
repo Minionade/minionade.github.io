@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ArrowRight, ChevronDown } from 'lucide-react';
+import grassBlock from '../assets/images/home-grass-block.webp';
+import crescentHammer from '../assets/images/home-crescent-hammer.webp';
 import { ArtworkItem, ResumeData } from '../types';
 import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 
@@ -78,6 +80,9 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
       </nav>
       <section data-landing-slice="0" className={`landing-slice border-b ${border}`}>
         <div className="landing-slice-content w-full">
+        <div className="landing-illustrated-layout">
+        <img src={grassBlock} alt="" aria-hidden="true" width="640" height="640" decoding="async" fetchPriority="high" className="landing-decoration" />
+        <div className="min-w-0">
         <p className={`text-xs uppercase tracking-[0.2em] font-medium ${accent}`}>Trevor Barrett / Minionade</p>
         <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12] max-w-3xl">Minecraft mods,<br />games, and experiments.</h1>
         <p className={`mt-4 text-base sm:text-lg leading-relaxed max-w-2xl ${muted}`}>I’m {data.profile.name}, a self-taught developer working on Minecraft mods, C# game prototypes, and AI-assisted projects. I like bringing old ideas into new versions and finding out what I can build next.</p>
@@ -87,12 +92,19 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
         </div>
 
         </div>
+        </div>
+        </div>
         {nextCue(0)}
       </section>
       <section data-landing-slice="1" className="landing-slice" aria-labelledby="selected-work-heading">
-        <div className="landing-slice-content w-full">
+        <div className="landing-slice-content landing-work-content w-full">
+        <div>
+          <p className={`text-xs uppercase tracking-[0.2em] font-medium mb-4 ${accent}`}>Ongoing work</p>
+          <h2 id="selected-work-heading" className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12]">What I’m building.</h2>
+        </div>
+        <div>
         <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
-          <h2 id="selected-work-heading" className="text-xl font-semibold tracking-tight">Selected areas of work</h2>
+          <p className="text-base font-medium tracking-tight">Selected areas of work</p>
           <span className={`text-xs ${muted}`}>A closer look, in my résumé</span>
         </div>
         <div className="grid sm:grid-cols-3 gap-5 sm:gap-6">
@@ -108,10 +120,14 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
         </div>
 
         </div>
+        </div>
         {nextCue(1)}
       </section>
       <section data-landing-slice="2" className={`landing-slice border-t ${border}`} aria-labelledby="portfolio-preview-heading">
         <div className="landing-slice-content w-full">
+        <div className="landing-illustrated-layout">
+        <img src={crescentHammer} alt="" aria-hidden="true" width="640" height="640" loading="lazy" decoding="async" className="landing-decoration image-pixelated" />
+        <div className="min-w-0">
         <h2 id="portfolio-preview-heading" className="text-xl font-semibold tracking-tight mb-4">Explore the portfolios</h2>
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           <div className="min-w-0">
@@ -149,20 +165,21 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
         </div>
 
         </div>
+        </div>
+        </div>
         {nextCue(2)}
       </section>
-      <section data-landing-slice="3" className={`landing-slice border-t ${border}`}>
-        <div className="landing-slice-content w-full grid sm:grid-cols-[1fr_1.5fr] gap-6">
-        <h2 className="text-xl font-semibold tracking-tight">Beyond the code</h2>
-        <div>
-          <p className={`text-sm leading-relaxed ${muted}`}>Technical work extends beyond a screen. My experience includes commercial equipment operation, mechanical troubleshooting, and customer-facing roles—bringing practical problem-solving to the systems I build.</p>
-          <div className="flex flex-wrap gap-x-6 gap-y-3 mt-4 text-sm">
-            <a className="hover:underline underline-offset-4" href="#resume-experience">Work experience ↗</a>
-            <a className="hover:underline underline-offset-4" href="#resume-skills">Technical skills ↗</a>
-            <a className="hover:underline underline-offset-4" href="#resume-education">Education ↗</a>
+      <section data-landing-slice="3" className={`landing-slice border-t ${border}`} aria-labelledby="beyond-code-heading">
+        <div className="landing-slice-content landing-beyond-content w-full">
+          <h2 id="beyond-code-heading" className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12]">Beyond the code.</h2>
+          <div className="landing-beyond-details min-w-0">
+            <p className={`text-base sm:text-lg lg:text-xl leading-relaxed ${muted}`}>Technical work extends beyond a screen. My experience includes commercial equipment operation, mechanical troubleshooting, and customer-facing roles—bringing practical problem-solving to the systems I build.</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-4 mt-6 text-base font-medium">
+              <a className="inline-flex items-center gap-1.5 hover:underline underline-offset-4" href="#resume-experience">Work experience <ArrowUpRight aria-hidden="true" className="w-4 h-4" /></a>
+              <a className="inline-flex items-center gap-1.5 hover:underline underline-offset-4" href="#resume-skills">Technical skills <ArrowUpRight aria-hidden="true" className="w-4 h-4" /></a>
+              <a className="inline-flex items-center gap-1.5 hover:underline underline-offset-4" href="#resume-education">Education <ArrowUpRight aria-hidden="true" className="w-4 h-4" /></a>
+            </div>
           </div>
-        </div>
-
         </div>
       </section>
     </div>
