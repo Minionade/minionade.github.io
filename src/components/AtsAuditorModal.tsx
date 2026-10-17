@@ -10,6 +10,7 @@ interface AtsAuditorModalProps {
   persona: Persona;
   onCopyPlainText: () => void;
   copied: boolean;
+  isDarkMode?: boolean;
 }
 
 export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
@@ -19,6 +20,7 @@ export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
   persona,
   onCopyPlainText,
   copied,
+  isDarkMode = false,
 }) => {
   if (!isOpen) return null;
 
@@ -61,20 +63,34 @@ export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 no-print">
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-200 overflow-hidden">
+      <div
+        className={`rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col border overflow-hidden transition-all ${
+          isDarkMode
+            ? 'bg-[#242b3b] border-slate-700/80 text-slate-100'
+            : 'bg-white border-slate-200 text-slate-900'
+        }`}
+      >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div
+          className={`px-6 py-4 border-b flex items-center justify-between ${
+            isDarkMode ? 'bg-[#1e2430] border-slate-700/80' : 'bg-slate-50 border-slate-200'
+          }`}
+        >
           <div>
-            <h2 className="text-base font-bold text-slate-900">
+            <h2 className="text-base font-bold">
               Applicant Tracking System (ATS) Readability Audit
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Validating structure, keyword density, and parser compliance for {persona.toUpperCase()} applications.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors"
+            className={`p-1 rounded-lg transition-colors ${
+              isDarkMode
+                ? 'text-slate-400 hover:text-white hover:bg-slate-700/60'
+                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200/60'
+            }`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -83,31 +99,41 @@ export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
         {/* Body */}
         <div className="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
           {/* Summary Box */}
-          <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between">
+          <div
+            className={`p-4 border rounded-xl flex items-center justify-between ${
+              isDarkMode
+                ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-200'
+                : 'bg-emerald-50/70 border-emerald-200 text-emerald-950'
+            }`}
+          >
             <div>
-              <div className="text-xs font-semibold text-emerald-900 uppercase tracking-wider">
+              <div className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
                 ATS Compatibility Index
               </div>
-              <div className="text-2xl font-bold text-emerald-950 mt-0.5">
+              <div className="text-2xl font-bold mt-0.5">
                 98 / 100 · High Match
               </div>
-              <p className="text-xs text-emerald-800 mt-1">
+              <p className={`text-xs mt-1 ${isDarkMode ? 'text-emerald-300' : 'text-emerald-800'}`}>
                 Your resume uses standard ATS-compliant headers, chronological linear flow, and clean unboxed text.
               </p>
             </div>
             <button
               onClick={onCopyPlainText}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-900 bg-white hover:bg-emerald-100/60 border border-emerald-300 rounded-lg transition-colors whitespace-nowrap shadow-xs"
+              className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shadow-xs border ${
+                isDarkMode
+                  ? 'bg-slate-800 text-emerald-300 hover:bg-slate-700 border-emerald-700/60'
+                  : 'bg-white text-emerald-900 hover:bg-emerald-100/60 border-emerald-300'
+              }`}
             >
               {copied ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-600" />
+                  <Check className="w-4 h-4 text-emerald-400" />
                   <span>Copied Text!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4 text-emerald-700" />
-                  <span>Copy Plain Text Resume</span>
+                  <Copy className="w-4 h-4 text-emerald-400" />
+                  <span>Copy Plain Text</span>
                 </>
               )}
             </button>
@@ -115,20 +141,33 @@ export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
 
           {/* Checklist */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3
+              className={`text-xs font-bold uppercase tracking-wider ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-900'
+              }`}
+            >
               Structural & Formatting Checklist
             </h3>
             <div className="space-y-2">
               {checks.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                <div
+                  key={idx}
+                  className={`flex items-start gap-3 p-3 rounded-lg border ${
+                    isDarkMode ? 'bg-[#1e2430] border-slate-700/70' : 'bg-slate-50 border-slate-100'
+                  }`}
+                >
                   {item.passed ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   ) : (
-                    <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                   )}
                   <div>
-                    <div className="text-xs font-semibold text-slate-800">{item.title}</div>
-                    <div className="text-[11px] text-slate-600">{item.desc}</div>
+                    <div className={`text-xs font-semibold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                      {item.title}
+                    </div>
+                    <div className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                      {item.desc}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -137,10 +176,14 @@ export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
 
           {/* Target Keywords for current persona */}
           <div className="space-y-2.5">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3
+              className={`text-xs font-bold uppercase tracking-wider ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-900'
+              }`}
+            >
               Target Role Keywords ({persona.toUpperCase()})
             </h3>
-            <p className="text-[11px] text-slate-500">
+            <p className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Keywords hiring managers and automated recruiters scan for in this role:
             </p>
             <div className="flex flex-wrap gap-1.5 text-xs">
@@ -149,13 +192,17 @@ export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
                 return (
                   <span
                     key={i}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-medium ${
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-medium border ${
                       isFound
-                        ? 'bg-emerald-100/70 text-emerald-800 border border-emerald-300'
+                        ? isDarkMode
+                          ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/80'
+                          : 'bg-emerald-100/70 text-emerald-800 border border-emerald-300'
+                        : isDarkMode
+                        ? 'bg-[#1e2430] text-slate-300 border-slate-700'
                         : 'bg-slate-100 text-slate-600 border border-slate-200'
                     }`}
                   >
-                    {isFound && <Check className="w-3 h-3 text-emerald-600" />}
+                    {isFound && <Check className="w-3 h-3 text-emerald-400" />}
                     <span>{kw}</span>
                   </span>
                 );
@@ -165,10 +212,18 @@ export const AtsAuditorModal: React.FC<AtsAuditorModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-200 flex justify-end bg-slate-50">
+        <div
+          className={`px-6 py-3 border-t flex justify-end ${
+            isDarkMode ? 'bg-[#1e2430] border-slate-700/80' : 'bg-slate-50 border-slate-200'
+          }`}
+        >
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors"
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
+              isDarkMode
+                ? 'bg-blue-600 text-white hover:bg-blue-500'
+                : 'text-white bg-slate-900 hover:bg-slate-800'
+            }`}
           >
             Close ATS Audit
           </button>

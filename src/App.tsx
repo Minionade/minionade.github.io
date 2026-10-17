@@ -6,15 +6,15 @@ import { PersonaSwitcher } from './components/PersonaSwitcher';
 import { ResumeDocument } from './components/ResumeDocument';
 import { ResumeEditorModal } from './components/ResumeEditorModal';
 import { AtsAuditorModal } from './components/AtsAuditorModal';
-import { OwnerAuthModal } from './components/OwnerAuthModal';
+import { GitHubAuthModal, GitHubUser } from './components/GitHubAuthModal';
 import { ProjectsSection } from './components/ProjectsSection';
 import { BlogSection } from './components/BlogSection';
-import { Lock, ShieldCheck } from 'lucide-react';
+import { Github, ShieldCheck } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'resume' | 'projects' | 'blog'>('resume');
 
-  // Dark Mode state: DEFAULT IS TRUE (Dark Mode by default!)
+  // Dark Mode state: DEFAULT IS TRUE (Softened Dark Mode by default)
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('trevor_dark_mode');
@@ -22,10 +22,10 @@ export default function App() {
     } catch {
       // ignore
     }
-    return true; // Default is Dark Mode
+    return true;
   });
 
-  // Load saved default configuration (or fallback)
+  // Load saved default configuration
   const [currentPersona, setCurrentPersona] = useState<Persona>(() => {
     try {
       return (localStorage.getItem('trevor_saved_persona') as Persona) || 'hybrid';
@@ -52,26 +52,24 @@ export default function App() {
 
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isAtsOpen, setIsAtsOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hasCustomEdits, setHasCustomEdits] = useState(false);
 
-  // Owner authentication state (only Trevor can access admin tools)
-  const [isOwner, setIsOwner] = useState<boolean>(() => {
+  // GitHub User authentication state (saved in browser, zero hardcoded passwords)
+  const [gitHubUser, setGitHubUser] = useState<GitHubUser | null>(() => {
     try {
-      return localStorage.getItem('trevor_owner_auth') === 'true';
+      const saved = localStorage.getItem('trevor_github_user_v1');
+      if (saved) {
+        return JSON.parse(saved);
+      }
     } catch {
-      return false;
+      // ignore
     }
+    return null;
   });
 
-  const [ownerPin, setOwnerPin] = useState<string>(() => {
-    try {
-      return localStorage.getItem('trevor_owner_pin') || 'trevor137';
-    } catch {
-      return 'trevor137';
-    }
-  });
+  const isOwner = Boolean(gitHubUser?.isOwner);
 
   const [visibleSections, setVisibleSections] = useState({
     summary: true,
@@ -81,7 +79,7 @@ export default function App() {
     education: true,
   });
 
-  // Load from localStorage or initial state
+  // Load resume data from localStorage or initial state
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
     try {
       const saved = localStorage.getItem('trevor_resume_data_v5');
@@ -112,12 +110,12 @@ export default function App() {
     setHasCustomEdits(JSON.stringify(resumeData) !== JSON.stringify(INITIAL_RESUME_DATA));
   }, [resumeData]);
 
-  // Keyboard shortcut Ctrl+Shift+A or Cmd+Shift+A to open Owner Portal
+  // Keyboard shortcut Ctrl+Shift+G or Cmd+Shift+G / Ctrl+Shift+A to open GitHub Auth Modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'G' || e.key === 'g' || e.key === 'A' || e.key === 'a')) {
         e.preventDefault();
-        setIsAuthOpen(true);
+        setIsGitHubModalOpen(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -163,56 +161,21 @@ export default function App() {
     }
   };
 
-  const handleLogin = (passcode: string): boolean => {
-    if (passcode === ownerPin) {
-      setIsOwner(true);
-      try {
-        localStorage.setItem('trevor_owner_auth', 'true');
-      } catch {
-        // ignore
-      }
-      return true;
-    }
-    return false;
-  };
-
-  const handleLogout = () => {
-    setIsOwner(false);
-    setIsEditorOpen(false);
-    setIsAtsOpen(false);
+  const handleGitHubLogin = (user: GitHubUser) => {
+    setGitHubUser(user);
     try {
-      localStorage.removeItem('trevor_owner_auth');
+      localStorage.setItem('trevor_github_user_v1', JSON.stringify(user));
     } catch {
       // ignore
     }
   };
 
-  const handleChangePasscode = (oldPass: string, newPass: string): boolean => {
-    if (oldPass === ownerPin) {
-      setOwnerPin(newPass);
-      try {
-        localStorage.setItem('trevor_owner_pin', newPass);
-      } catch {
-        // ignore
-      }
-      return true;
-    }
-    return false;
-  };
-
-  const handleOpenEditor = () => {
-    if (isOwner) {
-      setIsEditorOpen(true);
-    } else {
-      setIsAuthOpen(true);
-    }
-  };
-
-  const handleOpenAts = () => {
-    if (isOwner) {
-      setIsAtsOpen(true);
-    } else {
-      setIsAuthOpen(true);
+  const handleGitHubLogout = () => {
+    setGitHubUser(null);
+    try {
+      localStorage.removeItem('trevor_github_user_v1');
+    } catch {
+      // ignore
     }
   };
 
@@ -340,20 +303,20 @@ export default function App() {
     <div
       className={`min-h-screen flex flex-col font-sans transition-colors ${
         isDarkMode
-          ? 'bg-slate-950 text-slate-100 selection:bg-blue-600/30 selection:text-blue-200'
+          ? 'bg-[#1e2430] text-slate-100 selection:bg-blue-600/30 selection:text-blue-200'
           : 'bg-slate-50 text-slate-900 selection:bg-blue-100 selection:text-blue-900'
       }`}
     >
-      {/* Top Navigation with Dark Mode Toggle */}
+      {/* Top Navigation Bar */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onPrint={handlePrint}
-        onOpenEditor={handleOpenEditor}
-        onOpenAts={handleOpenAts}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenEditor={() => setIsEditorOpen(true)}
+        onOpenAts={() => setIsAtsOpen(true)}
+        onOpenGitHubAuth={() => setIsGitHubModalOpen(true)}
+        gitHubUser={gitHubUser}
         hasCustomEdits={hasCustomEdits}
-        isOwner={isOwner}
         isDarkMode={isDarkMode}
         onToggleDarkMode={handleToggleDarkMode}
       />
@@ -362,24 +325,22 @@ export default function App() {
       <main className="flex-1">
         {activeTab === 'resume' && (
           <div className="space-y-6">
-            {/* Persona, Target Role, Density, Palette Configuration Bar - STRICTLY OWNER ONLY */}
-            {isOwner && (
-              <PersonaSwitcher
-                currentPersona={currentPersona}
-                onSelectPersona={handleSelectPersona}
-                theme={theme}
-                onSelectTheme={handleSelectTheme}
-                fontSize={fontSize}
-                onSelectFontSize={handleSelectFontSize}
-                visibleSections={visibleSections}
-                onToggleSection={handleToggleSection}
-                onCopyPlainText={handleCopyPlainText}
-                copied={copied}
-                onOpenAts={handleOpenAts}
-                onOpenEditor={handleOpenEditor}
-                onLogout={handleLogout}
-              />
-            )}
+            {/* Interactive Persona, Target Role, Density & Palette Customizer */}
+            <PersonaSwitcher
+              currentPersona={currentPersona}
+              onSelectPersona={handleSelectPersona}
+              theme={theme}
+              onSelectTheme={handleSelectTheme}
+              fontSize={fontSize}
+              onSelectFontSize={handleSelectFontSize}
+              visibleSections={visibleSections}
+              onToggleSection={handleToggleSection}
+              onCopyPlainText={handleCopyPlainText}
+              copied={copied}
+              onOpenAts={() => setIsAtsOpen(true)}
+              onOpenEditor={() => setIsEditorOpen(true)}
+              isDarkMode={isDarkMode}
+            />
 
             {/* Resume Sheet Canvas with subtle drafting container */}
             <div className="py-6 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto">
@@ -414,7 +375,7 @@ export default function App() {
       <footer
         className={`border-t py-6 px-4 text-center text-xs no-print space-y-3 transition-colors ${
           isDarkMode
-            ? 'bg-slate-950/90 border-slate-800 text-slate-400'
+            ? 'bg-[#1e2430] border-slate-700/80 text-slate-400'
             : 'bg-white border-slate-200 text-slate-500'
         }`}
       >
@@ -423,11 +384,11 @@ export default function App() {
             <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               {resumeData.profile.name}
             </span>
-            <span aria-hidden="true" className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>
+            <span aria-hidden="true" className={isDarkMode ? 'text-slate-600' : 'text-slate-300'}>
               ·
             </span>
             <span>{resumeData.profile.location}</span>
-            <span aria-hidden="true" className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>
+            <span aria-hidden="true" className={isDarkMode ? 'text-slate-600' : 'text-slate-300'}>
               ·
             </span>
             <a
@@ -438,7 +399,7 @@ export default function App() {
             >
               {resumeData.profile.email}
             </a>
-            <span aria-hidden="true" className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>
+            <span aria-hidden="true" className={isDarkMode ? 'text-slate-600' : 'text-slate-300'}>
               ·
             </span>
             <a
@@ -473,57 +434,54 @@ export default function App() {
               Blog
             </button>
 
-            {/* Discrete Owner portal link */}
+            {/* GitHub Sign-In status */}
             <button
-              onClick={() => setIsAuthOpen(true)}
-              className={`inline-flex items-center gap-1 transition-colors ${
-                isDarkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-700'
+              onClick={() => setIsGitHubModalOpen(true)}
+              className={`inline-flex items-center gap-1.5 transition-colors ${
+                isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
               }`}
-              title={isOwner ? 'Owner Mode Active (Click to manage)' : 'Owner Login (Ctrl+Shift+A)'}
+              title="Sign in with GitHub (Ctrl+Shift+G)"
             >
-              {isOwner ? (
-                <>
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium">Owner Mode</span>
-                </>
+              <Github className="w-3.5 h-3.5" />
+              {gitHubUser ? (
+                <span className="font-mono text-emerald-400 font-medium">@{gitHubUser.login}</span>
               ) : (
-                <>
-                  <Lock className="w-3 h-3" />
-                  <span>Owner Login</span>
-                </>
+                <span>GitHub Sign-In</span>
               )}
             </button>
           </div>
         </div>
       </footer>
 
-      {/* Editor Modal (Admin Action: only accessible when isOwner is true) */}
+      {/* Editor Modal for Resume */}
       <ResumeEditorModal
-        isOpen={isEditorOpen && isOwner}
+        isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
         data={resumeData}
         onSave={handleSaveData}
         currentPersona={currentPersona}
+        isDarkMode={isDarkMode}
       />
 
-      {/* ATS Readability Auditor Modal (Admin Action: only accessible when isOwner is true) */}
+      {/* ATS Readability Auditor Modal */}
       <AtsAuditorModal
-        isOpen={isAtsOpen && isOwner}
+        isOpen={isAtsOpen}
         onClose={() => setIsAtsOpen(false)}
         data={resumeData}
         persona={currentPersona}
         onCopyPlainText={handleCopyPlainText}
         copied={copied}
+        isDarkMode={isDarkMode}
       />
 
-      {/* Owner Authentication & Passcode Modal */}
-      <OwnerAuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        isOwner={isOwner}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-        onChangePasscode={handleChangePasscode}
+      {/* GitHub Authentication Modal */}
+      <GitHubAuthModal
+        isOpen={isGitHubModalOpen}
+        onClose={() => setIsGitHubModalOpen(false)}
+        currentUser={gitHubUser}
+        onLogin={handleGitHubLogin}
+        onLogout={handleGitHubLogout}
+        isDarkMode={isDarkMode}
       />
     </div>
   );

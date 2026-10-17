@@ -81,28 +81,28 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
   // Theme styling tokens (light mode and print-optimized defaults)
   const themeStyles = {
     slate: {
-      accentText: isDarkMode ? 'text-slate-300 print:text-slate-900' : 'text-slate-900',
-      divider: isDarkMode ? 'border-slate-750 print:border-slate-300' : 'border-slate-300',
-      metaText: isDarkMode ? 'text-slate-400 print:text-slate-600' : 'text-slate-600',
-      headerBorder: isDarkMode ? 'border-slate-700 print:border-slate-800' : 'border-slate-800',
+      accentText: isDarkMode ? 'text-slate-200 print:text-slate-900' : 'text-slate-900',
+      divider: isDarkMode ? 'border-slate-600/70 print:border-slate-300' : 'border-slate-300',
+      metaText: isDarkMode ? 'text-slate-300 print:text-slate-600' : 'text-slate-600',
+      headerBorder: isDarkMode ? 'border-slate-500/80 print:border-slate-800' : 'border-slate-800',
     },
     navy: {
       accentText: isDarkMode ? 'text-blue-400 print:text-blue-900' : 'text-blue-900',
-      divider: isDarkMode ? 'border-blue-900/60 print:border-blue-200' : 'border-blue-200',
-      metaText: isDarkMode ? 'text-slate-400 print:text-slate-600' : 'text-slate-600',
-      headerBorder: isDarkMode ? 'border-blue-600/70 print:border-blue-800' : 'border-blue-800',
+      divider: isDarkMode ? 'border-blue-700/60 print:border-blue-200' : 'border-blue-200',
+      metaText: isDarkMode ? 'text-slate-300 print:text-slate-600' : 'text-slate-600',
+      headerBorder: isDarkMode ? 'border-blue-500/70 print:border-blue-800' : 'border-blue-800',
     },
     emerald: {
       accentText: isDarkMode ? 'text-emerald-400 print:text-emerald-950' : 'text-emerald-950',
-      divider: isDarkMode ? 'border-emerald-900/60 print:border-emerald-200' : 'border-emerald-200',
-      metaText: isDarkMode ? 'text-slate-400 print:text-slate-600' : 'text-slate-600',
-      headerBorder: isDarkMode ? 'border-emerald-600/70 print:border-emerald-800' : 'border-emerald-800',
+      divider: isDarkMode ? 'border-emerald-700/60 print:border-emerald-200' : 'border-emerald-200',
+      metaText: isDarkMode ? 'text-slate-300 print:text-slate-600' : 'text-slate-600',
+      headerBorder: isDarkMode ? 'border-emerald-500/70 print:border-emerald-800' : 'border-emerald-800',
     },
     charcoal: {
       accentText: isDarkMode ? 'text-neutral-200 print:text-neutral-900' : 'text-neutral-900',
-      divider: isDarkMode ? 'border-neutral-800 print:border-neutral-300' : 'border-neutral-300',
-      metaText: isDarkMode ? 'text-neutral-400 print:text-neutral-600' : 'text-neutral-600',
-      headerBorder: isDarkMode ? 'border-neutral-700 print:border-neutral-900' : 'border-neutral-900',
+      divider: isDarkMode ? 'border-neutral-600 print:border-neutral-300' : 'border-neutral-300',
+      metaText: isDarkMode ? 'text-neutral-300 print:text-neutral-600' : 'text-neutral-600',
+      headerBorder: isDarkMode ? 'border-neutral-500 print:border-neutral-900' : 'border-neutral-900',
     },
   }[theme];
 
@@ -130,7 +130,7 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
       id="printable-resume"
       className={`w-full max-w-[850px] mx-auto p-8 sm:p-12 transition-all font-sans print:p-0 print:border-none print:shadow-none print:bg-white print:text-slate-900 ${
         isDarkMode
-          ? 'bg-slate-900/90 text-slate-100 border border-slate-800/80 shadow-2xl backdrop-blur-xs'
+          ? 'bg-[#242b3b] text-slate-100 border border-slate-700/80 shadow-xl backdrop-blur-xs'
           : 'bg-white text-slate-900 border border-slate-200 shadow-md'
       }`}
     >

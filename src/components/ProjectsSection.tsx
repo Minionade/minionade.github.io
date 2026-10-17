@@ -71,26 +71,26 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, isDa
             key={project.id}
             className={`p-6 rounded-xl border transition-all flex flex-col justify-between ${
               isDarkMode
-                ? 'bg-slate-900/90 border-slate-800 hover:border-slate-700 hover:bg-slate-900 text-slate-100 shadow-lg'
+                ? 'bg-[#242b3b] border-slate-700/80 hover:border-slate-600/90 hover:bg-[#2b3346] text-slate-100 shadow-md'
                 : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm text-slate-900'
             }`}
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                  <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-[#1e2430]' : 'bg-slate-100'}`}>
                     {getProjectIcon(project.id)}
                   </div>
                   <div>
                     <h3 className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                       {project.title}
                     </h3>
-                    <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-500'}`}>
                       {project.roleSubtitle}
                     </p>
                   </div>
                 </div>
-                <span className={`text-xs font-medium whitespace-nowrap ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                <span className={`text-xs font-medium whitespace-nowrap ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>
                   {project.period}
                 </span>
               </div>
@@ -101,7 +101,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, isDa
                   <React.Fragment key={idx}>
                     <span className={`font-medium ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item}</span>
                     {idx < project.stack.length - 1 && (
-                      <span aria-hidden="true" className={isDarkMode ? 'text-slate-700' : 'text-slate-300'}>·</span>
+                      <span aria-hidden="true" className={isDarkMode ? 'text-slate-500' : 'text-slate-300'}>·</span>
                     )}
                   </React.Fragment>
                 ))}
@@ -121,7 +121,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, isDa
               </ul>
             </div>
 
-            <div className={`pt-4 mt-4 border-t flex items-center justify-between ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
+            <div className={`pt-4 mt-4 border-t flex items-center justify-between ${isDarkMode ? 'border-slate-700/60' : 'border-slate-100'}`}>
               <button
                 onClick={() => setSelectedProjectId(project.id)}
                 className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1 transition-colors"
@@ -150,12 +150,12 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, isDa
 
       {/* Project Modal Deep Dive */}
       {activeProject && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className={`rounded-xl shadow-2xl max-w-2xl w-full border overflow-hidden ${
-            isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
+            isDarkMode ? 'bg-[#242b3b] border-slate-700/80 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
           }`}>
             <div className={`px-6 py-4 border-b flex items-center justify-between ${
-              isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              isDarkMode ? 'bg-[#1e2430] border-slate-700/80' : 'bg-slate-50 border-slate-200'
             }`}>
               <div className="flex items-center gap-2.5">
                 <div className={`p-2 rounded-lg border ${
@@ -214,12 +214,12 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, isDa
             </div>
 
             <div className={`px-6 py-3 border-t flex justify-end ${
-              isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              isDarkMode ? 'bg-[#1e2430] border-slate-700/80' : 'bg-slate-50 border-slate-200'
             }`}>
               <button
                 onClick={() => setSelectedProjectId(null)}
                 className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
-                  isDarkMode ? 'bg-white text-slate-950 hover:bg-slate-100' : 'bg-slate-900 text-white hover:bg-slate-800'
+                  isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-slate-900 text-white hover:bg-slate-800'
                 }`}
               >
                 Close Project Details
