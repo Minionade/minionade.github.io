@@ -22,6 +22,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
         "category": "Development",
         "items": [
           "C#",
+          "Java",
           "Unity",
           "Minecraft modding",
           "KubeJS / JavaScript",
@@ -61,6 +62,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
         "category": "Development",
         "items": [
           "C#",
+          "Java",
           "Unity",
           "Custom network packets",
           "KubeJS / JavaScript",
@@ -180,15 +182,16 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       "roleSubtitle": "Personal projects",
       "period": "Ongoing",
       "stack": [
+        "Java",
         "Forge",
         "NeoForge",
         "KubeJS",
         "JavaScript",
         "GitHub"
       ],
-      "summary": "Published Minecraft mods and compatibility addons, alongside an expert modpack and a cross-version compatibility bridge.",
+      "summary": "Published Minecraft mods and compatibility addons written in Java, alongside KubeJS modpack scripting and a cross-version compatibility bridge.",
       "accomplishments": [
-        "Published Quantum Flux: Reforged and Tinkers\u2019 Auto Anvil for Forge 1.20.1, plus community compatibility addons.",
+        "Published Java mods including Quantum Flux: Reforged and Tinkers\u2019 Auto Anvil for Forge 1.20.1, plus compatibility addons.",
         "Writing KubeJS scripts for Project Atmos, a modpack inspired by Project Ozone 2: Kappa Mode.",
         "Developing Forge Stuck!!!, an experimental bridge targeting Forge 1.20.1 mods on NeoForge 1.21.1."
       ]
@@ -285,7 +288,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
   "education": {
     "id": "ged-bloomsburg",
     "degree": "General Educational Development (GED)",
-    "institution": "Homeschooled",
+    "institution": "Commonwealth of Pennsylvania",
     "location": "Bloomsburg, PA",
     "year": "September 2020",
     "notes": ""
@@ -297,6 +300,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       "roleSubtitle": "Minecraft compatibility bridge",
       "period": "In development",
       "stack": [
+        "Java",
         "Minecraft",
         "Forge 1.20.1",
         "NeoForge 1.21.1"
@@ -347,6 +351,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       "roleSubtitle": "Minecraft mod remake",
       "period": "Published alpha",
       "stack": [
+        "Java",
         "Minecraft",
         "Forge 1.20.1",
         "Forge Energy"
@@ -365,6 +370,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       "roleSubtitle": "Minecraft automation addon",
       "period": "Published alpha",
       "stack": [
+        "Java",
         "Minecraft",
         "Forge 1.20.1",
         "Tinkers\u2019 Construct"
@@ -383,6 +389,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       "roleSubtitle": "Community addon & patches",
       "period": "Published",
       "stack": [
+        "Java",
         "Minecraft",
         "Mod compatibility"
       ],
@@ -399,6 +406,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       "roleSubtitle": "Community UI compatibility addon",
       "period": "Published",
       "stack": [
+        "Java",
         "Minecraft",
         "Forge 1.20.1",
         "UI compatibility"

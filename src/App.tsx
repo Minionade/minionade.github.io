@@ -3,6 +3,7 @@ import { ArtworkItem, BlogPost, Persona, ProjectItem, ResumeData, ThemeId } from
 import { BLOG_POSTS, INITIAL_RESUME_DATA } from './data/initialData';
 import { INITIAL_ARTWORKS } from './data/artData';
 import { LandingPage } from './components/LandingPage';
+import { SocialLinks } from './components/SocialLinks';
 import { Navbar, NavTab } from './components/Navbar';
 import { PersonaSwitcher } from './components/PersonaSwitcher';
 import { ResumeDocument } from './components/ResumeDocument';
@@ -615,9 +616,10 @@ export default function App() {
       </main>
 
       {activeTab !== 'resume' && <div className="hidden print-only"><ResumeDocument data={resumeData} persona={currentPersona} theme={theme} fontSize={fontSize} visibleSections={visibleSections} /></div>}
+      <SocialLinks isDarkMode={isDarkMode} />
       {/* Bottom Footer */}
       <footer
-        className={`border-t py-8 px-4 sm:px-6 lg:px-8 text-xs transition-colors no-print ${
+        className={`border-t pt-8 pb-24 px-4 sm:px-6 lg:px-8 text-xs transition-colors no-print ${
           isDarkMode
             ? 'bg-[#181e2b] border-slate-700/80 text-slate-400'
             : 'bg-[#faf8f4] border-[#ded7ca] text-stone-600'

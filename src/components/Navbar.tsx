@@ -189,20 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={onOpenGitHubAuth}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                  isDarkMode
-                    ? 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
-                    : 'bg-[#eee9df] border-[#ded7ca] text-stone-800 hover:bg-[#e4ded2]'
-                }`}
-                title="Sign in with GitHub Personal Access Token for Admin Access"
-              >
-                <Github className="w-3.5 h-3.5 text-stone-600 dark:text-slate-400" />
-                <span>Sign In</span>
-              </button>
-            )}
+            ) : null}
           </div>
 
           {/* Verified Owner Badge with integrated Visitor Preview Mode Toggle (Desktop only) */}
@@ -368,23 +355,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Zone 3: Actions (Theme Toggle, Edit Resume [Desktop], Print Preview, Download PDF) */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* GitHub External Link Icon Button */}
-          <a
-            href="https://github.com/minionade"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-              isDarkMode
-                ? 'bg-slate-800/90 hover:bg-slate-700/90 border-slate-700/90 text-slate-100 hover:text-white shadow-xs'
-                : 'bg-[#eee9df] hover:bg-[#e4ded2] border-[#ded7ca] text-stone-800 shadow-xs'
-            }`}
-            title="Visit Minionade on GitHub"
-          >
-            <Github className="w-3.5 h-3.5" />
-            <span>GitHub</span>
-            <ExternalLink className="w-3 h-3 text-stone-400" />
-          </a>
-
           {/* Dark / Light Mode Switcher (Toasted tan in light mode) */}
           <button
             onClick={onToggleDarkMode}
@@ -437,11 +407,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   ? 'border-slate-700 bg-slate-800/80 text-slate-200 hover:text-white hover:bg-slate-700'
                   : 'border-[#cfc6b6] bg-[#fdfcf9] text-stone-800 hover:bg-[#ede7dc] hover:text-stone-950'
               }`}
-              title="Open full print and export preview modal"
+              title="Open print and export preview"
+              aria-label="Open print and export preview"
             >
               <Printer className="w-3.5 h-3.5 text-stone-600 dark:text-blue-400" />
               <span className="hidden sm:inline">Print Preview</span>
-              <span className="sm:hidden text-[11px]">Preview</span>
+
             </button>
           )}
 
@@ -453,11 +424,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ? 'text-white bg-blue-600 hover:bg-blue-500 shadow-blue-900/30'
                 : 'text-white bg-stone-900 hover:bg-stone-800 shadow-stone-800/20'
             }`}
-            title="Download executive built resume PDF"
+            title="Download résumé PDF"
+            aria-label="Download résumé PDF"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Download PDF</span>
-            <span className="sm:hidden text-[11px]">PDF</span>
+
           </button>
         </div>
       </div>
