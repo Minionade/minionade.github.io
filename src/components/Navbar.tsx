@@ -81,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Distinctive Graphic Brand Emblem using the uploaded site icon */}
           <button
-            onClick={() => setActiveTab('home')}
+            onClick={() => { setActiveTab('home'); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); }}
             className={`group text-left flex items-center gap-2 px-2 py-1.5 sm:px-2.5 rounded-xl border transition-all duration-200 ${
               isDarkMode
                 ? 'bg-gradient-to-r from-slate-900/90 via-slate-800/80 to-slate-900/90 border-slate-700/80 hover:border-blue-500/60 shadow-sm'
