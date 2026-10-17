@@ -627,7 +627,7 @@ export default function App() {
         }`}
       >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <span className={`font-semibold ${isDarkMode ? 'text-slate-300' : 'text-stone-800'}`}>Trevor Barrett</span>
             <span>•</span>
             <span>Bloomsburg, PA</span>
@@ -640,7 +640,7 @@ export default function App() {
             </a>
           </div>
 
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-xs">
             <button
               onClick={() => setActiveTab('resume')}
               className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-stone-950'}`}

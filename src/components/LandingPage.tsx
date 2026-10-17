@@ -5,10 +5,9 @@ import { ArtworkItem, ResumeData } from '../types';
 export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; artworks: ArtworkItem[]; isDarkMode: boolean }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [activeSlice, setActiveSlice] = useState(0);
-  const sliceNames = ['Introduction', 'My work', 'Portfolios', 'Beyond the code', 'Contact & links'];
+  const sliceNames = ['Introduction', 'My work', 'Portfolios', 'Beyond the code'];
   const scrollToSlice = (index: number) => {
-    const target = index === 4 ? document.getElementById('site-footer')
-      : rootRef.current?.querySelectorAll<HTMLElement>('[data-landing-slice]')[index];
+    const target = rootRef.current?.querySelectorAll<HTMLElement>('[data-landing-slice]')[index];
     target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   };
 
@@ -16,14 +15,19 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
     const html = document.documentElement;
     const header = document.querySelector('header');
     const previousHeight = html.style.getPropertyValue('--landing-header-height');
-    const measureHeader = () => html.style.setProperty('--landing-header-height', `${header?.getBoundingClientRect().height || 64}px`);
-    measureHeader();
+    const previousFooterHeight = html.style.getPropertyValue('--landing-footer-height');
+    const footer = document.getElementById('site-footer');
+    const measureHeader = () => {
+      html.style.setProperty('--landing-header-height', `${header?.getBoundingClientRect().height || 64}px`);
+      html.style.setProperty('--landing-footer-height', `${footer?.getBoundingClientRect().height || 0}px`);
+    };
     html.classList.add('landing-scroll');
+    measureHeader();
     const resize = new ResizeObserver(measureHeader);
     if (header) resize.observe(header);
+    if (footer) resize.observe(footer);
     const sections = Array.from(rootRef.current?.querySelectorAll<HTMLElement>('[data-landing-slice]') || []);
-    const footer = document.getElementById('site-footer');
-    const slices = footer ? [...sections, footer] : sections;
+    const slices = sections;
     const ratios = new Map<Element, number>();
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -40,7 +44,8 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
       html.classList.remove('landing-scroll');
       if (previousHeight) html.style.setProperty('--landing-header-height', previousHeight);
       else html.style.removeProperty('--landing-header-height');
-      footer?.removeAttribute('data-visible');
+      if (previousFooterHeight) html.style.setProperty('--landing-footer-height', previousFooterHeight);
+      else html.style.removeProperty('--landing-footer-height');
     };
   }, []);
 
@@ -157,7 +162,6 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
         </div>
 
         </div>
-        {nextCue(3)}
       </section>
     </div>
   );
