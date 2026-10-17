@@ -1,11 +1,12 @@
 import React from 'react';
 import { X, ListFilter } from 'lucide-react';
 
-export function TagFilter({ options, selected, onChange, isDarkMode = false }: {
+export function TagFilter({ options, selected, onChange, isDarkMode = false, accent = 'blue' }: {
   options: { tag: string; count: number }[];
   selected: string[];
   onChange: (tags: string[]) => void;
   isDarkMode?: boolean;
+  accent?: 'blue' | 'amber';
 }) {
   return <div className="flex flex-wrap items-center gap-2 text-xs">
     <label className={`inline-flex items-center gap-2 border rounded-lg px-3 py-2 ${isDarkMode ? 'bg-[#242b3b] border-slate-600 text-slate-100' : 'bg-[#faf8f4] border-stone-300 text-stone-900'}`}>
@@ -19,7 +20,7 @@ export function TagFilter({ options, selected, onChange, isDarkMode = false }: {
     </label>
     <ul aria-label="Selected tags" className="flex flex-wrap gap-2">
       {selected.map(tag => <li key={tag}><button onClick={() => onChange(selected.filter(t => t !== tag))}
-        aria-label={`Remove ${tag} filter`} className="inline-flex items-center gap-2 rounded-full bg-blue-600 text-white px-3 py-2 hover:bg-blue-500">
+        aria-label={`Remove ${tag} filter`} className={`inline-flex items-center gap-2 rounded-full px-3 py-2 ${accent === 'amber' ? 'bg-amber-300 text-slate-950 hover:bg-amber-200' : 'bg-blue-600 text-white hover:bg-blue-500'}`}>
         {tag}<X aria-hidden="true" className="w-3 h-3" />
       </button></li>)}
     </ul>

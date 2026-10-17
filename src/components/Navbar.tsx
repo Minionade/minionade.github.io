@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[10px] font-mono font-bold tracking-wider px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                <span className={`text-[10px] font-mono font-bold tracking-wider px-1.5 py-0.2 rounded border ${isDarkMode ? 'bg-amber-500/20 text-yellow-300 border-amber-500/30' : 'bg-amber-100 text-amber-800 border-amber-300'}`}>
                   Minionade
                 </span>
                 <span className="text-[9px] text-stone-400 dark:text-slate-400 hidden xl:inline font-mono">dev</span>

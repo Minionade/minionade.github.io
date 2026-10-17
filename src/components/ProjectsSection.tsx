@@ -20,6 +20,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   onDeleteProject,
   isDarkMode = false,
 }) => {
+  const accent = isDarkMode ? 'text-amber-300' : 'text-amber-900';
+  const accentHover = isDarkMode ? 'hover:text-amber-200' : 'hover:text-amber-700';
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [projectToEdit, setProjectToEdit] = useState<ProjectItem | null>(null);
@@ -45,17 +47,17 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   const getProjectIcon = (id: string) => {
     switch (id) {
       case 'custom-engine':
-        return <Terminal className="w-5 h-5 text-blue-400" />;
+        return <Terminal className={`w-5 h-5 ${accent}`} />;
       case 'indie-games-ai':
-        return <FileCode2 className="w-5 h-5 text-purple-400" />;
+        return <FileCode2 className={`w-5 h-5 ${accent}`} />;
       case 'gdd-archive':
-        return <FileCode2 className="w-5 h-5 text-amber-400" />;
+        return <FileCode2 className={`w-5 h-5 ${accent}`} />;
       case 'pc-building':
-        return <Cpu className="w-5 h-5 text-emerald-400" />;
+        return <Cpu className={`w-5 h-5 ${accent}`} />;
       case 'equipment-ops':
-        return <Wrench className="w-5 h-5 text-amber-400" />;
+        return <Wrench className={`w-5 h-5 ${accent}`} />;
       default:
-        return <Terminal className="w-5 h-5 text-blue-400" />;
+        return <Terminal className={`w-5 h-5 ${accent}`} />;
     }
   };
 
@@ -87,7 +89,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       {/* Section Header with Add Project button for Owner */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">
+          <div className={`text-xs font-semibold uppercase tracking-wider ${accent} mb-1`}>
             Technical Portfolio
           </div>
           <h2
@@ -105,7 +107,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
         {isOwner && (
           <button
             onClick={handleCreateNewClick}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-300 hover:bg-amber-200 rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 self-start sm:self-auto"
             title="Add a new project"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -114,7 +116,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
         )}
       </div>
 
-      <TagFilter options={dynamicTags} selected={selectedTags} onChange={setSelectedTags} isDarkMode={isDarkMode} />
+      <TagFilter accent="amber" options={dynamicTags} selected={selectedTags} onChange={setSelectedTags} isDarkMode={isDarkMode} />
       <p className="text-xs opacity-70" role="status">{filteredProjects.length} projects{selectedTags.length ? ' · matching any selected tag' : ''}</p>
 
       {/* Main Content Area: Projects Grid + GitHub Repos Sidebar */}
@@ -159,8 +161,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                             onClick={(e) => handleEditClick(e, project)}
                             className={`p-1.5 rounded transition-colors ${
                               isDarkMode
-                                ? 'text-slate-300 hover:text-blue-400 hover:bg-slate-700/60'
-                                : 'text-slate-500 hover:text-blue-600 hover:bg-slate-100'
+                                ? 'text-slate-300 hover:text-amber-300 hover:bg-slate-700/60'
+                                : 'text-slate-500 hover:text-amber-800 hover:bg-slate-100'
                             }`}
                             title="Edit project details"
                           >
@@ -211,14 +213,14 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 <div className={`pt-4 mt-4 border-t flex items-center justify-between ${isDarkMode ? 'border-slate-700/60' : 'border-slate-100'}`}>
                   <button
                     onClick={() => setSelectedProjectId(project.id)}
-                    className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1 transition-colors"
+                    className={`text-xs font-semibold ${accent} ${accentHover} inline-flex items-center gap-1 transition-colors`}
                   >
                     <span>Project details</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
 
                   {project.demoUrl && <a href={project.demoUrl} target="_blank" rel="noreferrer"
-                    className="text-xs inline-flex items-center gap-1 text-blue-400 hover:underline">
+                    className={`text-xs inline-flex items-center gap-1 ${accent} hover:underline`}>
                     <ExternalLink className="w-3 h-3" />
                     {project.demoUrl.includes('curseforge.com') ? 'CurseForge' : 'Project page'}
                   </a>}
@@ -251,7 +253,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               {isOwner && (
                 <button
                   onClick={handleCreateNewClick}
-                  className="mt-3 px-4 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors"
+                  className="mt-3 px-4 py-1.5 text-xs font-semibold text-slate-950 bg-amber-300 rounded-lg hover:bg-amber-200 transition-colors"
                 >
                   Add First Project
                 </button>
@@ -300,8 +302,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                     }}
                     className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded border transition-colors ${
                       isDarkMode
-                        ? 'text-blue-300 bg-blue-950/40 border-blue-800/60 hover:bg-blue-900/60'
-                        : 'text-blue-700 bg-blue-50 border-blue-200 hover:bg-blue-100'
+                        ? 'text-amber-300 bg-amber-950/40 border-amber-800/60 hover:bg-amber-900/60'
+                        : 'text-amber-800 bg-amber-50 border-amber-200 hover:bg-amber-100'
                     }`}
                   >
                     <Edit3 className="w-3 h-3" />
@@ -350,7 +352,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               </div>
 
               {activeProject.demoUrl && <a href={activeProject.demoUrl} target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-blue-400 hover:underline">
+                className={`inline-flex items-center gap-1.5 text-sm ${accent} hover:underline`}>
                 <ExternalLink className="w-4 h-4" />
                 {activeProject.demoUrl.includes('curseforge.com') ? 'View on CurseForge' : 'Visit project page'}
               </a>}
@@ -360,7 +362,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                     href={activeProject.githubUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-blue-400 bg-blue-950/30 border border-blue-800/40 hover:bg-blue-900/40 transition-colors"
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium ${accent} bg-amber-950/30 border border-amber-800/40 hover:bg-amber-900/40 transition-colors`}
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>View GitHub Repository: {activeProject.githubUrl}</span>
@@ -375,7 +377,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               <button
                 onClick={() => setSelectedProjectId(null)}
                 className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors ${
-                  isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-slate-900 text-white hover:bg-slate-800'
+                  isDarkMode ? 'bg-amber-300 text-slate-950 hover:bg-amber-200' : 'bg-slate-900 text-white hover:bg-slate-800'
                 }`}
               >
                 Close Project Details

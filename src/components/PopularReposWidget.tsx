@@ -76,6 +76,7 @@ interface PopularReposWidgetProps {
 }
 
 export const PopularReposWidget: React.FC<PopularReposWidgetProps> = ({ isDarkMode = false }) => {
+  const accent = isDarkMode ? 'text-amber-300' : 'text-amber-900';
   const [repos, setRepos] = useState<RepoItem[]>(FALLBACK_REPOS);
   const [isLoading, setIsLoading] = useState(false);
   const [lastFetched, setLastFetched] = useState<string | null>(null);
@@ -121,7 +122,7 @@ export const PopularReposWidget: React.FC<PopularReposWidgetProps> = ({ isDarkMo
       >
         <div className="flex items-center gap-2.5">
           <div className={`p-1.5 rounded-lg ${isDarkMode ? 'bg-slate-700/60' : 'bg-slate-200/80'}`}>
-            <Github className="w-4 h-4 text-blue-400" />
+            <Github className={`w-4 h-4 ${accent}`} />
           </div>
           <div>
             <h3 className="text-xs font-bold tracking-tight">GitHub Repositories</h3>
@@ -129,7 +130,7 @@ export const PopularReposWidget: React.FC<PopularReposWidgetProps> = ({ isDarkMo
               href="https://github.com/minionade"
               target="_blank"
               rel="noreferrer"
-              className="text-[11px] font-mono text-blue-400 hover:underline"
+              className={`text-[11px] font-mono ${accent} hover:underline`}
             >
               @minionade
             </a>
@@ -146,7 +147,7 @@ export const PopularReposWidget: React.FC<PopularReposWidgetProps> = ({ isDarkMo
               : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
           }`}
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-blue-400' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? `animate-spin ${accent}` : ''}`} />
         </button>
       </div>
 
@@ -166,14 +167,14 @@ export const PopularReposWidget: React.FC<PopularReposWidgetProps> = ({ isDarkMo
             className={`block p-3 rounded-lg border transition-all group ${
               isDarkMode
                 ? 'bg-[#1e2430]/80 border-slate-700/70 hover:border-slate-600 hover:bg-[#283244]'
-                : 'bg-slate-50 border-slate-200 hover:border-blue-300 hover:bg-blue-50/40'
+                : 'bg-slate-50 border-slate-200 hover:border-amber-400 hover:bg-amber-50/60'
             }`}
           >
             <div className="flex items-center justify-between gap-1 mb-1">
-              <span className="font-mono font-bold text-xs text-blue-400 group-hover:underline truncate">
+              <span className={`font-mono font-bold text-xs ${accent} group-hover:underline truncate`}>
                 {repo.name}
               </span>
-              <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-blue-400 shrink-0" />
+              <ExternalLink className={`w-3 h-3 text-slate-400 ${isDarkMode ? 'group-hover:text-amber-300' : 'group-hover:text-amber-800'} shrink-0`} />
             </div>
 
             {repo.description && (
@@ -194,7 +195,7 @@ export const PopularReposWidget: React.FC<PopularReposWidgetProps> = ({ isDarkMo
                 </span>
               )}
               <span className="flex items-center gap-1">
-                <Star className="w-3 h-3 text-amber-400 fill-amber-400/30" />
+                <Star className={`w-3 h-3 ${accent} fill-amber-400/30`} />
                 <span>{repo.stargazers_count}</span>
               </span>
               {repo.forks_count > 0 && (
@@ -218,7 +219,7 @@ export const PopularReposWidget: React.FC<PopularReposWidgetProps> = ({ isDarkMo
           href="https://github.com/minionade?tab=repositories"
           target="_blank"
           rel="noreferrer"
-          className="hover:underline text-blue-400 font-medium inline-flex items-center gap-1"
+          className={`hover:underline ${accent} font-medium inline-flex items-center gap-1`}
         >
           <span>View on GitHub</span>
           <ExternalLink className="w-3 h-3" />
