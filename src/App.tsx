@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArtworkItem, BlogPost, Persona, ProjectItem, ResumeData, ThemeId } from './types';
-import { BLOG_POSTS, INITIAL_RESUME_DATA } from './data/initialData';
-import { INITIAL_ARTWORKS } from './data/artData';
+import { BLOG_POSTS as DEFAULT_POSTS, INITIAL_RESUME_DATA as DEFAULT_RESUME } from './data/initialData';
+import { INITIAL_ARTWORKS as DEFAULT_ARTWORKS } from './data/artData';
 import { ARTWORK_STORAGE_KEY, loadArtworkData } from './utils/artworkStorage';
 import { LandingPage } from './components/LandingPage';
 import { SocialLinks } from './components/SocialLinks';
@@ -20,6 +20,15 @@ import { loadResumeData, RESUME_STORAGE_KEY } from './utils/resumeStorage';
 import { generateResumePdf } from './utils/generateResumePdf';
 import { deployToGitHubPages, DeployResult } from './utils/githubDeployService';
 import { Github, ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, X } from 'lucide-react';
+
+// Editor commits are included in the next Pages build, alongside source defaults.
+const publishedFiles = import.meta.glob('./data/portfolioState.json', { eager: true, import: 'default' });
+const published = Object.values(publishedFiles)[0] as { resumeData?: ResumeData; blogPosts?: BlogPost[]; artworks?: ArtworkItem[] } | undefined;
+const INITIAL_RESUME_DATA = published?.resumeData || DEFAULT_RESUME;
+const BLOG_POSTS = published?.blogPosts || DEFAULT_POSTS;
+const INITIAL_ARTWORKS = published?.artworks || DEFAULT_ARTWORKS;
+let syncPublished = false;
+try { syncPublished = sessionStorage.getItem('trevor_sync_published') === 'true'; sessionStorage.removeItem('trevor_sync_published'); } catch { /* Optional browser storage. */ }
 
 export default function App() {
   const [activeTab, updateActiveTab] = useState<NavTab>('home');
@@ -93,7 +102,7 @@ export default function App() {
   const [gitHubUser, setGitHubUser] = useState<GitHubUser | null>(() => {
     try {
       const saved = localStorage.getItem('trevor_github_user_v1');
-      if (saved) {
+      if (saved && !syncPublished) {
         return JSON.parse(saved);
       }
     } catch {
@@ -139,7 +148,7 @@ export default function App() {
   // Load resume data from localStorage or initial state
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
     try {
-      return loadResumeData(localStorage, INITIAL_RESUME_DATA);
+      return syncPublished ? INITIAL_RESUME_DATA : loadResumeData(localStorage, INITIAL_RESUME_DATA);
     } catch {
       // ignore
     }
@@ -152,7 +161,7 @@ export default function App() {
       // Clean up legacy v1 storage if needed
       localStorage.removeItem('trevor_blog_posts_v1');
       const saved = localStorage.getItem('trevor_blog_posts_v2');
-      if (saved) {
+      if (saved && !syncPublished) {
         return JSON.parse(saved);
       }
     } catch {
@@ -166,7 +175,7 @@ export default function App() {
     try {
       // Clean up legacy v1 storage if needed
       localStorage.removeItem('trevor_artworks_v1');
-      return loadArtworkData(localStorage, INITIAL_ARTWORKS);
+      return syncPublished ? INITIAL_ARTWORKS : loadArtworkData(localStorage, INITIAL_ARTWORKS);
     } catch {
       // ignore
     }
@@ -364,6 +373,18 @@ export default function App() {
     setIsPrintPreviewOpen(true);
   };
 
+  const handleSyncPublished = () => {
+    try {
+      // Retain the complete draft before replacing browser caches.
+      localStorage.setItem('trevor_pre_sync_backup', JSON.stringify({ resumeData, blogPosts, artworks, savedAt: new Date().toISOString() }));
+      [RESUME_STORAGE_KEY, 'trevor_resume_data_v7', 'trevor_resume_data_v6', 'trevor_resume_data_v5', 'trevor_blog_posts_v2', ARTWORK_STORAGE_KEY, 'trevor_artworks_v2'].forEach(key => localStorage.removeItem(key));
+      sessionStorage.setItem('trevor_sync_published', 'true');
+      window.location.reload();
+    } catch {
+      setDeployFeedback({ success: false, message: 'Sync could not back up your drafts. Your current content has been kept.' });
+    }
+  };
+
   // Save changes and deploy directly to GitHub Pages
   const handleSaveChangesAndDeploy = async () => {
     // 1. Persist everything locally
@@ -492,6 +513,7 @@ export default function App() {
         onOpenAts={() => setIsAtsOpen(true)}
         onOpenGitHubAuth={() => setIsGitHubModalOpen(true)}
         onSaveChanges={handleSaveChangesAndDeploy}
+        onSyncPublished={handleSyncPublished}
         onRequestLogout={handleRequestLogout}
         isDeploying={isDeploying}
         deploySuccess={deploySuccess}

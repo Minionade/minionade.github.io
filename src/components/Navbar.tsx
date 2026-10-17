@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Home, FileText, FolderCode, Palette, NotebookPen,
   Download,
   Edit3,
   CheckCircle,
@@ -30,6 +31,7 @@ interface NavbarProps {
   onOpenAts: () => void;
   onOpenGitHubAuth: () => void;
   onSaveChanges: () => void;
+  onSyncPublished: () => void;
   onRequestLogout: () => void;
   isDeploying?: boolean;
   deploySuccess?: boolean;
@@ -51,6 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAts,
   onOpenGitHubAuth,
   onSaveChanges,
+  onSyncPublished,
   onRequestLogout,
   isDeploying = false,
   deploySuccess = false,
@@ -67,10 +70,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`sticky top-0 z-40 backdrop-blur-md border-b no-print transition-colors ${
+      className={`sticky top-0 z-40 border-b no-print transition-colors ${
         isDarkMode
-          ? 'bg-[#181e2b]/95 border-slate-700/80 text-slate-100'
-          : 'bg-[#faf8f4]/95 border-[#e2ddd3] text-stone-900'
+          ? 'bg-[#181e2b] border-slate-700/80 text-slate-100'
+          : 'bg-[#faf8f4] border-[#e2ddd3] text-stone-900'
       }`}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
@@ -148,6 +151,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="font-mono text-[11px] font-semibold hidden lg:inline">@{gitHubUser.login}</span>
                 </button>
 
+                <button onClick={onSyncPublished} disabled={isDeploying}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold hover:bg-black/10 disabled:opacity-50"
+                  title="Back up browser drafts and reload the latest published content">
+                  <RefreshCw aria-hidden="true" className="w-3 h-3" /><span>Sync</span>
+                </button>
                 {/* Save Changes sub-button (deploys directly to GitHub Pages) */}
                 <button
                   onClick={onSaveChanges}
@@ -255,89 +263,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Zone 2: Navigation Links (Desktop Only: Resume, Projects, Art Portfolio, Blog) */}
         <nav
-          className={`hidden xl:flex items-center gap-4 lg:gap-6 text-sm font-medium ${
+          className={`hidden xl:flex items-center gap-1 divide-x divide-current/15 text-sm font-medium ${
             isDarkMode ? 'text-slate-300' : 'text-stone-700'
           }`}
         >
-          <a href="#home" onClick={(e) => { e.preventDefault(); setActiveTab('home'); }}
-            aria-current={activeTab === 'home' ? 'page' : undefined}
-            className={`whitespace-nowrap px-2 py-1.5 rounded-md transition-colors ${activeTab === 'home' ? (isDarkMode ? 'text-amber-300 bg-white/5' : 'text-amber-900 bg-black/5') : 'hover:underline'}`}>
-            Home
-          </a>
-          <a
-            href="#resume"
-            onClick={(e) => {
-              e.preventDefault();
-              setActiveTab('resume');
-            }}
-            className={`whitespace-nowrap shrink-0 transition-colors py-1 relative ${
-              activeTab === 'resume'
-                ? isDarkMode
-                  ? 'text-white font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-400'
-                  : 'text-stone-950 font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-amber-700'
-                : isDarkMode
-                ? 'hover:text-white'
-                : 'hover:text-stone-950'
-            }`}
-          >
-            Resume
-          </a>
-          <a
-            href="#projects"
-            onClick={(e) => {
-              e.preventDefault();
-              setActiveTab('projects');
-            }}
-            className={`whitespace-nowrap shrink-0 transition-colors py-1 relative ${
-              activeTab === 'projects'
-                ? isDarkMode
-                  ? 'text-white font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-400'
-                  : 'text-stone-950 font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-amber-700'
-                : isDarkMode
-                ? 'hover:text-white'
-                : 'hover:text-stone-950'
-            }`}
-          >
-            Projects
-          </a>
-          <a
-            href="#art"
-            onClick={(e) => {
-              e.preventDefault();
-              setActiveTab('art');
-            }}
-            className={`whitespace-nowrap shrink-0 transition-colors py-1 relative flex items-center gap-1.5 ${
-              activeTab === 'art'
-                ? isDarkMode
-                  ? 'text-white font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-amber-400'
-                  : 'text-stone-950 font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-amber-700'
-                : isDarkMode
-                ? 'hover:text-white'
-                : 'hover:text-stone-950'
-            }`}
-          >
-            <span>Art Portfolio</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          </a>
-          <a
-            href="#blog"
-            onClick={(e) => {
-              e.preventDefault();
-              setActiveTab('blog');
-            }}
-            className={`whitespace-nowrap shrink-0 transition-colors py-1 relative ${
-              activeTab === 'blog'
-                ? isDarkMode
-                  ? 'text-white font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-400'
-                  : 'text-stone-950 font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-amber-700'
-                : isDarkMode
-                ? 'hover:text-white'
-                : 'hover:text-stone-950'
-            }`}
-          >
-            Blog
-          </a>
-
+          {(['home', 'resume', 'projects', 'art', 'blog'] as NavTab[]).map(tab => {
+            const Icon = {home: Home, resume: FileText, projects: FolderCode, art: Palette, blog: NotebookPen}[tab];
+            return <a key={tab} href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
+              aria-current={activeTab === tab ? 'page' : undefined}
+              className={`inline-flex items-center justify-center gap-1.5 px-2 py-2 whitespace-nowrap rounded-md transition-colors ${activeTab === tab ? (isDarkMode ? 'bg-slate-700 text-white' : 'bg-stone-200 text-stone-950') : 'hover:bg-black/5'}`}>
+              <Icon aria-hidden="true" className="w-3.5 h-3.5 shrink-0" /><span>{tab === 'resume' ? 'Resume' : tab === 'art' ? 'Art' : tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
+            </a>;
+          })}
           {/* ATS Scanner - Visible only when owner is logged in and not in preview */}
           {showAdminTools && (
             <button
@@ -436,81 +373,21 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Nav Row (Clean, dedicated tab row; no sign-in or admin clutter) */}
       <div
-        className={`xl:hidden flex items-center justify-between gap-1 overflow-x-auto border-t px-2 py-2 text-xs font-medium [&>a]:shrink-0 ${
+        className={`xl:hidden flex items-center justify-between gap-0 divide-x divide-current/15 overflow-x-auto border-t px-2 py-2 text-xs font-medium [&>a]:shrink-0 ${
           isDarkMode
             ? 'bg-[#181e2b] border-slate-700/80 text-slate-300'
             : 'bg-[#f4efe6] border-[#ded7ca] text-stone-700'
         }`}
       >
-        <a href="#home" onClick={(e) => { e.preventDefault(); setActiveTab('home'); }}
-            aria-current={activeTab === 'home' ? 'page' : undefined}
-            className={`whitespace-nowrap px-2 py-1.5 rounded-md transition-colors ${activeTab === 'home' ? (isDarkMode ? 'text-amber-300 bg-white/5' : 'text-amber-900 bg-black/5') : 'hover:underline'}`}>
-            Home
-          </a>
-        <a
-          href="#resume"
-          onClick={(e) => {
-            e.preventDefault();
-            setActiveTab('resume');
-          }}
-          className={`px-3 py-1 rounded-md transition-colors ${
-            activeTab === 'resume'
-              ? isDarkMode
-                ? 'text-white font-bold bg-slate-800'
-                : 'text-stone-950 font-bold bg-[#e6dfd1]'
-              : ''
-          }`}
-        >
-          Resume
-        </a>
-        <a
-          href="#projects"
-          onClick={(e) => {
-            e.preventDefault();
-            setActiveTab('projects');
-          }}
-          className={`px-3 py-1 rounded-md transition-colors ${
-            activeTab === 'projects'
-              ? isDarkMode
-                ? 'text-white font-bold bg-slate-800'
-                : 'text-stone-950 font-bold bg-[#e6dfd1]'
-              : ''
-          }`}
-        >
-          Projects
-        </a>
-        <a
-          href="#art"
-          onClick={(e) => {
-            e.preventDefault();
-            setActiveTab('art');
-          }}
-          className={`px-3 py-1 rounded-md transition-colors ${
-            activeTab === 'art'
-              ? isDarkMode
-                ? 'text-amber-400 font-bold bg-slate-800'
-                : 'text-amber-900 font-bold bg-amber-200/60'
-              : ''
-          }`}
-        >
-          Art
-        </a>
-        <a
-          href="#blog"
-          onClick={(e) => {
-            e.preventDefault();
-            setActiveTab('blog');
-          }}
-          className={`px-3 py-1 rounded-md transition-colors ${
-            activeTab === 'blog'
-              ? isDarkMode
-                ? 'text-white font-bold bg-slate-800'
-                : 'text-stone-950 font-bold bg-[#e6dfd1]'
-              : ''
-          }`}
-        >
-          Blog
-        </a>
+          {(['home', 'resume', 'projects', 'art', 'blog'] as NavTab[]).map(tab => {
+            const Icon = {home: Home, resume: FileText, projects: FolderCode, art: Palette, blog: NotebookPen}[tab];
+            return <a key={tab} href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
+              aria-current={activeTab === tab ? 'page' : undefined}
+              className={`inline-flex items-center justify-center gap-1.5 px-2 py-2 whitespace-nowrap rounded-md transition-colors ${activeTab === tab ? (isDarkMode ? 'bg-slate-700 text-white' : 'bg-stone-200 text-stone-950') : 'hover:bg-black/5'}`}>
+              <Icon aria-hidden="true" className="w-3.5 h-3.5 shrink-0" /><span>{tab === 'resume' ? 'Resume' : tab === 'art' ? 'Art' : tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
+            </a>;
+          })}
+
       </div>
     </header>
   );

@@ -33,7 +33,8 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         ratios.set(entry.target, entry.intersectionRatio);
-        entry.target.toggleAttribute('data-visible', entry.isIntersecting);
+        // Reveal once; restarting transforms while snapping makes sections appear to jump.
+        if (entry.isIntersecting) entry.target.setAttribute('data-visible', '');
       });
       const current = slices.reduce((best, slice, index) => (ratios.get(slice) || 0) > (ratios.get(slices[best]) || 0) ? index : best, 0);
       setActiveSlice(current);
@@ -135,7 +136,7 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
             {artworks.length > 0 ? <div className="grid grid-cols-2 gap-4">
               {[...artworks].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))).slice(0, 2).map(art => <a key={art.id} href="#art" className="min-w-0 group">
                 <div className={`aspect-square rounded-lg overflow-hidden border ${border} ${isDarkMode ? 'bg-slate-900/40' : 'bg-stone-200/40'}`}>
-                  <img src={art.imageUrl} alt={art.title} loading="lazy" className={`w-full h-full object-contain p-2 ${getArtworkCategories(art).includes('pixel-art') ? 'image-pixelated' : ''}`} />
+                  <img src={art.imageUrl} alt={art.title} loading="lazy" decoding="async" className={`w-full h-full object-contain p-2 ${getArtworkCategories(art).includes('pixel-art') ? 'image-pixelated' : ''}`} />
                 </div>
                 <h4 className="text-xs font-medium mt-2 break-words group-hover:underline underline-offset-4">{art.title}</h4>
                 <p className={`text-[11px] mt-1 ${muted}`}>{getArtworkCategories(art).map(formatArtworkCategory).join(' · ')}</p>

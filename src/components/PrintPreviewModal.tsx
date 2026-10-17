@@ -1,72 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { X, Printer, Download, FileText } from 'lucide-react';
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { ResumeDocument } from './ResumeDocument';
 import { createResumePdf, GeneratePdfOptions } from '../utils/generateResumePdf';
 
 interface PrintPreviewModalProps extends GeneratePdfOptions {
   isOpen: boolean;
   onClose: () => void;
   isDarkMode?: boolean;
-}
-
-function PdfPages({ buffer, fitWidth }: { buffer: ArrayBuffer; fitWidth: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
-  const [status, setStatus] = useState('Rendering PDF…');
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const resize = new ResizeObserver(entries => setWidth(Math.floor(entries[0].contentRect.width)));
-    resize.observe(container);
-    return () => resize.disconnect();
-  }, []);
-  useEffect(() => {
-    if (!width) return;
-    let cancelled = false;
-    let task: ReturnType<typeof import('pdfjs-dist').getDocument> | undefined;
-    const container = containerRef.current!;
-    container.replaceChildren();
-    setStatus('Rendering PDF…');
-    const render = async () => {
-      const pdfjs = await import('pdfjs-dist');
-      if (cancelled) return;
-      pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
-      task = pdfjs.getDocument({ data: new Uint8Array(buffer.slice(0)) });
-      const pdf = await task.promise;
-      for (let number = 1; number <= pdf.numPages; number++) {
-        const page = await pdf.getPage(number);
-        if (cancelled) return;
-        const original = page.getViewport({ scale: 1 });
-        const scale = fitWidth ? Math.min(width / original.width, 1.4) : 96 / 72;
-        const viewport = page.getViewport({ scale });
-        const ratio = Math.min(window.devicePixelRatio || 1, 2);
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.ceil(viewport.width * ratio);
-        canvas.height = Math.ceil(viewport.height * ratio);
-        canvas.style.width = `${viewport.width}px`;
-        canvas.style.height = `${viewport.height}px`;
-        canvas.className = 'block bg-white shadow-lg mb-5 mx-auto';
-        canvas.setAttribute('role', 'img');
-        canvas.setAttribute('aria-label', `Resume PDF, page ${number} of ${pdf.numPages}`);
-        container.appendChild(canvas);
-        await page.render({ canvas, canvasContext: canvas.getContext('2d')!, viewport,
-          transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0],
-        }).promise;
-      }
-      if (!cancelled) setStatus('');
-    };
-    render().catch(error => {
-      if (!cancelled) {
-        console.error('PDF preview failed:', error);
-        setStatus('Preview could not render. Use Open / Print PDF to view the same document.');
-      }
-    });
-    return () => { cancelled = true; void task?.destroy(); container.replaceChildren(); };
-  }, [buffer, width, fitWidth]);
-  return <>
-    {status && <p role="status" className="text-sm text-center mb-4">{status}</p>}
-    <div ref={containerRef} className="w-full" />
-  </>;
 }
 
 export function PrintPreviewModal({ isOpen, onClose, data, persona, visibleSections, isDarkMode = false }: PrintPreviewModalProps) {
@@ -102,7 +42,7 @@ export function PrintPreviewModal({ isOpen, onClose, data, persona, visibleSecti
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
           <div><h2 id="pdf-preview-title" className="text-sm font-semibold">PDF preview</h2>
-            <p className="text-xs opacity-70">The exact document you download</p></div>
+            <p className="text-xs opacity-70">HTML preview · Open PDF to check exact pagination</p></div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button className={button} onClick={() => setFitWidth(value => !value)}>{fitWidth ? '100% size' : 'Fit width'}</button>
@@ -112,7 +52,10 @@ export function PrintPreviewModal({ isOpen, onClose, data, persona, visibleSecti
         </div>
       </div>
       <div className={`flex-1 min-h-0 overflow-auto p-3 sm:p-6 ${isDarkMode ? 'bg-slate-950/60' : 'bg-[#eae4d8]'}`}>
-        <PdfPages buffer={pdf.buffer} fitWidth={fitWidth} />
+        <div className={fitWidth ? 'w-full' : 'w-[850px] mx-auto'}>
+          <ResumeDocument data={{...data, projects: data.projects.map(project => ({...project, summary: ''}))}} persona={persona}
+            visibleSections={visibleSections || {summary:true, skills:true, projects:true, experience:true, education:true}} theme="slate" fontSize="standard" isDarkMode={false} />
+        </div>
       </div>
     </div>
   </div>;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TagFilter } from './TagFilter';
 import { ArtworkItem } from '../types';
 import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 import {
@@ -34,60 +35,24 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
   isOwner,
   isDarkMode,
 }) => {
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedArtwork, setSelectedArtwork] = useState<ArtworkItem | null>(null);
   const [editingArtwork, setEditingArtwork] = useState<ArtworkItem | null>(null);
   const [artworkToDelete, setArtworkToDelete] = useState<ArtworkItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [showIterativePhilosophy, setShowIterativePhilosophy] = useState(false);
 
-  // Dynamically derive categories and counts from artworks
-  const dynamicCategories = React.useMemo(() => {
-    const map = new Map<string, number>();
-    artworks.forEach((art) => {
-      getArtworkCategories(art).forEach(cat => map.set(cat, (map.get(cat) || 0) + 1));
-    });
-    return Array.from(map.entries()).map(([key, count]) => ({
-      key,
-      label: formatArtworkCategory(key),
-      count,
-    }));
-  }, [artworks]);
-
-  React.useEffect(() => {
-    if (activeCategory !== 'all' && !dynamicCategories.some(cat => cat.key === activeCategory)) setActiveCategory('all');
-  }, [activeCategory, dynamicCategories]);
-
-  // Dynamically derive unique tools and tags from artworks
+  const artworkTags = (art: ArtworkItem) => [...new Set([
+    ...getArtworkCategories(art).map(formatArtworkCategory), ...(art.tools || []), ...(art.tags || []),
+  ].map(tag => tag.trim()).filter(Boolean))];
   const dynamicTags = React.useMemo(() => {
-    const tagCountMap = new Map<string, number>();
-    artworks.forEach((art) => {
-      const list = [...(art.tools || []), ...(art.tags || [])];
-      list.forEach((t) => {
-        const clean = t.trim();
-        if (clean) {
-          tagCountMap.set(clean, (tagCountMap.get(clean) || 0) + 1);
-        }
-      });
-    });
-    return Array.from(tagCountMap.entries()).map(([tag, count]) => ({
-      tag,
-      count,
-    }));
+    const counts = new Map<string, number>();
+    artworks.forEach(art => artworkTags(art).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1)));
+    return [...counts].map(([tag, count]) => ({tag, count}));
   }, [artworks]);
-
-  // Filter artworks dynamically based on active category and active tag
-  const filteredArtworks = React.useMemo(() => {
-    return artworks.filter((item) => {
-      const matchesCategory = activeCategory === 'all' || getArtworkCategories(item).includes(activeCategory);
-      const matchesTag =
-        !activeTag ||
-        item.tools?.some((t) => t.toLowerCase() === activeTag.toLowerCase()) ||
-        item.tags?.some((t) => t.toLowerCase() === activeTag.toLowerCase());
-      return matchesCategory && matchesTag;
-    });
-  }, [artworks, activeCategory, activeTag]);
+  const filteredArtworks = React.useMemo(() => artworks.filter(art =>
+    !selectedTags.length || artworkTags(art).some(tag => selectedTags.includes(tag))
+  ), [artworks, selectedTags]);
 
   const handleSaveArtwork = (savedArt: ArtworkItem) => {
     const exists = artworks.some((a) => a.id === savedArt.id);
@@ -219,102 +184,10 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
         </div>
       )}
 
-      {/* Dynamic Filter Tabs (Only shown when there are artworks) */}
-      {artworks.length > 0 && (
-        <div className="space-y-3">
-          {/* Category tags derived from the artwork collection */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            <button
-              onClick={() => {
-                setActiveCategory('all');
-                setActiveTag(null);
-              }}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 ${
-                activeCategory === 'all' && !activeTag
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : isDarkMode
-                  ? 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/70'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
-              }`}
-            >
-              <span>All Works</span>
-              <span
-                className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                  activeCategory === 'all' && !activeTag
-                    ? 'bg-blue-800/80 text-blue-200'
-                    : isDarkMode
-                    ? 'bg-slate-700 text-slate-300'
-                    : 'bg-slate-200 text-slate-700'
-                }`}
-              >
-                {artworks.length}
-              </span>
-            </button>
-
-            {dynamicCategories.map((cat) => (
-              <button
-                key={cat.key}
-                aria-pressed={activeCategory === cat.key}
-                onClick={() => {
-                  setActiveCategory(activeCategory === cat.key ? 'all' : cat.key);
-                  setActiveTag(null);
-                }}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 ${
-                  activeCategory === cat.key && !activeTag
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : isDarkMode
-                    ? 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/70'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
-                }`}
-              >
-                <span>{cat.label}</span>
-                <span
-                  className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                    activeCategory === cat.key && !activeTag
-                      ? 'bg-blue-800/80 text-blue-200'
-                      : isDarkMode
-                      ? 'bg-slate-700 text-slate-300'
-                      : 'bg-slate-200 text-slate-700'
-                  }`}
-                >
-                  {cat.count}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Dynamic Tags / Tool Filter Chips */}
-          {dynamicTags.length > 0 && (
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-              <span className="text-[11px] font-semibold text-slate-400 mr-1 shrink-0">Tags:</span>
-              {dynamicTags.map(({ tag, count }) => (
-                <button
-                  key={tag}
-                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                    activeTag === tag
-                      ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
-                      : isDarkMode
-                      ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
-                  }`}
-                >
-                  <span>#{tag}</span>
-                  <span className={`text-[9px] opacity-75`}>({count})</span>
-                </button>
-              ))}
-              {activeTag && (
-                <button
-                  onClick={() => setActiveTag(null)}
-                  className="text-[11px] text-blue-400 hover:underline px-2 py-0.5"
-                >
-                  Clear Tag Filter
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      {artworks.length > 0 && <>
+        <TagFilter options={dynamicTags} selected={selectedTags} onChange={setSelectedTags} isDarkMode={isDarkMode} />
+        <p className="text-xs opacity-70" role="status">{filteredArtworks.length} artworks{selectedTags.length ? ' · matching any selected tag' : ''}</p>
+      </>}
 
       {/* Empty State when no artworks exist */}
       {artworks.length === 0 ? (
@@ -351,11 +224,11 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
         >
           <Palette className="w-10 h-10 mx-auto text-slate-500 mb-3" />
           <h3 className="text-base font-semibold">No artworks match filter</h3>
-          <p className="text-xs text-slate-400 mt-1">Try clearing the category or tag filter.</p>
+          <p className="text-xs text-slate-400 mt-1">Try removing a selected tag.</p>
           <button
             onClick={() => {
-              setActiveCategory('all');
-              setActiveTag(null);
+              setSelectedTags([]);
+              setSelectedTags([]);
             }}
             className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-500 font-medium"
           >
@@ -500,7 +373,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
         artworkToEdit={editingArtwork}
-        knownCategories={dynamicCategories.map(cat => cat.key)}
+        knownCategories={[...new Set(artworks.flatMap(getArtworkCategories))]}
         onSave={handleSaveArtwork}
         isDarkMode={isDarkMode}
       />

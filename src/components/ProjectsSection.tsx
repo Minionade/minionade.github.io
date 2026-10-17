@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TagFilter } from './TagFilter';
 import { ProjectItem } from '../types';
 import { Terminal, Cpu, FileCode2, Wrench, ChevronRight, ExternalLink, Plus, Edit3, Trash2 } from 'lucide-react';
 import { ProjectEditorModal } from './ProjectEditorModal';
@@ -20,7 +21,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   isDarkMode = false,
 }) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [projectToEdit, setProjectToEdit] = useState<ProjectItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
@@ -37,11 +38,9 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   }, [projects]);
 
   const filteredProjects = React.useMemo(() => {
-    if (!selectedTag) return projects;
-    return projects.filter((p) =>
-      p.stack?.some((s) => s.toLowerCase() === selectedTag.toLowerCase())
-    );
-  }, [projects, selectedTag]);
+    if (!selectedTags.length) return projects;
+    return projects.filter(p => p.stack?.some(s => selectedTags.includes(s.trim())));
+  }, [projects, selectedTags]);
 
   const getProjectIcon = (id: string) => {
     switch (id) {
@@ -115,52 +114,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
         )}
       </div>
 
-      {/* Dynamic Stack Tags */}
-      {dynamicTags.length > 0 && (
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-          <span className="text-[11px] font-semibold text-stone-500 dark:text-slate-400 mr-1 shrink-0">Filter by Stack:</span>
-          <button
-            onClick={() => setSelectedTag(null)}
-            className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
-              selectedTag === null
-                ? isDarkMode
-                  ? 'bg-blue-600 text-white font-bold'
-                  : 'bg-stone-900 text-white font-bold'
-                : isDarkMode
-                ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
-                : 'bg-[#eee9df] text-stone-800 hover:bg-[#e4ded2] border border-[#ded7ca]'
-            }`}
-          >
-            <span>All ({projects.length})</span>
-          </button>
-          {dynamicTags.map(({ tag, count }) => (
-            <button
-              key={tag}
-              onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
-                selectedTag === tag
-                  ? isDarkMode
-                    ? 'bg-blue-600 text-white font-bold shadow-xs'
-                    : 'bg-stone-900 text-white font-bold shadow-xs'
-                  : isDarkMode
-                  ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
-                  : 'bg-[#eee9df] text-stone-800 hover:bg-[#e4ded2] border border-[#ded7ca]'
-              }`}
-            >
-              <span>{tag}</span>
-              <span className="text-[9px] opacity-75">({count})</span>
-            </button>
-          ))}
-          {selectedTag && (
-            <button
-              onClick={() => setSelectedTag(null)}
-              className="text-[11px] text-blue-400 hover:underline px-2 py-0.5"
-            >
-              Clear Filter
-            </button>
-          )}
-        </div>
-      )}
+      <TagFilter options={dynamicTags} selected={selectedTags} onChange={setSelectedTags} isDarkMode={isDarkMode} />
+      <p className="text-xs opacity-70" role="status">{filteredProjects.length} projects{selectedTags.length ? ' · matching any selected tag' : ''}</p>
 
       {/* Main Content Area: Projects Grid + GitHub Repos Sidebar */}
       <div className="flex flex-col lg:flex-row gap-8 items-start">
