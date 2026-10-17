@@ -125,7 +125,7 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
       <section data-landing-slice="2" className={`landing-slice border-t ${border}`} aria-labelledby="portfolio-preview-heading">
         <div className="landing-slice-content w-full">
         <div className="landing-illustrated-layout">
-        <img src={crescentHammer} alt="" aria-hidden="true" width="640" height="640" loading="lazy" decoding="async" className="landing-decoration image-pixelated" />
+        <img src={crescentHammer} alt="" aria-hidden="true" width="640" height="640" loading="lazy" decoding="async" className="landing-decoration landing-wrench image-pixelated" />
         <div className="min-w-0">
         <h2 id="portfolio-preview-heading" className="text-xl font-semibold tracking-tight mb-4">Explore the portfolios</h2>
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">

@@ -234,3 +234,7 @@ html.landing-scroll .site-footer {
     --desktop-edge-soft: rgb(75 58 35 / 7%);
   }
 }
+
+@media (max-width: 1023px) {
+  .landing-wrench { display: none; }
+}
