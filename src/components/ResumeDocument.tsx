@@ -192,6 +192,10 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
             </>
           )}
         </div>
+        <a href="https://minionade.github.io" target="_blank" rel="noreferrer"
+          className={`inline-block mt-2 ${fontClasses.subBody} underline underline-offset-2 ${isDarkMode ? 'text-blue-300 print:text-slate-800' : 'text-blue-800'}`}>
+          https://minionade.github.io
+        </a>
       </header>
 
       {/* 2. Professional Summary */}

@@ -414,7 +414,7 @@ export default function App() {
     let text = `${resumeData.profile.name.toUpperCase()}\n`;
     text += `${resumeData.profile.location} | ${resumeData.profile.phone} | ${resumeData.profile.email}`;
     if (resumeData.profile.github) text += ` | https://${resumeData.profile.github.replace(/^https?:\/\//, '')}`;
-    text += `\n\n`;
+    text += ` | https://minionade.github.io\n\n`;
 
     text += `PROFILE\n`;
     text += `${summary}\n\n`;
