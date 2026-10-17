@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TagFilter } from './TagFilter';
 import { BlogPost } from '../types';
 import { BlogPostModal } from './BlogPostModal';
 import { BlogEditorModal } from './BlogEditorModal';
@@ -24,44 +25,17 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
   const [postToEdit, setPostToEdit] = useState<BlogPost | null>(null);
   const [postToDelete, setPostToDelete] = useState<BlogPost | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // Dynamically derive categories and counts from current posts
-  const dynamicCategories = React.useMemo(() => {
-    const catMap = new Map<string, number>();
-    posts.forEach((p) => {
-      if (p.category && p.category.trim()) {
-        const cat = p.category.trim();
-        catMap.set(cat, (catMap.get(cat) || 0) + 1);
-      }
-    });
-    return Array.from(catMap.entries()).map(([cat, count]) => ({ cat, count }));
-  }, [posts]);
-
-  // Dynamically derive tags from current posts
+  const postTags = (post: BlogPost) => [...new Set([post.category, ...(post.tags || [])].map(tag => tag?.trim()).filter(Boolean))];
   const dynamicTags = React.useMemo(() => {
-    const tagMap = new Map<string, number>();
-    posts.forEach((p) => {
-      (p.tags || []).forEach((t) => {
-        const clean = t.trim();
-        if (clean) tagMap.set(clean, (tagMap.get(clean) || 0) + 1);
-      });
-    });
-    return Array.from(tagMap.entries()).map(([tag, count]) => ({ tag, count }));
+    const counts = new Map<string, number>();
+    posts.forEach(post => postTags(post).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1)));
+    return [...counts].map(([tag, count]) => ({ tag, count }));
   }, [posts]);
-
-  // Filter posts based on active dynamic category and active tag
-  const filteredPosts = React.useMemo(() => {
-    return posts.filter((post) => {
-      const matchesCategory = activeCategory === 'all' || post.category === activeCategory;
-      const matchesTag =
-        !activeTag ||
-        post.tags?.some((t) => t.toLowerCase() === activeTag.toLowerCase()) ||
-        post.category.toLowerCase() === activeTag.toLowerCase();
-      return matchesCategory && matchesTag;
-    });
-  }, [posts, activeCategory, activeTag]);
+  const filteredPosts = React.useMemo(() => posts.filter(post =>
+    !selectedTags.length || postTags(post).some(tag => selectedTags.includes(tag))
+  ), [posts, selectedTags]);
 
   const handleEditClick = (e: React.MouseEvent, post: BlogPost) => {
     e.stopPropagation();
@@ -91,8 +65,8 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
   return (
     <section className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 no-print">
       {/* Section Header with New Post button for Owner */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-current/15">
+        <div className="min-w-0">
           <div className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">
             Dev Blog & Notes
           </div>
@@ -104,8 +78,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
             Software, Game Design & Field Notes
           </h2>
           <p className={`mt-2 text-sm max-w-2xl ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-            Write-ups and technical notes on systems architecture, custom C# game engines, PC hardware assembly, and
-            mechanical operations.
+            Notes on Minecraft mods, game prototypes, AI-assisted development, and what I’m learning along the way.
           </p>
         </div>
 
@@ -116,90 +89,12 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
             title="Write a new article"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Write a Post</span>
+            <span>Add New Post</span>
           </button>
         )}
       </div>
 
-      {/* Dynamic Category & Tag Filter Tabs (Only shown when there are posts) */}
-      {posts.length > 0 && (
-        <div className="space-y-2.5">
-          {/* Categories */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-            <button
-              onClick={() => {
-                setActiveCategory('all');
-                setActiveTag(null);
-              }}
-              className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors capitalize font-medium flex items-center gap-1.5 ${
-                activeCategory === 'all' && !activeTag
-                  ? isDarkMode
-                    ? 'bg-blue-600 text-white font-semibold'
-                    : 'bg-slate-900 text-white font-semibold'
-                  : isDarkMode
-                  ? 'bg-[#242b3b] text-slate-300 hover:bg-slate-700/70 hover:text-white border border-slate-700/50'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-              }`}
-            >
-              <span>All Posts</span>
-              <span className="text-[10px] opacity-75">({posts.length})</span>
-            </button>
-
-            {dynamicCategories.map(({ cat, count }) => (
-              <button
-                key={cat}
-                onClick={() => {
-                  setActiveCategory(cat);
-                  setActiveTag(null);
-                }}
-                className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors capitalize font-medium flex items-center gap-1.5 ${
-                  activeCategory === cat && !activeTag
-                    ? isDarkMode
-                      ? 'bg-blue-600 text-white font-semibold'
-                      : 'bg-slate-900 text-white font-semibold'
-                    : isDarkMode
-                    ? 'bg-[#242b3b] text-slate-300 hover:bg-slate-700/70 hover:text-white border border-slate-700/50'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`}
-              >
-                <span>{cat}</span>
-                <span className="text-[10px] opacity-75">({count})</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Dynamic Tags */}
-          {dynamicTags.length > 0 && (
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-              <span className="text-[11px] font-semibold text-slate-400 mr-1 shrink-0">Tags:</span>
-              {dynamicTags.map(({ tag, count }) => (
-                <button
-                  key={tag}
-                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                    activeTag === tag
-                      ? 'bg-blue-600 text-white font-bold shadow-xs'
-                      : isDarkMode
-                      ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
-                  }`}
-                >
-                  <span>#{tag}</span>
-                  <span className="text-[9px] opacity-75">({count})</span>
-                </button>
-              ))}
-              {activeTag && (
-                <button
-                  onClick={() => setActiveTag(null)}
-                  className="text-[11px] text-blue-400 hover:underline px-2 py-0.5"
-                >
-                  Clear Tag
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      {posts.length > 0 && <TagFilter options={dynamicTags} selected={selectedTags} onChange={setSelectedTags} isDarkMode={isDarkMode} />}
 
       {/* Blog Cards Grid or Empty State */}
       {posts.length === 0 ? (
@@ -224,7 +119,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
               className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all"
             >
               <Plus className="w-4 h-4" />
-              <span>Write First Post</span>
+              <span>Add First Post</span>
             </button>
           )}
         </div>
@@ -238,8 +133,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
           <p className="text-sm font-semibold">No blog posts found matching this filter.</p>
           <button
             onClick={() => {
-              setActiveCategory('all');
-              setActiveTag(null);
+              setSelectedTags([]);
             }}
             className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-500 font-medium"
           >
@@ -318,7 +212,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
               <span className={`text-xs font-semibold group-hover:text-blue-400 inline-flex items-center gap-1 transition-colors ${
                 isDarkMode ? 'text-slate-200' : 'text-slate-900'
               }`}>
-                <span>Read Button</span>
+                <span>Read post</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </span>
               <BookOpen className={`w-4 h-4 transition-colors ${
@@ -339,9 +233,10 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
 
       {/* Editor Modal for Blog (Owner only) */}
       <BlogEditorModal
-        isOpen={isEditorOpen}
+        isOpen={isEditorOpen && isOwner}
         onClose={() => setIsEditorOpen(false)}
         postToEdit={postToEdit}
+        knownTags={dynamicTags.map(({tag}) => tag)}
         onSavePost={onSavePost}
         isDarkMode={isDarkMode}
       />

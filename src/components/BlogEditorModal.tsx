@@ -8,6 +8,7 @@ interface BlogEditorModalProps {
   postToEdit: BlogPost | null;
   onSavePost: (post: BlogPost) => void;
   isDarkMode?: boolean;
+  knownTags?: string[];
 }
 
 export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
@@ -16,14 +17,13 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
   postToEdit,
   onSavePost,
   isDarkMode = false,
+  knownTags = [],
 }) => {
-  if (!isOpen) return null;
-
   const isEditing = Boolean(postToEdit);
 
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
-  const [category, setCategory] = useState('Systems Engineering');
+  const [category, setCategory] = useState('');
   const [readingTime, setReadingTime] = useState('5 min read');
   const [date, setDate] = useState('October 2026');
   const [summary, setSummary] = useState('');
@@ -42,10 +42,11 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
   >([]);
 
   useEffect(() => {
+    if (!isOpen) return;
     if (postToEdit) {
       setTitle(postToEdit.title);
       setSubtitle(postToEdit.subtitle);
-      setCategory(postToEdit.category);
+      setCategory([...new Set([postToEdit.category, ...(postToEdit.tags || [])].filter(Boolean))].join(', '));
       setReadingTime(postToEdit.readingTime);
       setDate(postToEdit.date);
       setSummary(postToEdit.summary);
@@ -66,9 +67,9 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
       // New blank post template
       setTitle('');
       setSubtitle('');
-      setCategory('Systems Engineering');
+      setCategory('');
       setReadingTime('5 min read');
-      setDate('October 2026');
+      setDate(new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
       setSummary('');
       setLead('');
       setSections([
@@ -84,7 +85,9 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
         },
       ]);
     }
-  }, [postToEdit]);
+  }, [isOpen, postToEdit]);
+
+  if (!isOpen) return null;
 
   const handleAddSection = () => {
     setSections((prev) => [
@@ -113,6 +116,8 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
       return;
     }
 
+    const tags = [...new Set(category.split(',').map(tag => tag.trim()).filter(Boolean))];
+
     const slug = (postToEdit?.slug || title)
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -123,7 +128,8 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
       slug,
       title: title.trim(),
       subtitle: subtitle.trim(),
-      category: category.trim(),
+      category: tags[0] || 'Notes',
+      tags,
       date: date.trim(),
       readingTime: readingTime.trim(),
       summary: summary.trim(),
@@ -176,10 +182,10 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
             </div>
             <div>
               <h2 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                {isEditing ? 'Edit Blog Post' : 'Write New Technical Blog Post'}
+                {isEditing ? 'Edit Blog Post' : 'Add New Post'}
               </h2>
               <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                Publish or update articles on systems engineering, GDDs, hardware, and field work.
+                Create or edit a post, then use Save Changes to publish your updates.
               </p>
             </div>
           </div>
@@ -231,18 +237,22 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
             </div>
 
             <div>
-              <label className="block font-semibold mb-1">Category</label>
+              <label htmlFor="blog-category-tags" className="block font-semibold mb-1">Category tags</label>
               <input
                 type="text"
+                id="blog-category-tags" list="blog-known-tags" aria-describedby="blog-tags-help"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                placeholder="e.g. Systems Engineering, Game Design & Systems, Hardware & IT"
+                placeholder="e.g. Minecraft, Java, Development"
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                   isDarkMode
                     ? 'bg-slate-950 border-slate-800 text-white'
                     : 'bg-white border-slate-300 text-slate-900'
                 }`}
               />
+              <datalist id="blog-known-tags">{knownTags.map(tag => <option key={tag} value={tag} />)}</datalist>
+              <p id="blog-tags-help" className="mt-1.5 opacity-70">Separate tags with commas. Use an existing tag or create your own.</p>
+              <div className="flex flex-wrap gap-1 mt-2">{[...new Set(category.split(',').map(tag => tag.trim()).filter(Boolean))].map(tag => <span key={tag} className="px-2 py-1 rounded-md text-[11px] bg-blue-500/15 text-blue-400">{tag}</span>)}</div>
             </div>
 
             <div>
