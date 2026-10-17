@@ -20,7 +20,7 @@ import { PrintPreviewModal } from './components/PrintPreviewModal';
 import { loadResumeData, RESUME_STORAGE_KEY } from './utils/resumeStorage';
 import { generateResumePdf } from './utils/generateResumePdf';
 import { deployToGitHubPages, DeployResult } from './utils/githubDeployService';
-import { Github, ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, X } from 'lucide-react';
+import { Github, ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, X, Printer, Download } from 'lucide-react';
 
 // Editor commits are included in the next Pages build, alongside source defaults.
 const publishedFiles = import.meta.glob('./data/portfolioState.json', { eager: true, import: 'default' });
@@ -371,10 +371,6 @@ export default function App() {
     });
   };
 
-  const handlePrint = () => {
-    setIsPrintPreviewOpen(true);
-  };
-
   const handleSyncPublished = () => {
     try {
       // Retain the complete draft before replacing browser caches.
@@ -509,9 +505,6 @@ export default function App() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onDownloadPdf={handleDownloadPdf}
-        onPrintPreview={() => setIsPrintPreviewOpen(true)}
-        onPrint={() => setIsPrintPreviewOpen(true)}
         onOpenEditor={() => setIsEditorOpen(true)}
         onOpenAts={() => setIsAtsOpen(true)}
         onOpenGitHubAuth={() => setIsGitHubModalOpen(true)}
@@ -577,6 +570,16 @@ export default function App() {
         {activeTab === 'home' && <LandingPage data={resumeData} artworks={artworks} isDarkMode={isDarkMode} />}
         {activeTab === 'resume' && (
           <div className="py-6 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-4">
+            <div role="group" aria-label="Résumé export options" className="max-w-[850px] mx-auto flex flex-wrap justify-end gap-2 no-print">
+              <button onClick={() => setIsPrintPreviewOpen(true)}
+                className={`inline-flex min-h-11 items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border transition-colors ${isDarkMode ? 'border-slate-600 bg-slate-800 text-slate-100 hover:bg-slate-700' : 'border-stone-300 bg-[#faf8f4] text-stone-800 hover:bg-stone-200'}`}>
+                <Printer aria-hidden="true" className="w-4 h-4" />Print Preview
+              </button>
+              <button onClick={handleDownloadPdf}
+                className="inline-flex min-h-11 items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors">
+                <Download aria-hidden="true" className="w-4 h-4" />Download PDF
+              </button>
+            </div>
             {/* Resume Admin Toolbar - OWNER ONLY (hidden when in preview mode) */}
             {showAdminTools && (
               <PersonaSwitcher
@@ -592,7 +595,6 @@ export default function App() {
                 copied={copied}
                 onOpenAts={() => setIsAtsOpen(true)}
                 onOpenEditor={() => setIsEditorOpen(true)}
-                onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
                 isDarkMode={isDarkMode}
               />
             )}

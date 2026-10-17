@@ -1,6 +1,6 @@
 import React from 'react';
 import { Persona, ThemeId } from '../types';
-import { Copy, Check, CheckCircle, Edit3, SlidersHorizontal, Printer } from 'lucide-react';
+import { Copy, Check, CheckCircle, Edit3, SlidersHorizontal } from 'lucide-react';
 
 interface PersonaSwitcherProps {
   currentPersona: Persona;
@@ -21,7 +21,6 @@ interface PersonaSwitcherProps {
   copied: boolean;
   onOpenAts: () => void;
   onOpenEditor: () => void;
-  onOpenPrintPreview?: () => void;
   isDarkMode?: boolean;
 }
 
@@ -38,7 +37,6 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
   copied,
   onOpenAts,
   onOpenEditor,
-  onOpenPrintPreview,
   isDarkMode = false,
 }) => {
   const personas: { id: Persona; label: string; tag: string }[] = [
@@ -105,20 +103,7 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
             <span>Edit Resume</span>
           </button>
 
-          {onOpenPrintPreview && (
-            <button
-              onClick={onOpenPrintPreview}
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border transition-colors ${
-                isDarkMode
-                  ? 'text-slate-200 bg-[#1e2430] hover:bg-slate-700/70 border-slate-700/70'
-                  : 'text-stone-800 bg-[#eee9df] hover:bg-[#e4ded2] border-[#d8d0c2]'
-              }`}
-              title="Open full print preview and export dialog"
-            >
-              <Printer className="w-3.5 h-3.5 text-stone-600" />
-              <span>Print Preview</span>
-            </button>
-          )}
+
 
           <button
             onClick={onOpenAts}

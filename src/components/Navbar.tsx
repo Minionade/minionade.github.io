@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Home, FileText, FolderCode, Palette, NotebookPen,
-  Download,
   Edit3,
   CheckCircle,
   Github,
@@ -15,7 +14,6 @@ import {
   LogOut,
   RefreshCw,
   Check,
-  Printer,
 } from 'lucide-react';
 import { GitHubUser } from './GitHubAuthModal';
 
@@ -24,9 +22,6 @@ export type NavTab = 'home' | 'resume' | 'projects' | 'blog' | 'art';
 interface NavbarProps {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
-  onDownloadPdf: () => void;
-  onPrintPreview?: () => void;
-  onPrint?: () => void;
   onOpenEditor: () => void;
   onOpenAts: () => void;
   onOpenGitHubAuth: () => void;
@@ -46,9 +41,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
-  onDownloadPdf,
-  onPrintPreview,
-  onPrint,
   onOpenEditor,
   onOpenAts,
   onOpenGitHubAuth,
@@ -66,7 +58,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const isOwner = Boolean(gitHubUser?.isOwner);
   const showAdminTools = isOwner && !isPreviewMode;
-  const handlePrintAction = onPrintPreview || onPrint;
 
   return (
     <header
@@ -292,7 +283,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </nav>
 
-        {/* Zone 3: Actions (Theme Toggle, Edit Resume [Desktop], Print Preview, Download PDF) */}
+        {/* Zone 3: Theme and editor actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Dark / Light Mode Switcher (Toasted tan in light mode) */}
           <button
@@ -337,39 +328,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           )}
 
-          {/* Print Preview Button - opens PrintPreviewModal */}
-          {handlePrintAction && (
-            <button
-              onClick={handlePrintAction}
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors shadow-xs whitespace-nowrap shrink-0 ${
-                isDarkMode
-                  ? 'border-slate-700 bg-slate-800/80 text-slate-200 hover:text-white hover:bg-slate-700'
-                  : 'border-[#cfc6b6] bg-[#fdfcf9] text-stone-800 hover:bg-[#ede7dc] hover:text-stone-950'
-              }`}
-              title="Open print and export preview"
-              aria-label="Open print and export preview"
-            >
-              <Printer className="w-3.5 h-3.5 text-stone-600 dark:text-blue-400" />
-              <span className="hidden sm:inline">Print Preview</span>
 
-            </button>
-          )}
-
-          {/* Download Built Resume PDF Button */}
-          <button
-            onClick={onDownloadPdf}
-            className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 ${
-              isDarkMode
-                ? 'text-white bg-blue-600 hover:bg-blue-500 shadow-blue-900/30'
-                : 'text-white bg-stone-900 hover:bg-stone-800 shadow-stone-800/20'
-            }`}
-            title="Download résumé PDF"
-            aria-label="Download résumé PDF"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Download PDF</span>
-
-          </button>
         </div>
       </div>
 
