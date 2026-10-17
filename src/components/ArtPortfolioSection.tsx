@@ -253,14 +253,9 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
                   src={item.imageUrl}
                   alt={item.title}
                   loading="lazy"
-                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                  style={{
-                    imageRendering: getArtworkCategories(item).includes('pixel-art') ? 'pixelated' : 'auto',
-                  }}
+                  className="w-full h-full object-contain"
                 />
 
-                {/* Gradient vignette */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
 
                 {/* Category badges */}
                 <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-1">

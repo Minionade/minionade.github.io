@@ -37,8 +37,6 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
   isDarkMode,
 }) => {
   const [zoomLevel, setZoomLevel] = useState<'fit' | '1x' | '2x'>('fit');
-  const [pixelatedMode, setPixelatedMode] = useState<boolean>(true);
-  const [showScanlines, setShowScanlines] = useState<boolean>(false);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
 
   useEffect(() => {
@@ -113,42 +111,6 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* View controls */}
-            <div
-              className={`flex items-center rounded-lg border p-0.5 ${
-                isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-200'
-              }`}
-            >
-              <button
-                onClick={() => setPixelatedMode(!pixelatedMode)}
-                className={`p-1.5 rounded text-xs font-medium flex items-center gap-1 transition-colors ${
-                  pixelatedMode
-                    ? 'bg-blue-600 text-white'
-                    : isDarkMode
-                    ? 'text-slate-400 hover:text-white'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-                title="Toggle crisp pixel scaling (no blur)"
-              >
-                <Grid className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Pixel Crisp</span>
-              </button>
-              <button
-                onClick={() => setShowScanlines(!showScanlines)}
-                className={`p-1.5 rounded text-xs font-medium flex items-center gap-1 transition-colors ${
-                  showScanlines
-                    ? 'bg-purple-600 text-white'
-                    : isDarkMode
-                    ? 'text-slate-400 hover:text-white'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-                title="Toggle retro CRT scanlines effect"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span className="hidden md:inline">CRT FX</span>
-              </button>
-            </div>
-
             <button
               onClick={onClose}
               className={`p-1.5 rounded-lg border transition-colors ${
@@ -188,24 +150,10 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
               <img
                 src={artwork.imageUrl}
                 alt={artwork.title}
-                className={`max-h-[55vh] max-w-full object-contain transition-all ${
-                  pixelatedMode ? 'image-pixelated' : ''
-                }`}
-                style={{
-                  imageRendering: pixelatedMode ? 'pixelated' : 'auto',
-                }}
+                className="max-h-[55vh] max-w-full object-contain"
               />
 
-              {/* CRT Scanline overlay effect */}
-              {showScanlines && (
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-25 mix-blend-overlay"
-                  style={{
-                    backgroundImage:
-                      'repeating-linear-gradient(0deg, rgba(0,0,0,0.6) 0px, rgba(0,0,0,0.6) 2px, transparent 2px, transparent 4px)',
-                  }}
-                />
-              )}
+
             </div>
 
             <div className="mt-3 flex items-center justify-between w-full text-xs text-slate-400 px-2">
