@@ -8,10 +8,13 @@ import { ResumeDocument } from './components/ResumeDocument';
 import { ResumeEditorModal } from './components/ResumeEditorModal';
 import { AtsAuditorModal } from './components/AtsAuditorModal';
 import { GitHubAuthModal, GitHubUser } from './components/GitHubAuthModal';
+import { ConfirmModal } from './components/ConfirmModal';
 import { ProjectsSection } from './components/ProjectsSection';
 import { BlogSection } from './components/BlogSection';
 import { ArtPortfolioSection } from './components/ArtPortfolioSection';
-import { Github, ShieldCheck, Lock } from 'lucide-react';
+import { generateResumePdf } from './utils/generateResumePdf';
+import { deployToGitHubPages, DeployResult } from './utils/githubDeployService';
+import { Github, ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, X } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('resume');
@@ -55,10 +58,16 @@ export default function App() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isAtsOpen, setIsAtsOpen] = useState(false);
   const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false);
+  const [isLogoutWarningOpen, setIsLogoutWarningOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hasCustomEdits, setHasCustomEdits] = useState(false);
 
-  // GitHub User authentication state (saved in browser, zero hardcoded passwords)
+  // Deploy to GitHub Pages state
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [deploySuccess, setDeploySuccess] = useState(false);
+  const [deployFeedback, setDeployFeedback] = useState<DeployResult | null>(null);
+
+  // GitHub User authentication state
   const [gitHubUser, setGitHubUser] = useState<GitHubUser | null>(() => {
     try {
       const saved = localStorage.getItem('trevor_github_user_v1');
@@ -74,7 +83,7 @@ export default function App() {
   // Owner status
   const isOwner = Boolean(gitHubUser?.isOwner);
 
-  // Preview Mode: Allows owner to preview the site as a regular visitor (hiding admin tools)
+  // Preview Mode: Allows owner to preview the site as a regular visitor
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(() => {
     try {
       return localStorage.getItem('trevor_preview_mode') === 'true';
@@ -118,10 +127,12 @@ export default function App() {
     return INITIAL_RESUME_DATA;
   });
 
-  // Blog posts state with persistence
+  // Blog posts state with persistence (clean v2 without placeholders)
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => {
     try {
-      const saved = localStorage.getItem('trevor_blog_posts_v1');
+      // Clean up legacy v1 storage if needed
+      localStorage.removeItem('trevor_blog_posts_v1');
+      const saved = localStorage.getItem('trevor_blog_posts_v2');
       if (saved) {
         return JSON.parse(saved);
       }
@@ -131,10 +142,12 @@ export default function App() {
     return BLOG_POSTS;
   });
 
-  // Art portfolio artworks state with persistence
+  // Art portfolio artworks state with persistence (clean v2 without placeholders)
   const [artworks, setArtworks] = useState<ArtworkItem[]>(() => {
     try {
-      const saved = localStorage.getItem('trevor_artworks_v1');
+      // Clean up legacy v1 storage if needed
+      localStorage.removeItem('trevor_artworks_v1');
+      const saved = localStorage.getItem('trevor_artworks_v2');
       if (saved) {
         return JSON.parse(saved);
       }
@@ -218,6 +231,15 @@ export default function App() {
     }
   };
 
+  const handleRequestLogout = () => {
+    setIsLogoutWarningOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    handleGitHubLogout();
+    setIsLogoutWarningOpen(false);
+  };
+
   const handleSaveData = (newData: ResumeData) => {
     setResumeData(newData);
     try {
@@ -263,7 +285,7 @@ export default function App() {
         ? prev.map((p) => (p.id === post.id ? post : p))
         : [post, ...prev];
       try {
-        localStorage.setItem('trevor_blog_posts_v1', JSON.stringify(updated));
+        localStorage.setItem('trevor_blog_posts_v2', JSON.stringify(updated));
       } catch {
         // ignore
       }
@@ -275,7 +297,7 @@ export default function App() {
     setBlogPosts((prev) => {
       const updated = prev.filter((p) => p.id !== postId);
       try {
-        localStorage.setItem('trevor_blog_posts_v1', JSON.stringify(updated));
+        localStorage.setItem('trevor_blog_posts_v2', JSON.stringify(updated));
       } catch {
         // ignore
       }
@@ -286,7 +308,7 @@ export default function App() {
   const handleUpdateArtworks = (updated: ArtworkItem[]) => {
     setArtworks(updated);
     try {
-      localStorage.setItem('trevor_artworks_v1', JSON.stringify(updated));
+      localStorage.setItem('trevor_artworks_v2', JSON.stringify(updated));
     } catch {
       // ignore
     }
@@ -295,7 +317,7 @@ export default function App() {
   const handleResetArtworks = () => {
     setArtworks(INITIAL_ARTWORKS);
     try {
-      localStorage.removeItem('trevor_artworks_v1');
+      localStorage.setItem('trevor_artworks_v2', JSON.stringify(INITIAL_ARTWORKS));
     } catch {
       // ignore
     }
@@ -308,6 +330,15 @@ export default function App() {
     }));
   };
 
+  // Download executive built resume PDF using jsPDF
+  const handleDownloadPdf = () => {
+    generateResumePdf({
+      data: resumeData,
+      persona: currentPersona,
+      visibleSections,
+    });
+  };
+
   const handlePrint = () => {
     if (activeTab !== 'resume') {
       setActiveTab('resume');
@@ -316,6 +347,50 @@ export default function App() {
       }, 150);
     } else {
       window.print();
+    }
+  };
+
+  // Save changes and deploy directly to GitHub Pages
+  const handleSaveChangesAndDeploy = async () => {
+    // 1. Persist everything locally
+    try {
+      localStorage.setItem('trevor_resume_data_v5', JSON.stringify(resumeData));
+      localStorage.setItem('trevor_blog_posts_v2', JSON.stringify(blogPosts));
+      localStorage.setItem('trevor_artworks_v2', JSON.stringify(artworks));
+    } catch {
+      // ignore
+    }
+
+    // 2. If user is signed in with token, deploy directly to GitHub Pages
+    if (!gitHubUser || !gitHubUser.token) {
+      setDeployFeedback({
+        success: false,
+        message: 'GitHub Token Required to Deploy',
+        details: 'To deploy directly to your GitHub Page, please sign in with a GitHub Personal Access Token that has repo or workflow permissions.',
+      });
+      setIsGitHubModalOpen(true);
+      return;
+    }
+
+    setIsDeploying(true);
+    setDeployFeedback(null);
+
+    const payload = {
+      resumeData,
+      blogPosts,
+      artworks,
+      savedAt: new Date().toISOString(),
+    };
+
+    const result = await deployToGitHubPages(gitHubUser.token, payload, 'minionade', 'minionade.github.io');
+
+    setIsDeploying(false);
+    setDeployFeedback(result);
+
+    if (result.success) {
+      setDeploySuccess(true);
+      setTimeout(() => setDeploySuccess(false), 4000);
+      setHasCustomEdits(false);
     }
   };
 
@@ -359,21 +434,20 @@ export default function App() {
 
     text += `EDUCATION\n`;
     text += `${resumeData.education.degree}\n`;
-    text += `${resumeData.education.institution}, ${resumeData.education.location} (${resumeData.education.year})\n`;
-    if (resumeData.education.notes) {
-      text += `${resumeData.education.notes}\n`;
-    }
+    text += `${resumeData.education.institution} - ${resumeData.education.location} (${resumeData.education.year})\n`;
+    if (resumeData.education.notes) text += `${resumeData.education.notes}\n`;
 
     return text;
   };
 
-  const handleCopyPlainText = async () => {
+  const handleCopyPlainText = () => {
     const text = generatePlainTextResume();
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    } else {
       const el = document.createElement('textarea');
       el.value = text;
       document.body.appendChild(el);
@@ -397,10 +471,15 @@ export default function App() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        onDownloadPdf={handleDownloadPdf}
         onPrint={handlePrint}
         onOpenEditor={() => setIsEditorOpen(true)}
         onOpenAts={() => setIsAtsOpen(true)}
         onOpenGitHubAuth={() => setIsGitHubModalOpen(true)}
+        onSaveChanges={handleSaveChangesAndDeploy}
+        onRequestLogout={handleRequestLogout}
+        isDeploying={isDeploying}
+        deploySuccess={deploySuccess}
         gitHubUser={gitHubUser}
         hasCustomEdits={hasCustomEdits}
         isDarkMode={isDarkMode}
@@ -408,6 +487,50 @@ export default function App() {
         isPreviewMode={isPreviewMode}
         onTogglePreviewMode={handleTogglePreviewMode}
       />
+
+      {/* Deployment Notification Banner / Toast */}
+      {deployFeedback && (
+        <aside
+          aria-label="Deployment status notification"
+          className={`mx-auto max-w-4xl w-[94%] mt-3 p-3.5 rounded-xl border flex items-start justify-between gap-3 shadow-lg animate-in slide-in-from-top-2 duration-300 no-print ${
+            deployFeedback.success
+              ? 'bg-emerald-950/80 border-emerald-700/80 text-emerald-200'
+              : 'bg-amber-950/80 border-amber-700/80 text-amber-200'
+          }`}
+        >
+          <div className="flex items-start gap-2.5">
+            {deployFeedback.success ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            ) : (
+              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            )}
+            <div className="space-y-0.5">
+              <p className="font-bold text-xs sm:text-sm">{deployFeedback.message}</p>
+              {deployFeedback.details && (
+                <p className="text-[11px] text-slate-300 leading-relaxed">{deployFeedback.details}</p>
+              )}
+              {deployFeedback.workflowRunUrl && (
+                <a
+                  href={deployFeedback.workflowRunUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-300 hover:underline pt-0.5"
+                >
+                  <span>View GitHub Actions Deployment Workflow</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={() => setDeployFeedback(null)}
+            className="p-1 rounded text-slate-400 hover:text-white transition-colors"
+            aria-label="Dismiss alert"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </aside>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1">
@@ -455,7 +578,7 @@ export default function App() {
         )}
 
         {activeTab === 'art' && (
-          <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto no-print">
             <ArtPortfolioSection
               artworks={artworks}
               onUpdateArtworks={handleUpdateArtworks}
@@ -477,46 +600,25 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer */}
+      {/* Bottom Footer */}
       <footer
-        className={`border-t py-6 px-4 text-center text-xs no-print space-y-3 transition-colors ${
+        className={`border-t py-8 px-4 sm:px-6 lg:px-8 text-xs transition-colors no-print ${
           isDarkMode
-            ? 'bg-[#1e2430] border-slate-700/80 text-slate-400'
+            ? 'bg-[#181e2b] border-slate-700/80 text-slate-400'
             : 'bg-white border-slate-200 text-slate-500'
         }`}
       >
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-              {resumeData.profile.name}
-            </span>
-            <span aria-hidden="true" className={isDarkMode ? 'text-slate-600' : 'text-slate-300'}>
-              ·
-            </span>
-            <span>{resumeData.profile.location}</span>
-            <span aria-hidden="true" className={isDarkMode ? 'text-slate-600' : 'text-slate-300'}>
-              ·
-            </span>
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-300">Trevor Barrett</span>
+            <span>•</span>
+            <span>Bloomsburg, PA</span>
+            <span>•</span>
             <a
-              href={`mailto:${resumeData.profile.email}`}
-              className={`transition-colors ${
-                isDarkMode ? 'text-slate-300 hover:text-blue-400' : 'text-slate-700 hover:text-blue-600'
-              }`}
+              href="mailto:trevorbarrett137@gmail.com"
+              className="hover:underline text-blue-400"
             >
-              {resumeData.profile.email}
-            </a>
-            <span aria-hidden="true" className={isDarkMode ? 'text-slate-600' : 'text-slate-300'}>
-              ·
-            </span>
-            <a
-              href="https://github.com/minionade"
-              target="_blank"
-              rel="noreferrer"
-              className={`font-mono transition-colors ${
-                isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-700 hover:text-slate-950'
-              }`}
-            >
-              github.com/minionade
+              trevorbarrett137@gmail.com
             </a>
           </div>
 
@@ -535,7 +637,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveTab('art')}
-              className={`transition-colors ${isDarkMode ? 'hover:text-amber-400' : 'hover:text-amber-600'}`}
+              className={`transition-colors ${isDarkMode ? 'hover:text-amber-300' : 'hover:text-amber-700'}`}
             >
               Art Portfolio
             </button>
@@ -598,6 +700,19 @@ export default function App() {
         currentUser={gitHubUser}
         onLogin={handleGitHubLogin}
         onLogout={handleGitHubLogout}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* Sign-out Warning Confirmation Modal */}
+      <ConfirmModal
+        isOpen={isLogoutWarningOpen}
+        title="Sign Out of GitHub"
+        message="Warning: Signing out will clear your active GitHub session token from this browser. You will need to generate or enter a new GitHub Personal Access Key to sign back in. Are you sure you want to sign out?"
+        confirmLabel="Yes, Sign Out"
+        cancelLabel="Cancel"
+        isDestructive={true}
+        onConfirm={handleConfirmLogout}
+        onCancel={() => setIsLogoutWarningOpen(false)}
         isDarkMode={isDarkMode}
       />
     </div>

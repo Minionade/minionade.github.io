@@ -10,9 +10,11 @@ import {
   Eye,
   EyeOff,
   ExternalLink,
-  Sparkles,
-  Gamepad2,
-  Terminal,
+  UploadCloud,
+  LogOut,
+  RefreshCw,
+  Check,
+  Printer,
 } from 'lucide-react';
 import { GitHubUser } from './GitHubAuthModal';
 
@@ -21,10 +23,15 @@ export type NavTab = 'resume' | 'projects' | 'blog' | 'art';
 interface NavbarProps {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
-  onPrint: () => void;
+  onDownloadPdf: () => void;
+  onPrint?: () => void;
   onOpenEditor: () => void;
   onOpenAts: () => void;
   onOpenGitHubAuth: () => void;
+  onSaveChanges: () => void;
+  onRequestLogout: () => void;
+  isDeploying?: boolean;
+  deploySuccess?: boolean;
   gitHubUser: GitHubUser | null;
   hasCustomEdits: boolean;
   isDarkMode: boolean;
@@ -36,10 +43,15 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
+  onDownloadPdf,
   onPrint,
   onOpenEditor,
   onOpenAts,
   onOpenGitHubAuth,
+  onSaveChanges,
+  onRequestLogout,
+  isDeploying = false,
+  deploySuccess = false,
   gitHubUser,
   hasCustomEdits,
   isDarkMode,
@@ -61,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4">
         {/* Zone 1: Standout Graphic Brand Title + Authenticator / Preview Badge */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Distinctive Graphic Brand Emblem */}
+          {/* Distinctive Graphic Brand Emblem using the uploaded site icon */}
           <button
             onClick={() => setActiveTab('resume')}
             className={`group text-left flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl border transition-all duration-200 ${
@@ -71,12 +83,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
             title="Trevor Barrett / Minionade • Systems & Creative Portfolio"
           >
-            {/* Custom Minionade Graphic Icon */}
-            <div className="relative w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-gradient-to-br from-amber-400 via-lime-500 to-emerald-500 shadow-xs text-slate-950 font-black shrink-0">
-              {/* Pixelated/gaming graphic accent */}
-              <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-                <Gamepad2 className="w-4 h-4 text-slate-950" />
-              </div>
+            {/* Custom Channel Icon */}
+            <div className="relative w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-slate-950 shadow-xs border border-slate-700 shrink-0">
+              <img
+                src="./channel_icon.png"
+                alt="Minionade"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback if image path differs
+                  const target = e.target as HTMLImageElement;
+                  if (!target.src.endsWith('/public/channel_icon.png')) {
+                    target.src = '/public/channel_icon.png';
+                  }
+                }}
+              />
               <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-slate-950" />
             </div>
 
@@ -305,24 +325,70 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           )}
 
-          {/* GitHub Sign-In / Account Auth Modal Button */}
+          {/* GitHub Sign-In Block with Save Changes & Log Out sub-buttons */}
           {gitHubUser ? (
-            <button
-              onClick={onOpenGitHubAuth}
-              className={`inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+            <div
+              className={`flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl border transition-all ${
                 isDarkMode
-                  ? 'bg-slate-800/80 border-slate-700 text-slate-200 hover:bg-slate-700'
-                  : 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                  ? 'bg-slate-800/80 border-slate-700/90 shadow-sm'
+                  : 'bg-slate-100 border-slate-300 shadow-xs'
               }`}
-              title={`Signed in as @${gitHubUser.login}`}
             >
-              <img
-                src={gitHubUser.avatar_url}
-                alt={gitHubUser.login}
-                className="w-4 h-4 rounded-full border border-slate-500"
-              />
-              <span className="font-mono text-[11px] hidden sm:inline">@{gitHubUser.login}</span>
-            </button>
+              {/* Profile sub-button */}
+              <button
+                onClick={onOpenGitHubAuth}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-slate-700/50 transition-colors text-xs"
+                title={`Signed in as @${gitHubUser.login} (Click to view account)`}
+              >
+                <img
+                  src={gitHubUser.avatar_url}
+                  alt={gitHubUser.login}
+                  className="w-4 h-4 rounded-full border border-slate-500 shrink-0"
+                />
+                <span className="font-mono text-[11px] font-semibold hidden lg:inline">@{gitHubUser.login}</span>
+              </button>
+
+              {/* Save Changes sub-button (deploys directly to GitHub Pages) */}
+              <button
+                onClick={onSaveChanges}
+                disabled={isDeploying}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all shadow-xs ${
+                  deploySuccess
+                    ? 'bg-emerald-600 text-white'
+                    : isDeploying
+                    ? 'bg-blue-600/80 text-white cursor-wait'
+                    : hasCustomEdits
+                    ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold'
+                    : isDarkMode
+                    ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+                title="Save changes and deploy directly to GitHub Pages"
+              >
+                {isDeploying ? (
+                  <RefreshCw className="w-3 h-3 animate-spin shrink-0" />
+                ) : deploySuccess ? (
+                  <Check className="w-3 h-3 text-white shrink-0" />
+                ) : (
+                  <UploadCloud className="w-3 h-3 shrink-0" />
+                )}
+                <span>{isDeploying ? 'Deploying...' : deploySuccess ? 'Deployed!' : 'Save Changes'}</span>
+              </button>
+
+              {/* Log Out sub-button with warning modal trigger */}
+              <button
+                onClick={onRequestLogout}
+                className={`p-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  isDarkMode
+                    ? 'text-slate-400 hover:text-red-400 hover:bg-red-950/40'
+                    : 'text-slate-500 hover:text-red-600 hover:bg-red-50'
+                }`}
+                title="Log out of GitHub account"
+                aria-label="Log out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
           ) : (
             <button
               onClick={onOpenGitHubAuth}
@@ -331,27 +397,43 @@ export const Navbar: React.FC<NavbarProps> = ({
                   ? 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
                   : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-slate-900'
               }`}
-              title="Sign in with GitHub for Admin Access"
+              title="Sign in with GitHub Personal Access Token for Admin Access"
             >
-              <Terminal className="w-3.5 h-3.5 text-slate-400" />
-              <span className="hidden sm:inline">Admin</span>
+              <Github className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">Sign In</span>
             </button>
           )}
 
-          {/* Download / Print PDF */}
-          <button
-            onClick={onPrint}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 ${
-              isDarkMode
-                ? 'text-white bg-blue-600 hover:bg-blue-500 shadow-blue-900/30'
-                : 'text-white bg-slate-900 hover:bg-slate-800'
-            }`}
-            title="Download clean PDF or print"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Download PDF</span>
-            <span className="sm:hidden">PDF</span>
-          </button>
+          {/* Download Built Resume PDF Button */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onDownloadPdf}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 ${
+                isDarkMode
+                  ? 'text-white bg-blue-600 hover:bg-blue-500 shadow-blue-900/30'
+                  : 'text-white bg-slate-900 hover:bg-slate-800'
+              }`}
+              title="Download executive built resume PDF"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Download PDF</span>
+              <span className="sm:hidden">PDF</span>
+            </button>
+
+            {onPrint && (
+              <button
+                onClick={onPrint}
+                className={`hidden xl:inline-flex p-1.5 text-xs rounded-lg border transition-colors ${
+                  isDarkMode
+                    ? 'border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800'
+                    : 'border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+                title="Open browser print preview"
+              >
+                <Printer className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

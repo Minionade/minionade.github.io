@@ -67,6 +67,7 @@ export interface BlogPost {
   date: string;
   readingTime: string;
   category: string;
+  tags?: string[];
   summary: string;
   content: {
     lead: string;
@@ -87,11 +88,12 @@ export interface BlogPost {
 export interface ArtworkItem {
   id: string;
   title: string;
-  category: 'pixel-art' | 'modpack-logo' | 'illustration';
+  category: 'pixel-art' | 'modpack-logo' | 'illustration' | string;
   imageUrl: string;
   description: string;
   promptNotes?: string;
   tools: string[];
+  tags?: string[];
   resolution?: string;
   year: string;
   clientOrProject?: string;
@@ -99,3 +101,4 @@ export interface ArtworkItem {
   colorPalette?: string[];
   iterationCycles?: number;
 }
+

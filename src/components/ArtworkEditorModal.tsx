@@ -18,7 +18,7 @@ export const ArtworkEditorModal: React.FC<ArtworkEditorModalProps> = ({
   isDarkMode,
 }) => {
   const [title, setTitle] = useState(artworkToEdit?.title || '');
-  const [category, setCategory] = useState<'pixel-art' | 'modpack-logo' | 'illustration'>(
+  const [category, setCategory] = useState<string>(
     artworkToEdit?.category || 'pixel-art'
   );
   const [imageUrl, setImageUrl] = useState(artworkToEdit?.imageUrl || '');

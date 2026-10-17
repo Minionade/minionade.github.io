@@ -33,18 +33,65 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
   isOwner,
   isDarkMode,
 }) => {
-  const [activeFilter, setActiveFilter] = useState<'all' | 'pixel-art' | 'modpack-logo' | 'illustration'>('all');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [activeTag, setActiveTag] = useState<string | null>(null);
   const [selectedArtwork, setSelectedArtwork] = useState<ArtworkItem | null>(null);
   const [editingArtwork, setEditingArtwork] = useState<ArtworkItem | null>(null);
   const [artworkToDelete, setArtworkToDelete] = useState<ArtworkItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [showIterativePhilosophy, setShowIterativePhilosophy] = useState(true);
 
-  // Filter artworks
-  const filteredArtworks = artworks.filter((item) => {
-    if (activeFilter === 'all') return true;
-    return item.category === activeFilter;
-  });
+  // Helper to format category names into readable labels
+  const formatCategoryLabel = (cat: string) => {
+    if (cat === 'pixel-art') return 'Pixel Art';
+    if (cat === 'modpack-logo') return 'Modpack Logos';
+    if (cat === 'illustration') return 'Illustration';
+    return cat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  // Dynamically derive categories and counts from artworks
+  const dynamicCategories = React.useMemo(() => {
+    const map = new Map<string, number>();
+    artworks.forEach((art) => {
+      const cat = art.category || 'other';
+      map.set(cat, (map.get(cat) || 0) + 1);
+    });
+    return Array.from(map.entries()).map(([key, count]) => ({
+      key,
+      label: formatCategoryLabel(key),
+      count,
+    }));
+  }, [artworks]);
+
+  // Dynamically derive unique tools and tags from artworks
+  const dynamicTags = React.useMemo(() => {
+    const tagCountMap = new Map<string, number>();
+    artworks.forEach((art) => {
+      const list = [...(art.tools || []), ...(art.tags || [])];
+      list.forEach((t) => {
+        const clean = t.trim();
+        if (clean) {
+          tagCountMap.set(clean, (tagCountMap.get(clean) || 0) + 1);
+        }
+      });
+    });
+    return Array.from(tagCountMap.entries()).map(([tag, count]) => ({
+      tag,
+      count,
+    }));
+  }, [artworks]);
+
+  // Filter artworks dynamically based on active category and active tag
+  const filteredArtworks = React.useMemo(() => {
+    return artworks.filter((item) => {
+      const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+      const matchesTag =
+        !activeTag ||
+        item.tools?.some((t) => t.toLowerCase() === activeTag.toLowerCase()) ||
+        item.tags?.some((t) => t.toLowerCase() === activeTag.toLowerCase());
+      return matchesCategory && matchesTag;
+    });
+  }, [artworks, activeCategory, activeTag]);
 
   const handleSaveArtwork = (savedArt: ArtworkItem) => {
     const exists = artworks.some((a) => a.id === savedArt.id);
@@ -126,10 +173,10 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
                   ? 'border-slate-700 text-slate-300 hover:bg-slate-800'
                   : 'border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
-              title="Reset to default artwork set"
+              title="Clear all artworks"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Reset Defaults</span>
+              <span className="hidden sm:inline">Clear All</span>
             </button>
           </div>
         )}
@@ -177,58 +224,147 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
         </div>
       )}
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        {[
-          { key: 'all', label: 'All Works', count: artworks.length },
-          {
-            key: 'pixel-art',
-            label: 'Handcrafted Pixel Art',
-            count: artworks.filter((a) => a.category === 'pixel-art').length,
-          },
-          {
-            key: 'modpack-logo',
-            label: 'Minecraft Modpack Logos (Iterative AI)',
-            count: artworks.filter((a) => a.category === 'modpack-logo').length,
-          },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveFilter(tab.key as any)}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 ${
-              activeFilter === tab.key
-                ? 'bg-blue-600 text-white shadow-xs'
-                : isDarkMode
-                ? 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/70'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
-            }`}
-          >
-            <span>{tab.label}</span>
-            <span
-              className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                activeFilter === tab.key
-                  ? 'bg-blue-800/80 text-blue-200'
+      {/* Dynamic Filter Tabs (Only shown when there are artworks) */}
+      {artworks.length > 0 && (
+        <div className="space-y-3">
+          {/* Category Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button
+              onClick={() => {
+                setActiveCategory('all');
+                setActiveTag(null);
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 ${
+                activeCategory === 'all' && !activeTag
+                  ? 'bg-blue-600 text-white shadow-xs'
                   : isDarkMode
-                  ? 'bg-slate-700 text-slate-300'
-                  : 'bg-slate-200 text-slate-700'
+                  ? 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/70'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
               }`}
             >
-              {tab.count}
-            </span>
-          </button>
-        ))}
-      </div>
+              <span>All Works</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                  activeCategory === 'all' && !activeTag
+                    ? 'bg-blue-800/80 text-blue-200'
+                    : isDarkMode
+                    ? 'bg-slate-700 text-slate-300'
+                    : 'bg-slate-200 text-slate-700'
+                }`}
+              >
+                {artworks.length}
+              </span>
+            </button>
 
-      {/* Artwork Grid */}
-      {filteredArtworks.length === 0 ? (
+            {dynamicCategories.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => {
+                  setActiveCategory(cat.key);
+                  setActiveTag(null);
+                }}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 ${
+                  activeCategory === cat.key && !activeTag
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : isDarkMode
+                    ? 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 hover:text-white border border-slate-700/70'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
+                }`}
+              >
+                <span>{cat.label}</span>
+                <span
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                    activeCategory === cat.key && !activeTag
+                      ? 'bg-blue-800/80 text-blue-200'
+                      : isDarkMode
+                      ? 'bg-slate-700 text-slate-300'
+                      : 'bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {cat.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Dynamic Tags / Tool Filter Chips */}
+          {dynamicTags.length > 0 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+              <span className="text-[11px] font-semibold text-slate-400 mr-1 shrink-0">Tags:</span>
+              {dynamicTags.map(({ tag, count }) => (
+                <button
+                  key={tag}
+                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                    activeTag === tag
+                      ? 'bg-amber-500 text-slate-950 font-bold shadow-xs'
+                      : isDarkMode
+                      ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                  }`}
+                >
+                  <span>#{tag}</span>
+                  <span className={`text-[9px] opacity-75`}>({count})</span>
+                </button>
+              ))}
+              {activeTag && (
+                <button
+                  onClick={() => setActiveTag(null)}
+                  className="text-[11px] text-blue-400 hover:underline px-2 py-0.5"
+                >
+                  Clear Tag Filter
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Empty State when no artworks exist */}
+      {artworks.length === 0 ? (
+        <div
+          className={`text-center py-20 px-6 rounded-2xl border ${
+            isDarkMode ? 'border-slate-800 bg-[#161a23]' : 'border-slate-200 bg-slate-50'
+          }`}
+        >
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <Palette className="w-8 h-8" />
+          </div>
+          <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+            No Artwork in Portfolio
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">
+            There are currently no artwork pieces published. As artwork or branding pieces are uploaded, dynamic
+            tag and category filters will automatically generate here.
+          </p>
+          {isOwner && (
+            <button
+              onClick={handleOpenAdd}
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add First Artwork</span>
+            </button>
+          )}
+        </div>
+      ) : filteredArtworks.length === 0 ? (
         <div
           className={`text-center py-16 rounded-2xl border ${
             isDarkMode ? 'border-slate-800 bg-[#161a23]' : 'border-slate-200 bg-slate-50'
           }`}
         >
           <Palette className="w-10 h-10 mx-auto text-slate-500 mb-3" />
-          <h3 className="text-base font-semibold">No artworks found</h3>
-          <p className="text-xs text-slate-400 mt-1">There are no pieces matching this category filter.</p>
+          <h3 className="text-base font-semibold">No artworks match filter</h3>
+          <p className="text-xs text-slate-400 mt-1">Try clearing the category or tag filter.</p>
+          <button
+            onClick={() => {
+              setActiveCategory('all');
+              setActiveTag(null);
+            }}
+            className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-500 font-medium"
+          >
+            Show All Works
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

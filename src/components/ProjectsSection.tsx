@@ -20,8 +20,28 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   isDarkMode = false,
 }) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [projectToEdit, setProjectToEdit] = useState<ProjectItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+
+  // Dynamic tags derived from all projects
+  const dynamicTags = React.useMemo(() => {
+    const counts = new Map<string, number>();
+    projects.forEach((p) => {
+      p.stack?.forEach((s) => {
+        const clean = s.trim();
+        if (clean) counts.set(clean, (counts.get(clean) || 0) + 1);
+      });
+    });
+    return Array.from(counts.entries()).map(([tag, count]) => ({ tag, count }));
+  }, [projects]);
+
+  const filteredProjects = React.useMemo(() => {
+    if (!selectedTag) return projects;
+    return projects.filter((p) =>
+      p.stack?.some((s) => s.toLowerCase() === selectedTag.toLowerCase())
+    );
+  }, [projects, selectedTag]);
 
   const getProjectIcon = (id: string) => {
     switch (id) {
@@ -96,12 +116,57 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
         )}
       </div>
 
+      {/* Dynamic Stack Tags */}
+      {dynamicTags.length > 0 && (
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <span className="text-[11px] font-semibold text-slate-400 mr-1 shrink-0">Filter by Stack:</span>
+          <button
+            onClick={() => setSelectedTag(null)}
+            className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
+              selectedTag === null
+                ? isDarkMode
+                  ? 'bg-blue-600 text-white font-bold'
+                  : 'bg-slate-900 text-white font-bold'
+                : isDarkMode
+                ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+            }`}
+          >
+            <span>All ({projects.length})</span>
+          </button>
+          {dynamicTags.map(({ tag, count }) => (
+            <button
+              key={tag}
+              onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
+                selectedTag === tag
+                  ? 'bg-blue-600 text-white font-bold shadow-xs'
+                  : isDarkMode
+                  ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+              }`}
+            >
+              <span>{tag}</span>
+              <span className="text-[9px] opacity-75">({count})</span>
+            </button>
+          ))}
+          {selectedTag && (
+            <button
+              onClick={() => setSelectedTag(null)}
+              className="text-[11px] text-blue-400 hover:underline px-2 py-0.5"
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Main Content Area: Projects Grid + GitHub Repos Sidebar */}
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Main Projects Feed */}
         <div className="flex-1 min-w-0 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
               <div
                 key={project.id}
                 className={`p-6 rounded-xl border transition-all flex flex-col justify-between ${
