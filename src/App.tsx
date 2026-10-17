@@ -102,7 +102,7 @@ export default function App() {
   const [gitHubUser, setGitHubUser] = useState<GitHubUser | null>(() => {
     try {
       const saved = localStorage.getItem('trevor_github_user_v1');
-      if (saved && !syncPublished) {
+      if (saved) {
         return JSON.parse(saved);
       }
     } catch {
