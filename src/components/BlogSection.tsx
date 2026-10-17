@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BlogPost } from '../types';
 import { BlogPostModal } from './BlogPostModal';
 import { BlogEditorModal } from './BlogEditorModal';
+import { ConfirmModal } from './ConfirmModal';
 import { ArrowRight, BookOpen, Clock, Plus, Edit3, Trash2 } from 'lucide-react';
 
 interface BlogSectionProps {
@@ -21,6 +22,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
 }) => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [postToEdit, setPostToEdit] = useState<BlogPost | null>(null);
+  const [postToDelete, setPostToDelete] = useState<BlogPost | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
@@ -39,9 +41,16 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
 
   const handleDeleteClick = (e: React.MouseEvent, post: BlogPost) => {
     e.stopPropagation();
-    if (confirm(`Are you sure you want to delete "${post.title}"?`)) {
-      onDeletePost(post.id);
+    setPostToDelete(post);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!postToDelete) return;
+    onDeletePost(postToDelete.id);
+    if (selectedPost?.id === postToDelete.id) {
+      setSelectedPost(null);
     }
+    setPostToDelete(null);
   };
 
   const handleCreateNewClick = () => {
@@ -54,29 +63,30 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
       {/* Section Header with New Post button for Owner */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-blue-500 mb-1">
-            Technical Journal & Engineering Blog
+          <div className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">
+            Dev Blog & Notes
           </div>
           <h2
             className={`text-2xl sm:text-3xl font-bold tracking-tight ${
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
-            Software Systems, Game Design & Hardware Engineering
+            Software, Game Design & Field Notes
           </h2>
-          <p className={`mt-2 text-sm max-w-2xl ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-            Detailed essays and technical postmortems by Trevor Barrett on custom socket engine architecture, decade-long game design documentation, PC hardware benchmarking, and lessons from heavy equipment operations.
+          <p className={`mt-2 text-sm max-w-2xl ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+            Write-ups and thoughts on building a custom C# socket engine, years of game design docs, PC hardware, and
+            lessons from commercial equipment operations.
           </p>
         </div>
 
         {isOwner && (
           <button
             onClick={handleCreateNewClick}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 self-start sm:self-auto"
-            title="Create and publish a new engineering article"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 self-start sm:self-auto"
+            title="Write a new article"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Write New Blog Post</span>
+            <span>Write a Post</span>
           </button>
         )}
       </div>
@@ -97,7 +107,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
             }`}
           >
-            {cat === 'all' ? 'All Articles' : cat}
+            {cat === 'all' ? 'All Posts' : cat}
           </button>
         ))}
       </div>
@@ -138,7 +148,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                           ? 'text-slate-300 hover:text-blue-400 hover:bg-slate-700/60'
                           : 'text-slate-500 hover:text-blue-600 hover:bg-slate-100'
                       }`}
-                      title="Edit this blog post"
+                      title="Edit this post"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
@@ -149,7 +159,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                           ? 'text-slate-300 hover:text-red-400 hover:bg-slate-700/60'
                           : 'text-slate-500 hover:text-red-600 hover:bg-slate-100'
                       }`}
-                      title="Delete this blog post"
+                      title="Delete this post"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -174,7 +184,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
               <span className={`text-xs font-semibold group-hover:text-blue-400 inline-flex items-center gap-1 transition-colors ${
                 isDarkMode ? 'text-slate-200' : 'text-slate-900'
               }`}>
-                <span>Read Technical Essay</span>
+                <span>Read Button</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </span>
               <BookOpen className={`w-4 h-4 transition-colors ${
@@ -215,6 +225,17 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
         onClose={() => setIsEditorOpen(false)}
         postToEdit={postToEdit}
         onSavePost={onSavePost}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* In-App Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={Boolean(postToDelete)}
+        title="Delete Blog Post"
+        message={`Are you sure you want to delete "${postToDelete?.title}"? This cannot be undone.`}
+        confirmLabel="Delete Post"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setPostToDelete(null)}
         isDarkMode={isDarkMode}
       />
     </section>

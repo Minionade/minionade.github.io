@@ -32,57 +32,10 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const [authMethod, setAuthMethod] = useState<'username' | 'token'>('username');
-  const [usernameInput, setUsernameInput] = useState(OWNER_USERNAME);
   const [tokenInput, setTokenInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-
-  const handleUsernameAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
-    const targetUser = usernameInput.trim();
-
-    if (!targetUser) {
-      setErrorMsg('Please enter a GitHub username');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(targetUser)}`);
-      if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error(`GitHub user "${targetUser}" not found`);
-        }
-        throw new Error(`GitHub API error (${res.status}): Please try again`);
-      }
-
-      const data = await res.json();
-      const isOwner = data.login.toLowerCase() === OWNER_USERNAME.toLowerCase();
-
-      const user: GitHubUser = {
-        login: data.login,
-        name: data.name || data.login,
-        avatar_url: data.avatar_url,
-        bio: data.bio || '',
-        html_url: data.html_url,
-        isOwner,
-      };
-
-      onLogin(user);
-      setSuccessMsg(isOwner ? 'Welcome back Trevor! Verified as repository owner.' : `Signed in as @${data.login}`);
-      setTimeout(() => {
-        onClose();
-      }, 1000);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to authenticate with GitHub');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleTokenAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,12 +44,13 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
     const token = tokenInput.trim();
 
     if (!token) {
-      setErrorMsg('Please enter your GitHub Personal Access Token');
+      setErrorMsg('Please enter your GitHub Personal Access Token.');
       return;
     }
 
     setIsLoading(true);
     try {
+      // Verify identity with GitHub's API
       const res = await fetch('https://api.github.com/user', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -106,13 +60,14 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
 
       if (!res.ok) {
         if (res.status === 401) {
-          throw new Error('Invalid or expired GitHub token. Please verify token permissions (read:user).');
+          throw new Error('Invalid or expired GitHub token.');
         }
         throw new Error(`GitHub API returned status ${res.status}`);
       }
 
       const data = await res.json();
-      const isOwner = data.login.toLowerCase() === OWNER_USERNAME.toLowerCase();
+      const authenticatedLogin = data.login.toLowerCase();
+      const isOwner = authenticatedLogin === OWNER_USERNAME.toLowerCase();
 
       const user: GitHubUser = {
         login: data.login,
@@ -125,12 +80,13 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
       };
 
       onLogin(user);
-      setSuccessMsg(isOwner ? 'Cryptographically verified as repository owner!' : `Authenticated as @${data.login}`);
+      setSuccessMsg(`Signed in as @${data.login}.`);
+
       setTimeout(() => {
         onClose();
       }, 1000);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to authenticate token with GitHub');
+      setErrorMsg(err.message || 'Failed to authenticate with GitHub');
     } finally {
       setIsLoading(false);
     }
@@ -156,9 +112,9 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
               <Github className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-base font-bold">GitHub Sign-In</h2>
+              <h2 className="text-base font-bold">GitHub Sign In</h2>
               <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                Public repository safe · Zero stored passwords
+                Sign in with your GitHub account
               </p>
             </div>
           </div>
@@ -175,25 +131,21 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-5 text-sm">
+        <div className="p-6 space-y-4 text-sm">
           {currentUser ? (
-            /* Signed in state */
+            /* Signed in view */
             <div className="space-y-4">
               <div
                 className={`p-4 rounded-xl border flex items-center gap-3.5 ${
-                  currentUser.isOwner
-                    ? isDarkMode
-                      ? 'bg-emerald-950/40 border-emerald-800/60'
-                      : 'bg-emerald-50 border-emerald-200'
-                    : isDarkMode
-                    ? 'bg-slate-800/80 border-slate-700'
-                    : 'bg-slate-50 border-slate-200'
+                  isDarkMode
+                    ? 'bg-[#1e2430] border-slate-700/70 text-slate-100'
+                    : 'bg-slate-50 border-slate-200 text-slate-900'
                 }`}
               >
                 <img
                   src={currentUser.avatar_url}
                   alt={currentUser.login}
-                  className="w-12 h-12 rounded-full border border-slate-600 shadow-xs"
+                  className="w-11 h-11 rounded-full border border-slate-500 shadow-xs"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -201,7 +153,7 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
                     {currentUser.isOwner && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                         <ShieldCheck className="w-3 h-3" />
-                        Verified Owner
+                        Verified
                       </span>
                     )}
                   </div>
@@ -209,37 +161,12 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
                     href={currentUser.html_url}
                     target="_blank"
                     rel="noreferrer"
-                    className={`text-xs font-mono flex items-center gap-1 mt-0.5 hover:underline ${
-                      isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                    }`}
+                    className="text-xs font-mono flex items-center gap-1 mt-0.5 text-blue-400 hover:underline"
                   >
                     <span>@{currentUser.login}</span>
                     <ExternalLink className="w-3 h-3" />
                   </a>
-                  {currentUser.bio && (
-                    <p className={`text-[11px] truncate mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                      {currentUser.bio}
-                    </p>
-                  )}
                 </div>
-              </div>
-
-              <div
-                className={`text-xs p-3 rounded-lg ${
-                  isDarkMode ? 'bg-slate-800/70 text-slate-300' : 'bg-slate-100 text-slate-600'
-                }`}
-              >
-                {currentUser.isOwner ? (
-                  <p>
-                    You are authenticated as <strong>@{currentUser.login}</strong>. All editing features, resume
-                    customizations, and blog management tools are unlocked.
-                  </p>
-                ) : (
-                  <p>
-                    You are signed in with GitHub as <strong>@{currentUser.login}</strong>. Public portfolio features
-                    are available.
-                  </p>
-                )}
               </div>
 
               <div className="flex items-center justify-between pt-2">
@@ -263,140 +190,68 @@ export const GitHubAuthModal: React.FC<GitHubAuthModalProps> = ({
           ) : (
             /* Sign in form */
             <div className="space-y-4">
-              {/* Method tabs */}
-              <div className="flex border-b border-slate-700/60 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setAuthMethod('username')}
-                  className={`flex-1 pb-2 font-medium border-b-2 transition-colors ${
-                    authMethod === 'username'
-                      ? 'border-blue-500 text-blue-400 font-semibold'
-                      : 'border-transparent text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  Quick Sign-In (Username)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAuthMethod('token')}
-                  className={`flex-1 pb-2 font-medium border-b-2 transition-colors ${
-                    authMethod === 'token'
-                      ? 'border-blue-500 text-blue-400 font-semibold'
-                      : 'border-transparent text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  Verified Token (PAT)
-                </button>
-              </div>
-
-              {authMethod === 'username' ? (
-                <form onSubmit={handleUsernameAuth} className="space-y-3.5">
-                  <div>
-                    <label className={`block text-xs font-semibold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                      GitHub Username
+              <form onSubmit={handleTokenAuth} className="space-y-3.5">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className={`block text-xs font-semibold ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                      GitHub Personal Access Token
                     </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                        @
-                      </div>
-                      <input
-                        type="text"
-                        value={usernameInput}
-                        onChange={(e) => setUsernameInput(e.target.value)}
-                        placeholder="Minionade"
-                        className={`w-full pl-7 pr-3 py-2 text-xs rounded-lg border outline-none font-mono transition-colors ${
-                          isDarkMode
-                            ? 'bg-[#1e2430] border-slate-700 text-slate-100 focus:border-blue-500'
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-600'
-                        }`}
-                      />
-                    </div>
-                    <p className={`text-[11px] mt-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Fetches live profile data from GitHub. The repository owner account is <strong>@minionade</strong>.
-                    </p>
+                    <a
+                      href="https://github.com/settings/tokens"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[11px] text-blue-400 hover:underline inline-flex items-center gap-0.5"
+                    >
+                      <span>Get token</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg transition-colors shadow-xs"
-                  >
-                    <Github className="w-4 h-4" />
-                    <span>{isLoading ? 'Verifying with GitHub...' : 'Sign in as @' + (usernameInput || 'user')}</span>
-                  </button>
-                </form>
-              ) : (
-                <form onSubmit={handleTokenAuth} className="space-y-3.5">
-                  <div>
-                    <label className={`block text-xs font-semibold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                      GitHub Personal Access Token (PAT)
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                        <KeyRound className="w-3.5 h-3.5" />
-                      </div>
-                      <input
-                        type="password"
-                        value={tokenInput}
-                        onChange={(e) => setTokenInput(e.target.value)}
-                        placeholder="github_pat_..."
-                        className={`w-full pl-8 pr-3 py-2 text-xs rounded-lg border outline-none font-mono transition-colors ${
-                          isDarkMode
-                            ? 'bg-[#1e2430] border-slate-700 text-slate-100 focus:border-blue-500'
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-600'
-                        }`}
-                      />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <KeyRound className="w-3.5 h-3.5" />
                     </div>
-                    <p className={`text-[11px] mt-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Stored only in your browser session. Verifies your identity directly with GitHub API. Requires only{' '}
-                      <code>read:user</code> scope.
-                    </p>
+                    <input
+                      type="password"
+                      value={tokenInput}
+                      onChange={(e) => setTokenInput(e.target.value)}
+                      placeholder="ghp_... or github_pat_..."
+                      className={`w-full pl-8 pr-3 py-2 text-xs rounded-lg border outline-none font-mono transition-colors ${
+                        isDarkMode
+                          ? 'bg-[#1e2430] border-slate-700 text-slate-100 focus:border-blue-500'
+                          : 'bg-white border-slate-300 text-slate-900 focus:border-blue-600'
+                      }`}
+                    />
                   </div>
+                  <p className={`text-[11px] mt-1.5 leading-normal ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Requires read-only <code>read:user</code> scope. The token is stored only in your local browser session.
+                  </p>
+                </div>
 
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg transition-colors shadow-xs"
-                  >
-                    <Github className="w-4 h-4" />
-                    <span>{isLoading ? 'Authenticating...' : 'Authenticate Token with GitHub'}</span>
-                  </button>
-                </form>
-              )}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg transition-colors shadow-xs"
+                >
+                  <Github className="w-3.5 h-3.5" />
+                  <span>{isLoading ? 'Signing in...' : 'Sign In with GitHub'}</span>
+                </button>
+              </form>
 
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                <div className="p-3 rounded-lg bg-red-950/40 border border-red-800/60 text-red-300 text-xs flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-400 mt-0.5" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               {successMsg && (
-                <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 text-xs flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
                   <span>{successMsg}</span>
                 </div>
               )}
             </div>
           )}
-        </div>
-
-        {/* Footer info */}
-        <div
-          className={`px-6 py-3 border-t text-[11px] flex items-center justify-between ${
-            isDarkMode ? 'bg-[#1e2430] border-slate-700/80 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
-          }`}
-        >
-          <span>Target repo: github.com/minionade</span>
-          <a
-            href="https://github.com/settings/tokens"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:underline text-blue-400 inline-flex items-center gap-1"
-          >
-            <span>GitHub Tokens</span>
-            <ExternalLink className="w-2.5 h-2.5" />
-          </a>
         </div>
       </div>
     </div>

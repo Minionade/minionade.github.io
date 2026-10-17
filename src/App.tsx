@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BlogPost, Persona, ResumeData, ThemeId } from './types';
+import { ArtworkItem, BlogPost, Persona, ProjectItem, ResumeData, ThemeId } from './types';
 import { BLOG_POSTS, INITIAL_RESUME_DATA } from './data/initialData';
-import { Navbar } from './components/Navbar';
+import { INITIAL_ARTWORKS } from './data/artData';
+import { Navbar, NavTab } from './components/Navbar';
 import { PersonaSwitcher } from './components/PersonaSwitcher';
 import { ResumeDocument } from './components/ResumeDocument';
 import { ResumeEditorModal } from './components/ResumeEditorModal';
@@ -9,10 +10,11 @@ import { AtsAuditorModal } from './components/AtsAuditorModal';
 import { GitHubAuthModal, GitHubUser } from './components/GitHubAuthModal';
 import { ProjectsSection } from './components/ProjectsSection';
 import { BlogSection } from './components/BlogSection';
-import { Github, ShieldCheck } from 'lucide-react';
+import { ArtPortfolioSection } from './components/ArtPortfolioSection';
+import { Github, ShieldCheck, Lock } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'resume' | 'projects' | 'blog'>('resume');
+  const [activeTab, setActiveTab] = useState<NavTab>('resume');
 
   // Dark Mode state: DEFAULT IS TRUE (Softened Dark Mode by default)
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -69,7 +71,19 @@ export default function App() {
     return null;
   });
 
+  // Owner status
   const isOwner = Boolean(gitHubUser?.isOwner);
+
+  // Preview Mode: Allows owner to preview the site as a regular visitor (hiding admin tools)
+  const [isPreviewMode, setIsPreviewMode] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('trevor_preview_mode') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const showAdminTools = isOwner && !isPreviewMode;
 
   const [visibleSections, setVisibleSections] = useState({
     summary: true,
@@ -78,6 +92,18 @@ export default function App() {
     experience: true,
     education: true,
   });
+
+  const handleTogglePreviewMode = () => {
+    setIsPreviewMode((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('trevor_preview_mode', String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   // Load resume data from localStorage or initial state
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
@@ -103,6 +129,19 @@ export default function App() {
       // ignore
     }
     return BLOG_POSTS;
+  });
+
+  // Art portfolio artworks state with persistence
+  const [artworks, setArtworks] = useState<ArtworkItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('trevor_artworks_v1');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // ignore
+    }
+    return INITIAL_ARTWORKS;
   });
 
   // Track if custom edits differ from initial
@@ -188,6 +227,35 @@ export default function App() {
     }
   };
 
+  const handleSaveProject = (project: ProjectItem) => {
+    setResumeData((prev) => {
+      const exists = prev.projects.some((p) => p.id === project.id);
+      const updated = exists
+        ? prev.projects.map((p) => (p.id === project.id ? project : p))
+        : [project, ...prev.projects];
+      const nextData = { ...prev, projects: updated };
+      try {
+        localStorage.setItem('trevor_resume_data_v5', JSON.stringify(nextData));
+      } catch {
+        // ignore
+      }
+      return nextData;
+    });
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    setResumeData((prev) => {
+      const updated = prev.projects.filter((p) => p.id !== projectId);
+      const nextData = { ...prev, projects: updated };
+      try {
+        localStorage.setItem('trevor_resume_data_v5', JSON.stringify(nextData));
+      } catch {
+        // ignore
+      }
+      return nextData;
+    });
+  };
+
   const handleSaveBlogPost = (post: BlogPost) => {
     setBlogPosts((prev) => {
       const exists = prev.some((p) => p.id === post.id);
@@ -213,6 +281,24 @@ export default function App() {
       }
       return updated;
     });
+  };
+
+  const handleUpdateArtworks = (updated: ArtworkItem[]) => {
+    setArtworks(updated);
+    try {
+      localStorage.setItem('trevor_artworks_v1', JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleResetArtworks = () => {
+    setArtworks(INITIAL_ARTWORKS);
+    try {
+      localStorage.removeItem('trevor_artworks_v1');
+    } catch {
+      // ignore
+    }
   };
 
   const handleToggleSection = (section: keyof typeof visibleSections) => {
@@ -319,45 +405,65 @@ export default function App() {
         hasCustomEdits={hasCustomEdits}
         isDarkMode={isDarkMode}
         onToggleDarkMode={handleToggleDarkMode}
+        isPreviewMode={isPreviewMode}
+        onTogglePreviewMode={handleTogglePreviewMode}
       />
 
       {/* Main Content Area */}
       <main className="flex-1">
         {activeTab === 'resume' && (
-          <div className="space-y-6">
-            {/* Interactive Persona, Target Role, Density & Palette Customizer */}
-            <PersonaSwitcher
-              currentPersona={currentPersona}
-              onSelectPersona={handleSelectPersona}
-              theme={theme}
-              onSelectTheme={handleSelectTheme}
-              fontSize={fontSize}
-              onSelectFontSize={handleSelectFontSize}
-              visibleSections={visibleSections}
-              onToggleSection={handleToggleSection}
-              onCopyPlainText={handleCopyPlainText}
-              copied={copied}
-              onOpenAts={() => setIsAtsOpen(true)}
-              onOpenEditor={() => setIsEditorOpen(true)}
-              isDarkMode={isDarkMode}
-            />
-
-            {/* Resume Sheet Canvas with subtle drafting container */}
-            <div className="py-6 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-              <ResumeDocument
-                data={resumeData}
-                persona={currentPersona}
+          <div className="py-6 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-4">
+            {/* Resume Admin Toolbar - OWNER ONLY (hidden when in preview mode) */}
+            {showAdminTools && (
+              <PersonaSwitcher
+                currentPersona={currentPersona}
+                onSelectPersona={handleSelectPersona}
                 theme={theme}
+                onSelectTheme={handleSelectTheme}
                 fontSize={fontSize}
+                onSelectFontSize={handleSelectFontSize}
                 visibleSections={visibleSections}
+                onToggleSection={handleToggleSection}
+                onCopyPlainText={handleCopyPlainText}
+                copied={copied}
+                onOpenAts={() => setIsAtsOpen(true)}
+                onOpenEditor={() => setIsEditorOpen(true)}
                 isDarkMode={isDarkMode}
               />
-            </div>
+            )}
+
+            {/* Resume Sheet Canvas */}
+            <ResumeDocument
+              data={resumeData}
+              persona={currentPersona}
+              theme={theme}
+              fontSize={fontSize}
+              visibleSections={visibleSections}
+              isDarkMode={isDarkMode}
+            />
           </div>
         )}
 
         {activeTab === 'projects' && (
-          <ProjectsSection projects={resumeData.projects} isDarkMode={isDarkMode} />
+          <ProjectsSection
+            projects={resumeData.projects}
+            isOwner={showAdminTools}
+            onSaveProject={handleSaveProject}
+            onDeleteProject={handleDeleteProject}
+            isDarkMode={isDarkMode}
+          />
+        )}
+
+        {activeTab === 'art' && (
+          <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <ArtPortfolioSection
+              artworks={artworks}
+              onUpdateArtworks={handleUpdateArtworks}
+              onResetArtworks={handleResetArtworks}
+              isOwner={showAdminTools}
+              isDarkMode={isDarkMode}
+            />
+          </div>
         )}
 
         {activeTab === 'blog' && (
@@ -365,7 +471,7 @@ export default function App() {
             posts={blogPosts}
             onSavePost={handleSaveBlogPost}
             onDeletePost={handleDeleteBlogPost}
-            isOwner={isOwner}
+            isOwner={showAdminTools}
             isDarkMode={isDarkMode}
           />
         )}
@@ -428,34 +534,45 @@ export default function App() {
               Projects
             </button>
             <button
+              onClick={() => setActiveTab('art')}
+              className={`transition-colors ${isDarkMode ? 'hover:text-amber-400' : 'hover:text-amber-600'}`}
+            >
+              Art Portfolio
+            </button>
+            <button
               onClick={() => setActiveTab('blog')}
               className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
             >
               Blog
             </button>
 
-            {/* GitHub Sign-In status */}
+            {/* Discrete Account Link */}
             <button
               onClick={() => setIsGitHubModalOpen(true)}
               className={`inline-flex items-center gap-1.5 transition-colors ${
                 isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
               }`}
-              title="Sign in with GitHub (Ctrl+Shift+G)"
+              title={isOwner ? `Signed in as @${gitHubUser?.login}` : 'Sign in with GitHub'}
             >
-              <Github className="w-3.5 h-3.5" />
-              {gitHubUser ? (
-                <span className="font-mono text-emerald-400 font-medium">@{gitHubUser.login}</span>
+              {isOwner ? (
+                <>
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="font-mono text-emerald-400 font-medium">@{gitHubUser?.login}</span>
+                </>
               ) : (
-                <span>GitHub Sign-In</span>
+                <>
+                  <Github className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Sign In</span>
+                </>
               )}
             </button>
           </div>
         </div>
       </footer>
 
-      {/* Editor Modal for Resume */}
+      {/* Editor Modal for Resume - OWNER ONLY */}
       <ResumeEditorModal
-        isOpen={isEditorOpen}
+        isOpen={isEditorOpen && showAdminTools}
         onClose={() => setIsEditorOpen(false)}
         data={resumeData}
         onSave={handleSaveData}
@@ -463,9 +580,9 @@ export default function App() {
         isDarkMode={isDarkMode}
       />
 
-      {/* ATS Readability Auditor Modal */}
+      {/* ATS Readability Auditor Modal - OWNER ONLY */}
       <AtsAuditorModal
-        isOpen={isAtsOpen}
+        isOpen={isAtsOpen && showAdminTools}
         onClose={() => setIsAtsOpen(false)}
         data={resumeData}
         persona={currentPersona}

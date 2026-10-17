@@ -83,3 +83,19 @@ export interface BlogPost {
     }[];
   };
 }
+
+export interface ArtworkItem {
+  id: string;
+  title: string;
+  category: 'pixel-art' | 'modpack-logo' | 'illustration';
+  imageUrl: string;
+  description: string;
+  promptNotes?: string;
+  tools: string[];
+  resolution?: string;
+  year: string;
+  clientOrProject?: string;
+  featured?: boolean;
+  colorPalette?: string[];
+  iterationCycles?: number;
+}

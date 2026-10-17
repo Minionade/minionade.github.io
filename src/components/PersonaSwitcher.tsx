@@ -1,6 +1,6 @@
 import React from 'react';
 import { Persona, ThemeId } from '../types';
-import { Copy, Check, CheckCircle, Edit3, Sparkles } from 'lucide-react';
+import { Copy, Check, CheckCircle, Edit3, SlidersHorizontal } from 'lucide-react';
 
 interface PersonaSwitcherProps {
   currentPersona: Persona;
@@ -39,26 +39,26 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
   onOpenEditor,
   isDarkMode = false,
 }) => {
-  const personas: { id: Persona; label: string; desc: string }[] = [
+  const personas: { id: Persona; label: string; tag: string }[] = [
     {
       id: 'hybrid',
       label: 'Hybrid Focus',
-      desc: 'Balanced software systems, hardware, and commercial machinery',
+      tag: 'Software + Systems + Ops',
     },
     {
       id: 'gamedev',
-      label: 'Game & Software Dev',
-      desc: '5+ yrs C# engine/server, Unity, Godot, and 10 yrs GDDs',
+      label: 'Game & Engine Dev',
+      tag: 'C# Engine & Architecture',
     },
     {
       id: 'hardware',
       label: 'IT & Hardware Tech',
-      desc: 'Custom PC assembly, BIOS, Windows diagnostics, small engine mechanics',
+      tag: 'PC Builds & Diagnostics',
     },
     {
       id: 'equipment',
       label: 'Equipment & Grounds',
-      desc: 'Commercial mowers, mini excavators, skid steer, and fleet maintenance',
+      tag: 'Heavy Machinery & Fleet',
     },
   ];
 
@@ -71,192 +71,186 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
 
   return (
     <div
-      className={`border-b py-3 px-4 sm:px-6 lg:px-8 no-print transition-colors shadow-xs ${
+      className={`rounded-xl border no-print transition-colors shadow-xs p-3.5 sm:p-4 space-y-3 ${
         isDarkMode
-          ? 'bg-[#222938] border-slate-700/80 text-slate-100'
+          ? 'bg-[#242b3b] border-slate-700/80 text-slate-100'
           : 'bg-white border-slate-200 text-slate-900'
       }`}
     >
-      <div className="max-w-7xl mx-auto space-y-3">
-        {/* Top Control Bar: Role Selection and Quick Tools */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0">
-            <span
-              className={`text-xs font-semibold uppercase tracking-wider whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
-                isDarkMode ? 'text-slate-300' : 'text-slate-500'
+      {/* Row 1: Header / Admin Quick Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-700/40">
+        <div className="flex items-center gap-2">
+          <span className="p-1 rounded bg-blue-500/20 text-blue-400 shrink-0">
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+          </span>
+          <span className="text-xs font-bold tracking-tight">Resume Admin Controls</span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={onOpenEditor}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border transition-colors ${
+              isDarkMode
+                ? 'text-blue-300 bg-blue-950/40 hover:bg-blue-900/60 border-blue-800/60'
+                : 'text-blue-800 bg-blue-50 hover:bg-blue-100 border-blue-200'
+            }`}
+            title="Edit resume text and details"
+          >
+            <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+            <span>Edit Resume</span>
+          </button>
+
+          <button
+            onClick={onOpenAts}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border transition-colors ${
+              isDarkMode
+                ? 'text-emerald-300 bg-emerald-950/40 hover:bg-emerald-900/60 border-emerald-800/60'
+                : 'text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
+            }`}
+            title="Audit against ATS keyword scanners"
+          >
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+            <span>ATS Scanner</span>
+          </button>
+
+          <button
+            onClick={onCopyPlainText}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${
+              isDarkMode
+                ? 'text-slate-200 bg-[#1e2430] hover:bg-slate-700/70 border-slate-700/70'
+                : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border-slate-200'
+            }`}
+            title="Copy plain text formatted for job application boards"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400 font-semibold">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                <span>Copy Text</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Row 2: Target Role Selector Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        {personas.map((p) => {
+          const isActive = currentPersona === p.id;
+          return (
+            <button
+              key={p.id}
+              onClick={() => onSelectPersona(p.id)}
+              className={`p-2 rounded-lg border text-left transition-all ${
+                isActive
+                  ? isDarkMode
+                    ? 'bg-blue-600/20 border-blue-500 text-white shadow-xs'
+                    : 'bg-blue-50 border-blue-500 text-blue-950 shadow-xs'
+                  : isDarkMode
+                  ? 'bg-[#1e2430] border-slate-700/70 text-slate-300 hover:border-slate-600 hover:bg-[#202736]'
+                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-white'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span>Target Role:</span>
-            </span>
-            <div
-              className={`flex items-center gap-1 p-1 rounded-lg shrink-0 ${
-                isDarkMode ? 'bg-[#1a202c]' : 'bg-slate-100'
-              }`}
-            >
-              {personas.map((p) => {
-                const isActive = currentPersona === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => onSelectPersona(p.id)}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap shrink-0 ${
-                      isActive
-                        ? isDarkMode
-                          ? 'bg-blue-600 text-white shadow-xs'
-                          : 'bg-white text-slate-900 shadow-xs'
-                        : isDarkMode
-                        ? 'text-slate-300 hover:text-white hover:bg-slate-700/60'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                );
-              })}
+              <div className="flex items-center justify-between gap-1">
+                <span className="font-bold text-xs truncate">{p.label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />}
+              </div>
+              <span className={`block text-[10px] mt-0.5 truncate ${isActive ? 'text-blue-300 font-medium' : 'text-slate-400'}`}>
+                {p.tag}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Row 3: Document Spacing, Accent Palette & Section Toggles */}
+      <div
+        className={`pt-2.5 border-t flex flex-wrap items-center justify-between gap-3 text-xs ${
+          isDarkMode ? 'border-slate-700/40' : 'border-slate-100'
+        }`}
+      >
+        {/* Fit / Spacing and Theme Accent */}
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Density scale */}
+          <div className="flex items-center gap-1.5">
+            <span className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Fit:</span>
+            <div className={`flex items-center p-0.5 rounded-md ${isDarkMode ? 'bg-[#1e2430]' : 'bg-slate-100'}`}>
+              {(['compact', 'standard', 'spacious'] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={() => onSelectFontSize(size)}
+                  className={`px-2 py-0.5 rounded text-[11px] capitalize transition-colors ${
+                    fontSize === size
+                      ? isDarkMode
+                        ? 'bg-slate-700 font-semibold text-white shadow-xs'
+                        : 'bg-white font-semibold text-slate-900 shadow-xs'
+                      : isDarkMode
+                      ? 'text-slate-400 hover:text-slate-200'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Density, Palette, Plain text */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
-            {/* Spacing Density */}
+          {/* Accent palette */}
+          <div className="flex items-center gap-1.5">
+            <span className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Accent:</span>
             <div className="flex items-center gap-1.5">
-              <span className={isDarkMode ? 'text-slate-400 font-medium' : 'text-slate-500 font-medium'}>
-                Density:
-              </span>
-              <div
-                className={`flex items-center p-0.5 rounded-md ${
-                  isDarkMode ? 'bg-[#1a202c]' : 'bg-slate-100'
-                }`}
-              >
-                {(['compact', 'standard', 'spacious'] as const).map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => onSelectFontSize(size)}
-                    className={`px-2 py-0.5 rounded capitalize transition-colors ${
-                      fontSize === size
-                        ? isDarkMode
-                          ? 'bg-slate-700 font-semibold text-white'
-                          : 'bg-white font-semibold text-slate-900 shadow-xs'
-                        : isDarkMode
-                        ? 'text-slate-400 hover:text-slate-200'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Theme Palette */}
-            <div className="flex items-center gap-1.5">
-              <span className={isDarkMode ? 'text-slate-400 font-medium' : 'text-slate-500 font-medium'}>
-                Palette:
-              </span>
-              <div className="flex items-center gap-1.5">
-                {themes.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => onSelectTheme(t.id)}
-                    className={`w-4 h-4 rounded-full ${t.color} border border-slate-500 transition-all ${
-                      theme === t.id
-                        ? 'ring-2 ring-blue-400 ring-offset-1 scale-110 ' + (isDarkMode ? 'ring-offset-[#222938]' : 'ring-offset-white')
-                        : 'opacity-60 hover:opacity-100'
-                    }`}
-                    title={t.label}
-                    aria-label={t.label}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="flex items-center gap-1.5">
-              {/* ATS Scanner */}
-              <button
-                onClick={onOpenAts}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-md border transition-colors ${
-                  isDarkMode
-                    ? 'text-emerald-300 bg-emerald-950/40 hover:bg-emerald-900/60 border-emerald-800/60'
-                    : 'text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
-                }`}
-                title="Scan resume for ATS compliance and keywords"
-              >
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                <span>ATS Scan</span>
-              </button>
-
-              {/* Copy Plain Text ATS */}
-              <button
-                onClick={onCopyPlainText}
-                className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-md border transition-colors ${
-                  isDarkMode
-                    ? 'text-slate-200 bg-[#2a3344] hover:bg-[#323d52] border-slate-600/60'
-                    : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border-slate-200'
-                }`}
-                title="Copy plain text formatted for job application boards"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-emerald-400 font-medium">Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Copy Text</span>
-                  </>
-                )}
-              </button>
+              {themes.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => onSelectTheme(t.id)}
+                  className={`w-3.5 h-3.5 rounded-full ${t.color} border border-slate-500 transition-all ${
+                    theme === t.id
+                      ? 'ring-2 ring-blue-400 ring-offset-1 scale-110 ' +
+                        (isDarkMode ? 'ring-offset-[#242b3b]' : 'ring-offset-white')
+                      : 'opacity-60 hover:opacity-100'
+                  }`}
+                  title={t.label}
+                  aria-label={t.label}
+                />
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Sub-bar: Active persona description & Section toggles */}
-        <div
-          className={`flex flex-col sm:flex-row sm:items-center justify-between text-xs border-t pt-2 gap-2 ${
-            isDarkMode ? 'text-slate-300 border-slate-700/80' : 'text-slate-600 border-slate-200'
-          }`}
-        >
-          <div>
-            <span className={isDarkMode ? 'font-medium text-slate-200' : 'font-medium text-slate-900'}>
-              Active Lens:{' '}
-            </span>
-            <span className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>
-              {personas.find((p) => p.id === currentPersona)?.desc}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={isDarkMode ? 'text-slate-400' : 'text-slate-400'}>Sections:</span>
-            {(
-              [
-                ['summary', 'Summary'],
-                ['skills', 'Skills'],
-                ['projects', 'Projects'],
-                ['experience', 'Experience'],
-                ['education', 'Education'],
-              ] as const
-            ).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => onToggleSection(key)}
-                className={`transition-colors flex items-center gap-1 ${
-                  visibleSections[key]
-                    ? isDarkMode
-                      ? 'text-blue-400 font-medium hover:text-blue-300'
-                      : 'text-blue-600 font-medium hover:text-blue-700'
-                    : isDarkMode
-                    ? 'text-slate-500 line-through hover:text-slate-400'
-                    : 'text-slate-400 line-through hover:text-slate-600'
-                }`}
-                title={`Toggle ${label} visibility`}
-              >
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
+        {/* Section visibility toggles */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sections:</span>
+          {(
+            [
+              ['summary', 'Summary'],
+              ['skills', 'Skills'],
+              ['projects', 'Projects'],
+              ['experience', 'Experience'],
+              ['education', 'Education'],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => onToggleSection(key)}
+              className={`px-2 py-0.5 rounded text-[11px] border transition-colors ${
+                visibleSections[key]
+                  ? isDarkMode
+                    ? 'bg-blue-950/40 border-blue-800/60 text-blue-300 font-medium'
+                    : 'bg-blue-50 border-blue-200 text-blue-700 font-medium'
+                  : isDarkMode
+                  ? 'bg-[#1e2430] border-slate-700/60 text-slate-500 line-through'
+                  : 'bg-slate-100 border-slate-200 text-slate-400 line-through'
+              }`}
+              title={`Toggle ${label} visibility`}
+            >
+              <span>{label}</span>
+            </button>
+          ))}
         </div>
       </div>
     </div>

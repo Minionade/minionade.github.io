@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" shape-rendering="crispEdges">
+  <defs>
+    <linearGradient id="lemonadeGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="35%" stop-color="#FDE047" />
+      <stop offset="70%" stop-color="#EAB308" />
+      <stop offset="100%" stop-color="#CA8A04" />
+    </linearGradient>
+    <linearGradient id="glassShine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8" />
+      <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="goggleRing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#CBD5E1" />
+      <stop offset="50%" stop-color="#94A3B8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Tile -->
+  <rect x="2" y="2" width="96" height="96" rx="20" fill="#0B1120" stroke="#1E293B" stroke-width="2.5" />
+  <rect x="6" y="6" width="88" height="88" rx="16" fill="#0F172A" />
+
+  <!-- Mug Handle -->
+  <path d="M 68 40 H 78 V 66 H 68 V 60 H 72 V 46 H 68 Z" fill="#38BDF8" fill-opacity="0.5" stroke="#0F172A" stroke-width="1.5" />
+  <rect x="70" y="44" width="4" height="18" fill="#E0F2FE" fill-opacity="0.7" />
+
+  <!-- Straw -->
+  <path d="M 56 28 L 74 6" stroke="#0F172A" stroke-width="6" stroke-linecap="square" />
+  <path d="M 56 28 L 74 6" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="square" />
+  <line x1="59" y1="24" x2="63" y2="21" stroke="#EF4444" stroke-width="3" />
+  <line x1="65" y1="17" x2="69" y2="14" stroke="#EF4444" stroke-width="3" />
+  <line x1="71" y1="10" x2="74" y2="7" stroke="#EF4444" stroke-width="3" />
+
+  <!-- Lemon Garnish -->
+  <circle cx="28" cy="27" r="14" fill="#FACC15" stroke="#CA8A04" stroke-width="2" />
+  <circle cx="28" cy="27" r="11" fill="#FEF9C3" />
+  <circle cx="28" cy="27" r="9" fill="#EAB308" />
+  <line x1="19" y1="27" x2="37" y2="27" stroke="#FEF9C3" stroke-width="1.5" />
+  <line x1="28" y1="18" x2="28" y2="36" stroke="#FEF9C3" stroke-width="1.5" />
+  <line x1="22" y1="21" x2="34" y2="33" stroke="#FEF9C3" stroke-width="1.5" />
+  <line x1="22" y1="33" x2="34" y2="21" stroke="#FEF9C3" stroke-width="1.5" />
+  <circle cx="28" cy="27" r="2" fill="#FEF08A" />
+
+  <!-- Jar Body & Lemonade -->
+  <rect x="30" y="28" width="40" height="4" rx="1.5" fill="#94A3B8" stroke="#0F172A" stroke-width="1.5" />
+  <rect x="32" y="32" width="36" height="3" fill="#64748B" />
+  <path d="M 28 35 H 72 V 76 Q 72 82 66 82 H 34 Q 28 82 28 76 Z" fill="#0F172A" stroke="#0F172A" stroke-width="2" />
+  <path d="M 30 38 H 70 V 75 Q 70 80 65 80 H 35 Q 30 80 30 75 Z" fill="url(#lemonadeGrad)" />
+  <path d="M 30 38 Q 40 36 50 38 T 70 38 V 42 H 30 Z" fill="#FEF08A" />
+
+  <!-- Ice Cubes -->
+  <g opacity="0.88">
+    <rect x="34" y="42" width="9" height="9" fill="#E0F2FE" stroke="#38BDF8" stroke-width="1" rx="1" />
+    <path d="M 35 43 H 41 V 45 H 35 Z" fill="#FFFFFF" />
+  </g>
+  <g opacity="0.85">
+    <rect x="56" y="44" width="8" height="8" fill="#E0F2FE" stroke="#38BDF8" stroke-width="1" rx="1" />
+    <path d="M 57 45 H 61 V 47 H 57 Z" fill="#FFFFFF" />
+  </g>
+
+  <!-- Goggle Strap -->
+  <rect x="29" y="52" width="42" height="6" fill="#0F172A" rx="1" />
+  <rect x="30" y="53" width="40" height="2" fill="#334155" />
+
+  <!-- Goggles & Eyes -->
+  <circle cx="43" cy="55" r="9" fill="url(#goggleRing)" stroke="#0F172A" stroke-width="2" />
+  <circle cx="57" cy="55" r="9" fill="url(#goggleRing)" stroke="#0F172A" stroke-width="2" />
+  <circle cx="43" cy="55" r="6.2" fill="#FFFFFF" />
+  <circle cx="57" cy="55" r="6.2" fill="#FFFFFF" />
+  <circle cx="44.2" cy="55" r="3.2" fill="#78350F" />
+  <circle cx="44.2" cy="55" r="2" fill="#0F172A" />
+  <circle cx="43.2" cy="54" r="1" fill="#FFFFFF" />
+  <circle cx="55.8" cy="55" r="3.2" fill="#78350F" />
+  <circle cx="55.8" cy="55" r="2" fill="#0F172A" />
+  <circle cx="54.8" cy="54" r="1" fill="#FFFFFF" />
+  <rect x="49" y="53.5" width="2" height="3" fill="#475569" stroke="#0F172A" stroke-width="0.8" />
+
+  <!-- Smile -->
+  <path d="M 46 68 Q 50 72 54 68" stroke="#713F12" stroke-width="2" stroke-linecap="round" fill="none" />
+  <circle cx="40" cy="67" r="1.5" fill="#F87171" opacity="0.6" />
+  <circle cx="60" cy="67" r="1.5" fill="#F87171" opacity="0.6" />
+
+  <!-- Specular shine -->
+  <path d="M 31 40 H 34 V 73 H 31 Z" fill="url(#glassShine)" />
+  <path d="M 36 40 H 37 V 70 H 36 Z" fill="#FFFFFF" fill-opacity="0.4" />
+</svg>
