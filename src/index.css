@@ -127,10 +127,6 @@ html.landing-scroll .landing-slice[data-landing-slice="3"] {
   min-height: calc(100svh - var(--landing-header-height, 64px) - var(--landing-footer-height, 160px));
   padding: 2rem 0;
 }
-html.landing-scroll .site-footer {
-  padding-top: 1rem;
-  padding-bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 4.5rem));
-}
 @keyframes landing-arrow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(5px); }

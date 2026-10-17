@@ -648,13 +648,13 @@ export default function App() {
       {/* Bottom Footer */}
       <footer
         id="site-footer"
-        className={`site-footer border-t pt-8 pb-24 px-4 sm:px-6 lg:px-8 text-xs transition-colors no-print ${
+        className={`site-footer border-t pt-4 pb-[max(5rem,calc(env(safe-area-inset-bottom)+4.5rem))] lg:pb-4 px-4 sm:px-6 lg:pr-8 lg:pl-72 text-xs transition-colors no-print ${
           isDarkMode
             ? 'bg-[#181e2b] border-slate-700/80 text-slate-400'
             : 'bg-[#faf8f4] border-[#ded7ca] text-stone-600'
         }`}
       >
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center lg:justify-between gap-x-6 gap-y-2">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <span className={`font-semibold ${isDarkMode ? 'text-slate-300' : 'text-stone-800'}`}>Trevor Barrett</span>
             <span>•</span>
