@@ -104,7 +104,6 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
         </div>
         <div>
         <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
-          <p className="text-base font-medium tracking-tight">Selected areas of work</p>
           <span className={`text-xs ${muted}`}>A closer look, in my résumé</span>
         </div>
         <div className="grid sm:grid-cols-3 gap-5 sm:gap-6">
