@@ -128,10 +128,10 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
   return (
     <article
       id="printable-resume"
-      className={`w-full max-w-[850px] mx-auto p-8 sm:p-12 transition-all font-sans print:p-0 print:border-none print:shadow-none print:bg-white print:text-slate-900 ${
+      className={`w-full max-w-[850px] mx-auto p-8 sm:p-12 font-sans print:p-0 print:border-none print:shadow-none print:bg-white print:text-slate-900 ${
         isDarkMode
-          ? 'bg-[#242b3b] text-slate-100 border border-slate-700/80 shadow-xl backdrop-blur-xs'
-          : 'bg-[#faf8f4] text-stone-900 border border-[#ded7ca] shadow-md'
+          ? 'bg-[#242b3b] text-slate-100 border border-slate-700/80 shadow-sm'
+          : 'bg-[#faf8f4] text-stone-900 border border-[#ded7ca] shadow-sm'
       }`}
     >
       {/* 1. Header / Contact Block */}
