@@ -375,7 +375,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Nav Row (Clean, dedicated tab row; no sign-in or admin clutter) */}
       <div
-        className={`xl:hidden flex items-center justify-between gap-1 overflow-x-auto border-t px-2 py-2 text-xs font-medium [&>a]:shrink-0 ${
+        className={`xl:hidden grid grid-cols-5 gap-1 border-t px-2 py-2 text-xs font-medium ${
           isDarkMode
             ? 'bg-[#181e2b] border-slate-700/80 text-slate-300'
             : 'bg-[#f4efe6] border-[#ded7ca] text-stone-700'
@@ -383,13 +383,12 @@ export const Navbar: React.FC<NavbarProps> = ({
       >
           {(['home', 'projects', 'art', 'blog', 'resume'] as NavTab[]).map(tab => {
             const Icon = {home: Home, resume: FileText, projects: FolderCode, art: Palette, blog: NotebookPen}[tab];
-            return <React.Fragment key={tab}>
-              {tab !== 'home' && <span aria-hidden="true" className="w-0.5 h-0.5 rounded-full bg-current opacity-35 shrink-0" />}
-              <a href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
+            return <a key={tab} href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
               aria-current={activeTab === tab ? 'page' : undefined}
-              className={`inline-flex items-center justify-center gap-1.5 px-2 py-2 whitespace-nowrap rounded-md transition-colors ${activeTab === tab ? (isDarkMode ? 'bg-slate-700 text-white' : 'bg-stone-200 text-stone-950') : 'hover:bg-black/5'}`}>
+              className={`relative flex min-w-0 min-h-12 flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 px-1 py-2 whitespace-nowrap rounded-md transition-colors ${activeTab === tab ? (isDarkMode ? 'bg-slate-700 text-white' : 'bg-stone-200 text-stone-950') : 'hover:bg-black/5'}`}>
+              {tab !== 'home' && <span aria-hidden="true" className="absolute -left-[3px] top-1/2 -translate-y-1/2 w-0.5 h-0.5 rounded-full bg-current opacity-35" />}
               <Icon aria-hidden="true" className="w-3.5 h-3.5 shrink-0" /><span>{tab === 'resume' ? 'Résumé' : tab === 'art' ? 'Art' : tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
-            </a></React.Fragment>;
+            </a>;
           })}
 
       </div>
