@@ -40,7 +40,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
   const [editingArtwork, setEditingArtwork] = useState<ArtworkItem | null>(null);
   const [artworkToDelete, setArtworkToDelete] = useState<ArtworkItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [showIterativePhilosophy, setShowIterativePhilosophy] = useState(true);
+  const [showIterativePhilosophy, setShowIterativePhilosophy] = useState(false);
 
   // Dynamically derive categories and counts from artworks
   const dynamicCategories = React.useMemo(() => {
@@ -140,14 +140,13 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
               }`}
             >
               <Palette className="w-3.5 h-3.5 text-amber-400" />
-              Visual Arts & Game Branding
+              Art & Visual Work
             </span>
-            <span className="text-xs text-slate-400">• Aseprite & Generative Iteration</span>
+            <span className="text-xs text-slate-400">• Logos, textures & stream graphics</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Pixel Art & Game Logos</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Art Portfolio</h1>
           <p className={`mt-2 text-sm sm:text-base max-w-2xl ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-            Handcrafted 16-bit retro sprite work and environment mockups, paired with heavily iterated Minecraft modpack
-            branding and prompt-engineered visual assets.
+            Modpack identities, game branding, stream graphics, and Minecraft texture work. Open a piece for a closer look.
           </p>
         </div>
 
@@ -380,7 +379,8 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                   style={{
                     imageRendering: getArtworkCategories(item).includes('pixel-art') ? 'pixelated' : 'auto',
                   }}

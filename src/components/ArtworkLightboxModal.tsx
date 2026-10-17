@@ -78,7 +78,7 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
     setTimeout(() => setCopiedColor(null), 2000);
   };
 
-  const isAiAssisted = getArtworkCategories(artwork).includes('modpack-logo') || Boolean(artwork.promptNotes);
+  const isAiAssisted = Boolean(artwork.promptNotes);
 
   return (
     <div
@@ -234,7 +234,7 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
               <div>
                 <h3 className="text-xl font-bold tracking-tight mb-1">{artwork.title}</h3>
                 <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {artwork.clientOrProject || 'Personal Works'} • {artwork.year}
+                  {artwork.clientOrProject || 'Personal Works'}{artwork.year ? ` • ${artwork.year}` : ''}
                 </p>
               </div>
 

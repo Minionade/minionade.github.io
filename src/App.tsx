@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArtworkItem, BlogPost, Persona, ProjectItem, ResumeData, ThemeId } from './types';
 import { BLOG_POSTS, INITIAL_RESUME_DATA } from './data/initialData';
 import { INITIAL_ARTWORKS } from './data/artData';
+import { ARTWORK_STORAGE_KEY, loadArtworkData } from './utils/artworkStorage';
 import { LandingPage } from './components/LandingPage';
 import { SocialLinks } from './components/SocialLinks';
 import { Navbar, NavTab } from './components/Navbar';
@@ -165,15 +166,16 @@ export default function App() {
     try {
       // Clean up legacy v1 storage if needed
       localStorage.removeItem('trevor_artworks_v1');
-      const saved = localStorage.getItem('trevor_artworks_v2');
-      if (saved) {
-        return JSON.parse(saved);
-      }
+      return loadArtworkData(localStorage, INITIAL_ARTWORKS);
     } catch {
       // ignore
     }
     return INITIAL_ARTWORKS;
   });
+
+  useEffect(() => {
+    try { localStorage.setItem(ARTWORK_STORAGE_KEY, JSON.stringify(artworks)); } catch { /* Storage can be unavailable. */ }
+  }, [artworks]);
 
   // Track if custom edits differ from initial
   useEffect(() => {
@@ -327,7 +329,7 @@ export default function App() {
   const handleUpdateArtworks = (updated: ArtworkItem[]) => {
     setArtworks(updated);
     try {
-      localStorage.setItem('trevor_artworks_v2', JSON.stringify(updated));
+      localStorage.setItem(ARTWORK_STORAGE_KEY, JSON.stringify(updated));
     } catch {
       // ignore
     }
@@ -336,7 +338,7 @@ export default function App() {
   const handleResetArtworks = () => {
     setArtworks(INITIAL_ARTWORKS);
     try {
-      localStorage.setItem('trevor_artworks_v2', JSON.stringify(INITIAL_ARTWORKS));
+      localStorage.setItem(ARTWORK_STORAGE_KEY, JSON.stringify(INITIAL_ARTWORKS));
     } catch {
       // ignore
     }
@@ -368,7 +370,7 @@ export default function App() {
     try {
       localStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(resumeData));
       localStorage.setItem('trevor_blog_posts_v2', JSON.stringify(blogPosts));
-      localStorage.setItem('trevor_artworks_v2', JSON.stringify(artworks));
+      localStorage.setItem(ARTWORK_STORAGE_KEY, JSON.stringify(artworks));
     } catch {
       // ignore
     }
