@@ -267,7 +267,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             isDarkMode ? 'text-slate-300' : 'text-stone-700'
           }`}
         >
-          {(['home', 'resume', 'projects', 'art', 'blog'] as NavTab[]).map(tab => {
+          {(['home', 'projects', 'art', 'blog', 'resume'] as NavTab[]).map(tab => {
             const Icon = {home: Home, resume: FileText, projects: FolderCode, art: Palette, blog: NotebookPen}[tab];
             return <React.Fragment key={tab}>
               {tab !== 'home' && <span aria-hidden="true" className="w-0.5 h-0.5 rounded-full bg-current opacity-35 shrink-0" />}
@@ -381,7 +381,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             : 'bg-[#f4efe6] border-[#ded7ca] text-stone-700'
         }`}
       >
-          {(['home', 'resume', 'projects', 'art', 'blog'] as NavTab[]).map(tab => {
+          {(['home', 'projects', 'art', 'blog', 'resume'] as NavTab[]).map(tab => {
             const Icon = {home: Home, resume: FileText, projects: FolderCode, art: Palette, blog: NotebookPen}[tab];
             return <React.Fragment key={tab}>
               {tab !== 'home' && <span aria-hidden="true" className="w-0.5 h-0.5 rounded-full bg-current opacity-35 shrink-0" />}
