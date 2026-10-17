@@ -11,8 +11,8 @@ export const INITIAL_RESUME_DATA: ResumeData = {
     "portfolio": "minionade.github.io"
   },
   "summaryByPersona": {
-    "hybrid": "Self-taught developer working with C#, Unity, and Minecraft mods. My projects include published mods, a standalone multiplayer game prototype, and custom modpack scripting. I manage repositories and branches with GitHub and coordinate multiple AI agents on shared projects.",
-    "gamedev": "Self-taught C# developer with experience building Unity gameplay prototypes and a standalone tile-based MMO prototype with its own server. I also publish Minecraft mods, write KubeJS scripts, and guide multiple AI agents toward a shared project goal.",
+    "hybrid": "Self-taught developer working with C#, Unity, and Java Minecraft mods. I use AI tools to help build mods, games, artwork, and icons, and coordinate multiple agents within shared projects. My work also includes custom modpack scripting, a standalone multiplayer prototype, and GitHub repository and branch management.",
+    "gamedev": "Self-taught C# developer building Unity gameplay prototypes and a standalone tile-based MMO prototype with its own server. I also publish Java Minecraft mods and write KubeJS scripts. I use AI throughout development, guiding multiple agents toward a shared goal and iterating on their output.",
     "hardware": "I build and troubleshoot desktop PCs for myself and friends, from choosing compatible parts to assembly, setup, and testing. My experience includes Windows diagnostics, BIOS configuration, cooling, and resolving hardware and driver issues.",
     "equipment": "Experience in commercial landscaping and municipal grounds maintenance, including riding mowers, zero-turns, mini excavators, and mini skid steers. I have also helped with equipment checks, routine maintenance, and repairs alongside a public works mechanic."
   },
@@ -33,10 +33,19 @@ export const INITIAL_RESUME_DATA: ResumeData = {
         "category": "Tools & workflow",
         "items": [
           "Git / GitHub",
-          "Repositories and branches",
-          "AI-assisted development",
-          "Coordinating multiple AI agents",
-          "Local models with Ollama"
+          "Repository and branch management"
+        ]
+      },
+      {
+        "category": "AI tools & workflow",
+        "items": [
+          "ChatGPT",
+          "Claude",
+          "GitHub Copilot",
+          "Gemini / Google AI Studio",
+          "Ollama",
+          "Prompt iteration",
+          "Multi-agent coordination"
         ]
       },
       {
@@ -191,7 +200,7 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       ],
       "summary": "Published Minecraft mods and compatibility addons written in Java, alongside KubeJS modpack scripting and a cross-version compatibility bridge.",
       "accomplishments": [
-        "Published Java mods including Quantum Flux: Reforged and Tinkers\u2019 Auto Anvil for Forge 1.20.1, plus compatibility addons.",
+        "Published Java mods including Quantum Flux: Reforged and Tinkers’ Auto Anvil for Forge 1.20.1, plus compatibility addons.",
         "Writing KubeJS scripts for Project Atmos, a modpack inspired by Project Ozone 2: Kappa Mode.",
         "Developing Forge Stuck!!!, an experimental bridge targeting Forge 1.20.1 mods on NeoForge 1.21.1."
       ]
@@ -214,18 +223,19 @@ export const INITIAL_RESUME_DATA: ResumeData = {
     },
     {
       "id": "indie-games-ai",
-      "title": "Unity Gameplay Prototypes",
+      "title": "Game Prototypes & AI-Assisted Development",
       "roleSubtitle": "Personal projects",
       "period": "Unfinished",
       "stack": [
         "C#",
         "Unity",
-        "Editor tools"
+        "AI tools"
       ],
       "summary": "Unity prototypes exploring movement, RPG mechanics, and different game formats.",
       "accomplishments": [
         "Explored Source-style bunny hopping and surfing, RPG leveling, and spell systems.",
-        "Worked on FPS, MOBA, and tile-based prototypes, along with editor tools."
+        "Worked on FPS, MOBA, and tile-based prototypes, along with editor tools.",
+        "Guide multiple AI agents on shared projects and iterate on code, game features, artwork, and icons."
       ]
     }
   ],
@@ -326,8 +336,8 @@ export const INITIAL_RESUME_DATA: ResumeData = {
       "summary": "My love letter to Project Ozone 2: Kappa Mode, built around the progression and feel that made the original pack memorable.",
       "accomplishments": [
         "Writing KubeJS JavaScript to tune recipes, progression, and how the mods fit together.",
-        "Recreated missing mods as Quantum Flux: Reforged and Tinkers\u2019 Auto Anvil to support the pack.",
-        "Iterating on the pack\u2019s balance and feel as development continues."
+        "Recreated missing mods as Quantum Flux: Reforged and Tinkers’ Auto Anvil to support the pack.",
+        "Iterating on the pack’s balance and feel as development continues."
       ]
     },
     {
@@ -366,19 +376,19 @@ export const INITIAL_RESUME_DATA: ResumeData = {
     },
     {
       "id": "tinkers-auto-anvil",
-      "title": "Tinkers\u2019 Auto Anvil",
+      "title": "Tinkers’ Auto Anvil",
       "roleSubtitle": "Minecraft automation addon",
       "period": "Published alpha",
       "stack": [
         "Java",
         "Minecraft",
         "Forge 1.20.1",
-        "Tinkers\u2019 Construct"
+        "Tinkers’ Construct"
       ],
-      "summary": "A modern remake inspired by TiCAutoToolStation, adding an automatic anvil for Tinkers\u2019 Construct.",
+      "summary": "A modern remake inspired by TiCAutoToolStation, adding an automatic anvil for Tinkers’ Construct.",
       "accomplishments": [
         "Built an anvil that accepts tools and materials through hoppers and pipes.",
-        "Recreated the idea for modern Tinkers\u2019 Construct without using the original mod\u2019s code.",
+        "Recreated the idea for modern Tinkers’ Construct without using the original mod’s code.",
         "Published on CurseForge for Minecraft 1.20.1."
       ],
       "demoUrl": "https://www.curseforge.com/minecraft/mc-mods/tinkers-auto-anvil"

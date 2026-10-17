@@ -377,7 +377,7 @@ export default function App() {
     try {
       // Retain the complete draft before replacing browser caches.
       localStorage.setItem('trevor_pre_sync_backup', JSON.stringify({ resumeData, blogPosts, artworks, savedAt: new Date().toISOString() }));
-      [RESUME_STORAGE_KEY, 'trevor_resume_data_v7', 'trevor_resume_data_v6', 'trevor_resume_data_v5', 'trevor_blog_posts_v2', ARTWORK_STORAGE_KEY, 'trevor_artworks_v2'].forEach(key => localStorage.removeItem(key));
+      [RESUME_STORAGE_KEY, 'trevor_resume_data_v8', 'trevor_resume_data_v7', 'trevor_resume_data_v6', 'trevor_resume_data_v5', 'trevor_blog_posts_v2', ARTWORK_STORAGE_KEY, 'trevor_artworks_v2'].forEach(key => localStorage.removeItem(key));
       sessionStorage.setItem('trevor_sync_published', 'true');
       window.location.reload();
     } catch {
