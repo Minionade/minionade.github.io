@@ -146,3 +146,27 @@ html.landing-scroll .site-footer {
   .landing-scroll-arrow,
   .landing-slice[data-visible] .landing-slice-content { animation: none; }
 }
+
+.social-link-label {
+  max-width: 0;
+  margin-left: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 220ms ease, margin-left 220ms ease, opacity 150ms ease;
+}
+.social-link:focus-visible .social-link-label {
+  max-width: 6rem;
+  margin-left: 0.5rem;
+  opacity: 1;
+}
+@media (hover: hover) {
+  .social-link:hover .social-link-label {
+    max-width: 6rem;
+    margin-left: 0.5rem;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .social-link-label { transition: none; }
+}
