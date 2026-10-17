@@ -496,7 +496,8 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen flex flex-col font-sans transition-colors ${
+      data-color-mode={isDarkMode ? 'dark' : 'light'}
+      className={`min-h-screen flex flex-col font-sans transition-colors ${activeTab !== 'resume' ? 'desktop-content-frame' : ''} ${
         isDarkMode
           ? 'bg-[#1e2430] text-slate-100 selection:bg-blue-600/30 selection:text-blue-200'
           : 'bg-[#f5f2ec] text-stone-900 selection:bg-amber-200/50 selection:text-stone-900'

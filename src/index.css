@@ -215,3 +215,22 @@ html.landing-scroll .site-footer {
   .landing-beyond-content h2 { grid-column: 1 / -1; }
   .landing-beyond-details { grid-column: 2; margin-top: 0; }
 }
+
+/* Shade the unused desktop margins without overlaying content or controls. */
+@media screen and (min-width: 1440px) {
+  .desktop-content-frame {
+    --desktop-edge: rgb(5 8 15 / 65%);
+    --desktop-edge-soft: rgb(5 8 15 / 20%);
+    background-image: linear-gradient(90deg,
+      var(--desktop-edge) 0%,
+      var(--desktop-edge-soft) calc(50% - 42rem),
+      transparent calc(50% - 32rem),
+      transparent calc(50% + 32rem),
+      var(--desktop-edge-soft) calc(50% + 42rem),
+      var(--desktop-edge) 100%);
+  }
+  .desktop-content-frame[data-color-mode="light"] {
+    --desktop-edge: rgb(75 58 35 / 22%);
+    --desktop-edge-soft: rgb(75 58 35 / 7%);
+  }
+}
