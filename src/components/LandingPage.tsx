@@ -100,21 +100,21 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
       <section data-landing-slice="1" className="landing-slice" aria-labelledby="selected-work-heading">
         <div className="landing-slice-content landing-work-content w-full">
         <div>
-          <p className={`text-xs uppercase tracking-[0.2em] font-medium mb-4 ${accent}`}>Ongoing work</p>
+          <p className={`text-sm uppercase tracking-[0.2em] font-medium mb-4 ${accent}`}>Ongoing work</p>
           <h2 id="selected-work-heading" className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12]">What I’m building.</h2>
         </div>
         <div>
         <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
-          <span className={`text-xs ${muted}`}>A closer look, in my résumé</span>
+          <span className={`text-sm ${muted}`}>A closer look, in my résumé</span>
         </div>
-        <div className="grid sm:grid-cols-3 gap-5 sm:gap-6">
+        <div className="grid md:grid-cols-3 gap-7 lg:gap-8">
           {highlights.map(item => {
             const project = data.projects.find(p => p.id === item.id);
-            return <a key={item.id} href={project ? `#resume-project-${project.id}` : '#resume-projects'} className={`group border-t pt-3 ${border} focus-visible:outline-2 focus-visible:outline-offset-4`}>
-              <p className={`text-[10px] tracking-[0.14em] font-mono ${accent}`}>{item.label}</p>
-              <h3 className="mt-2 text-lg font-medium leading-snug tracking-tight group-hover:underline underline-offset-4">{item.title} <ArrowUpRight className="inline w-4 h-4" /></h3>
-              <p className={`mt-2 text-sm leading-relaxed ${muted}`}>{project?.summary || item.fallback}</p>
-              {project && <p className={`mt-2 text-xs leading-relaxed ${muted}`}>{project.stack.slice(0, 3).join(' / ')}</p>}
+            return <a key={item.id} href={project ? `#resume-project-${project.id}` : '#resume-projects'} className={`group border-t pt-5 ${border} focus-visible:outline-2 focus-visible:outline-offset-4`}>
+              <p className={`text-xs tracking-[0.14em] font-mono ${accent}`}>{item.label}</p>
+              <h3 className="mt-3 text-xl lg:text-2xl font-medium leading-snug tracking-tight group-hover:underline underline-offset-4">{item.title} <ArrowUpRight className="inline w-5 h-5" /></h3>
+              <p className={`mt-3 text-base lg:text-lg leading-relaxed ${muted}`}>{project?.summary || item.fallback}</p>
+              {project && <p className={`mt-3 text-sm leading-relaxed ${muted}`}>{project.stack.slice(0, 3).join(' / ')}</p>}
             </a>;
           })}
         </div>
@@ -125,41 +125,41 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
       </section>
       <section data-landing-slice="2" className={`landing-slice border-t ${border}`} aria-labelledby="portfolio-preview-heading">
         <div className="landing-slice-content w-full">
-        <div className="landing-illustrated-layout">
+        <div className="landing-illustrated-layout landing-portfolio-layout">
         <img src={crescentHammer} alt="" aria-hidden="true" width="640" height="640" loading="lazy" decoding="async" className="landing-decoration landing-wrench image-pixelated" />
         <div className="min-w-0">
-        <h2 id="portfolio-preview-heading" className="text-xl font-semibold tracking-tight mb-4">Explore the portfolios</h2>
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+        <h2 id="portfolio-preview-heading" className="text-3xl lg:text-4xl font-semibold tracking-tight mb-6">Explore the portfolios</h2>
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
           <div className="min-w-0">
             <div className="flex items-center justify-between gap-3 mb-3">
-              <h3 className="text-base font-medium">Projects</h3>
-              <a href="#projects" className={`text-xs inline-flex items-center gap-1 hover:underline ${accent}`}>View all <ArrowUpRight className="w-3.5 h-3.5" /></a>
+              <h3 className="text-xl font-medium">Projects</h3>
+              <a href="#projects" className={`text-sm inline-flex items-center gap-1 hover:underline ${accent}`}>View all <ArrowUpRight className="w-3.5 h-3.5" /></a>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {portfolio.slice(0, 2).map(project => <a key={project.id} href="#projects" className={`block border-l-2 pl-4 group ${border}`}>
-                <h4 className="text-sm font-semibold leading-relaxed group-hover:underline underline-offset-4">{project.title}</h4>
-                <p className={`text-xs leading-relaxed mt-1.5 line-clamp-3 ${muted}`}>{project.summary}</p>
-                <p className={`mt-2 text-[11px] leading-relaxed ${accent}`}>{project.stack.slice(0, 3).join(' · ')}</p>
+                <h4 className="text-base lg:text-lg font-semibold leading-relaxed group-hover:underline underline-offset-4">{project.title}</h4>
+                <p className={`text-sm lg:text-base leading-relaxed mt-1.5 line-clamp-3 ${muted}`}>{project.summary}</p>
+                <p className={`mt-2 text-sm leading-relaxed ${accent}`}>{project.stack.slice(0, 3).join(' · ')}</p>
               </a>)}
               {portfolio.length === 0 && <p className={`text-sm ${muted}`}>New projects will appear here as they’re added.</p>}
             </div>
           </div>
           <div className="min-w-0">
             <div className="flex items-center justify-between gap-3 mb-3">
-              <h3 className="text-base font-medium">Art & visual work</h3>
-              <a href="#art" className={`text-xs inline-flex items-center gap-1 hover:underline ${accent}`}>View all <ArrowUpRight className="w-3.5 h-3.5" /></a>
+              <h3 className="text-xl font-medium">Art & visual work</h3>
+              <a href="#art" className={`text-sm inline-flex items-center gap-1 hover:underline ${accent}`}>View all <ArrowUpRight className="w-3.5 h-3.5" /></a>
             </div>
             {artworks.length > 0 ? <div className="grid grid-cols-2 gap-4">
               {[...artworks].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))).slice(0, 2).map(art => <a key={art.id} href={artworkHref(art.id)} className="min-w-0 group">
                 <div className={`aspect-square rounded-lg overflow-hidden border ${border} ${isDarkMode ? 'bg-slate-900/40' : 'bg-stone-200/40'}`}>
                   <img src={art.imageUrl} alt={art.title} loading="lazy" decoding="async" className={`w-full h-full object-contain p-2 ${getArtworkCategories(art).includes('pixel-art') ? 'image-pixelated' : ''}`} />
                 </div>
-                <h4 className="text-xs font-medium mt-2 break-words group-hover:underline underline-offset-4">{art.title}</h4>
-                <p className={`text-[11px] mt-1 ${muted}`}>{getArtworkCategories(art).map(formatArtworkCategory).join(' · ')}</p>
+                <h4 className="text-sm lg:text-base font-medium mt-3 break-words group-hover:underline underline-offset-4">{art.title}</h4>
+                <p className={`text-xs lg:text-sm mt-1.5 ${muted}`}>{getArtworkCategories(art).map(formatArtworkCategory).join(' · ')}</p>
               </a>)}
             </div> : <a href="#art" className={`block rounded-lg border p-4 ${border} hover:border-amber-500/50 transition-colors`}>
-              <p className="text-sm font-medium">Art portfolio <ArrowUpRight className="inline w-4 h-4" /></p>
-              <p className={`text-xs leading-relaxed mt-2 ${muted}`}>New artwork will be featured here as it’s added to the portfolio.</p>
+              <p className="text-base font-medium">Art portfolio <ArrowUpRight className="inline w-4 h-4" /></p>
+              <p className={`text-sm lg:text-base leading-relaxed mt-2 ${muted}`}>New artwork will be featured here as it’s added to the portfolio.</p>
             </a>}
           </div>
         </div>
