@@ -268,11 +268,12 @@ export default function App() {
 
   const handleSaveProject = (project: ProjectItem) => {
     setResumeData((prev) => {
-      const exists = prev.projects.some((p) => p.id === project.id);
+      const portfolio = prev.portfolioProjects || prev.projects;
+      const exists = portfolio.some((p) => p.id === project.id);
       const updated = exists
-        ? prev.projects.map((p) => (p.id === project.id ? project : p))
-        : [project, ...prev.projects];
-      const nextData = { ...prev, projects: updated };
+        ? portfolio.map((p) => (p.id === project.id ? project : p))
+        : [project, ...portfolio];
+      const nextData = { ...prev, portfolioProjects: updated };
       try {
         localStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(nextData));
       } catch {
@@ -284,8 +285,8 @@ export default function App() {
 
   const handleDeleteProject = (projectId: string) => {
     setResumeData((prev) => {
-      const updated = prev.projects.filter((p) => p.id !== projectId);
-      const nextData = { ...prev, projects: updated };
+      const updated = (prev.portfolioProjects || prev.projects).filter((p) => p.id !== projectId);
+      const nextData = { ...prev, portfolioProjects: updated };
       try {
         localStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify(nextData));
       } catch {
@@ -582,7 +583,7 @@ export default function App() {
 
         {activeTab === 'projects' && (
           <ProjectsSection
-            projects={resumeData.projects}
+            projects={resumeData.portfolioProjects || resumeData.projects}
             isOwner={showAdminTools}
             onSaveProject={handleSaveProject}
             onDeleteProject={handleDeleteProject}

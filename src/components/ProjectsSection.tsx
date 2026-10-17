@@ -96,11 +96,10 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               isDarkMode ? 'text-white' : 'text-slate-900'
             }`}
           >
-            Engineering Initiatives & Hands-On Systems
+            Projects
           </h2>
           <p className={`mt-2 text-sm max-w-2xl ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-            Detailed technical breakdowns of custom C# game engines, socket networking, AI systems in Unity & Godot,
-            custom PC hardware benchmarks, and commercial equipment operations.
+            Published Minecraft mods, Infinity Redux and Project Atmos, C# game prototypes, and AI-assisted projects. I also coordinate multiple AI agents within projects, guiding their work toward a shared goal.
           </p>
         </div>
 
@@ -108,7 +107,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
           <button
             onClick={handleCreateNewClick}
             className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 self-start sm:self-auto"
-            title="Add a new engineering project"
+            title="Add a new project"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add New Project</span>
@@ -178,13 +177,13 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 }`}
               >
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
                       <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-[#1e2430]' : 'bg-[#eee9df]'}`}>
                         {getProjectIcon(project.id)}
                       </div>
                       <div>
-                        <h3 className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                        <h3 className={`font-bold text-base break-words ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                           {project.title}
                         </h3>
                         <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-500'}`}>
@@ -259,10 +258,15 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                     onClick={() => setSelectedProjectId(project.id)}
                     className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1 transition-colors"
                   >
-                    <span>View Architecture & Specs</span>
+                    <span>Project details</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
 
+                  {project.demoUrl && <a href={project.demoUrl} target="_blank" rel="noreferrer"
+                    className="text-xs inline-flex items-center gap-1 text-blue-400 hover:underline">
+                    <ExternalLink className="w-3 h-3" />
+                    {project.demoUrl.includes('curseforge.com') ? 'CurseForge' : 'Project page'}
+                  </a>}
                   {project.githubUrl && (
                     <a
                       href={project.githubUrl}
@@ -363,7 +367,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
             <div className={`p-6 space-y-4 text-xs leading-relaxed ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>
               <div>
                 <h4 className={`font-bold text-xs uppercase tracking-wider mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                  Architecture & Technologies
+                  Tools & technologies
                 </h4>
                 <p className={isDarkMode ? 'text-slate-300' : 'text-slate-600'}>
                   {activeProject.stack.join(' · ')}
@@ -379,7 +383,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
 
               <div>
                 <h4 className={`font-bold text-xs uppercase tracking-wider mb-1.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                  Accomplishments & Solutions
+                  What I worked on
                 </h4>
                 <ul className="list-disc pl-4 space-y-2">
                   {activeProject.accomplishments.map((bullet, idx) => (
@@ -390,6 +394,11 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 </ul>
               </div>
 
+              {activeProject.demoUrl && <a href={activeProject.demoUrl} target="_blank" rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-blue-400 hover:underline">
+                <ExternalLink className="w-4 h-4" />
+                {activeProject.demoUrl.includes('curseforge.com') ? 'View on CurseForge' : 'Visit project page'}
+              </a>}
               {activeProject.githubUrl && (
                 <div className="pt-2">
                   <a

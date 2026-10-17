@@ -11,30 +11,31 @@ export const INITIAL_RESUME_DATA: ResumeData = {
     "portfolio": "minionade.github.io"
   },
   "summaryByPersona": {
-    "hybrid": "Self-taught C# developer with experience building game engines, multiplayer networking, and gameplay systems. I also build and troubleshoot PCs and have worked in landscaping, municipal grounds maintenance, and customer service.",
-    "gamedev": "Self-taught game developer working in C#, Unity, and Godot. My personal projects include a custom game engine, multiplayer networking, and AI prototypes. I also write game design documents covering mechanics, progression, and balance.",
+    "hybrid": "Self-taught developer working with C#, Unity, and Minecraft mods. My projects include published mods, a standalone multiplayer game prototype, and custom modpack scripting. I manage repositories and branches with GitHub and coordinate multiple AI agents on shared projects.",
+    "gamedev": "Self-taught C# developer with experience building Unity gameplay prototypes and a standalone tile-based MMO prototype with its own server. I also publish Minecraft mods, write KubeJS scripts, and guide multiple AI agents toward a shared project goal.",
     "hardware": "I build and troubleshoot desktop PCs for myself and friends, from choosing compatible parts to assembly, setup, and testing. My experience includes Windows diagnostics, BIOS configuration, cooling, and resolving hardware and driver issues.",
     "equipment": "Experience in commercial landscaping and municipal grounds maintenance, including riding mowers, zero-turns, mini excavators, and mini skid steers. I have also helped with equipment checks, routine maintenance, and repairs alongside a public works mechanic."
   },
   "skillsByPersona": {
     "hybrid": [
       {
-        "category": "Programming",
+        "category": "Development",
         "items": [
-          "C# / .NET",
+          "C#",
           "Unity",
-          "Godot",
-          "TCP/UDP networking",
-          "Git"
+          "Minecraft modding",
+          "KubeJS / JavaScript",
+          "Basic SQL"
         ]
       },
       {
-        "category": "Game development",
+        "category": "Tools & workflow",
         "items": [
-          "Game engines",
-          "Gameplay AI",
-          "Game design documents",
-          "Systems balancing"
+          "Git / GitHub",
+          "Repositories and branches",
+          "AI-assisted development",
+          "Coordinating multiple AI agents",
+          "Local models with Ollama"
         ]
       },
       {
@@ -42,8 +43,8 @@ export const INITIAL_RESUME_DATA: ResumeData = {
         "items": [
           "PC assembly",
           "Windows troubleshooting",
-          "BIOS/UEFI setup",
-          "Cooling and stress testing"
+          "BIOS/UEFI",
+          "Hardware testing"
         ]
       },
       {
@@ -51,48 +52,47 @@ export const INITIAL_RESUME_DATA: ResumeData = {
         "items": [
           "Commercial mowers",
           "Mini excavators and skid steers",
-          "Routine maintenance",
-          "Small-engine troubleshooting"
+          "Routine maintenance"
         ]
       }
     ],
     "gamedev": [
       {
-        "category": "Languages & tools",
+        "category": "Development",
         "items": [
-          "C# / .NET",
-          "GDScript",
+          "C#",
           "Unity",
-          "Godot",
+          "Custom network packets",
+          "KubeJS / JavaScript",
+          "Basic SQL"
+        ]
+      },
+      {
+        "category": "Game projects",
+        "items": [
+          "Movement systems",
+          "RPG leveling and spells",
+          "Multiplayer prototypes",
+          "Editor tools"
+        ]
+      },
+      {
+        "category": "Version control",
+        "items": [
           "Git",
-          "Visual Studio / VS Code"
+          "GitHub",
+          "Repository and branch management"
         ]
       },
       {
-        "category": "Engine systems",
+        "category": "AI-assisted workflow",
         "items": [
-          "TCP/UDP networking",
-          "Packet serialization",
-          "Fixed-timestep game loops",
-          "Entity-component systems"
-        ]
-      },
-      {
-        "category": "Gameplay",
-        "items": [
-          "State machines",
-          "Goal-oriented action planning (GOAP)",
-          "Pathfinding",
-          "Procedural generation"
-        ]
-      },
-      {
-        "category": "Design",
-        "items": [
-          "Game design documents",
-          "Combat and progression systems",
-          "Game economies",
-          "Technical diagrams"
+          "Multi-agent coordination",
+          "GitHub Copilot",
+          "Claude",
+          "ChatGPT",
+          "Gemini / AI Studio",
+          "Ollama"
         ]
       }
     ],
@@ -175,77 +175,54 @@ export const INITIAL_RESUME_DATA: ResumeData = {
   },
   "projects": [
     {
-      "id": "custom-engine",
-      "title": "Custom C# Game Engine",
-      "roleSubtitle": "Personal project",
+      "id": "minecraft-mods",
+      "title": "Minecraft Mods & Modpack Development",
+      "roleSubtitle": "Personal projects",
       "period": "Ongoing",
       "stack": [
-        "C#",
-        ".NET",
-        "TCP/UDP",
-        "Packet serialization",
-        "Entity-component systems"
+        "Forge",
+        "NeoForge",
+        "KubeJS",
+        "JavaScript",
+        "GitHub"
       ],
-      "summary": "Building a game engine and dedicated server in C#, with a focus on networking and keeping game state in sync.",
+      "summary": "Published Minecraft mods and compatibility addons, alongside an expert modpack and a cross-version compatibility bridge.",
       "accomplishments": [
-        "Built TCP and UDP networking for reliable messages and frequent position updates.",
-        "Wrote packet serialization and a fixed-timestep server loop to manage game updates.",
-        "Organized game objects with an entity-component system."
+        "Published Quantum Flux: Reforged and Tinkers\u2019 Auto Anvil for Forge 1.20.1, plus community compatibility addons.",
+        "Writing KubeJS scripts for Project Atmos, a modpack inspired by Project Ozone 2: Kappa Mode.",
+        "Developing Forge Stuck!!!, an experimental bridge targeting Forge 1.20.1 mods on NeoForge 1.21.1."
+      ]
+    },
+    {
+      "id": "custom-engine",
+      "title": "Standalone C# MMO Prototype",
+      "roleSubtitle": "Personal project",
+      "period": "Unfinished",
+      "stack": [
+        "C#",
+        "Custom network packets",
+        "SQL"
       ],
-      "githubUrl": "https://github.com/minionade"
+      "summary": "A standalone tile-based MMO prototype with its own server and custom network packets.",
+      "accomplishments": [
+        "Built a standalone C# game prototype with custom packets and a separate server.",
+        "Worked with SQL for database management and experimented with salted password hashing."
+      ]
     },
     {
       "id": "indie-games-ai",
-      "title": "Unity & Godot Prototypes",
+      "title": "Unity Gameplay Prototypes",
       "roleSubtitle": "Personal projects",
-      "period": "Ongoing",
+      "period": "Unfinished",
       "stack": [
-        "Unity",
-        "Godot",
         "C#",
-        "GDScript",
-        "Gameplay AI"
+        "Unity",
+        "Editor tools"
       ],
-      "summary": "Game prototypes exploring enemy behavior, pathfinding, and procedural generation in Unity and Godot.",
+      "summary": "Unity prototypes exploring movement, RPG mechanics, and different game formats.",
       "accomplishments": [
-        "Built enemy behaviors using state machines and goal-oriented action planning.",
-        "Worked on pathfinding, obstacle avoidance, and line-of-sight checks.",
-        "Made editor tools to inspect AI behavior and debug state changes."
-      ]
-    },
-    {
-      "id": "gdd-archive",
-      "title": "Game Design Documents",
-      "roleSubtitle": "Personal projects",
-      "period": "Ongoing",
-      "stack": [
-        "Game mechanics",
-        "Combat balancing",
-        "Progression",
-        "Game economies"
-      ],
-      "summary": "Design documents for personal game ideas, covering how their mechanics fit together and how players progress.",
-      "accomplishments": [
-        "Documented game loops, combat rules, progression, and item systems.",
-        "Used formulas and diagrams to plan balancing, loot, menus, and game states."
-      ]
-    },
-    {
-      "id": "pc-building",
-      "title": "PC Building & Troubleshooting",
-      "roleSubtitle": "Personal and friends’ builds",
-      "period": "Ongoing",
-      "stack": [
-        "PC assembly",
-        "BIOS/UEFI",
-        "Windows",
-        "Hardware testing"
-      ],
-      "summary": "Built and maintained desktop PCs for myself and friends, including parts selection, assembly, and troubleshooting.",
-      "accomplishments": [
-        "Selected compatible components and assembled systems with attention to cooling and cable routing.",
-        "Tested memory, CPU, and GPU stability using MemTest86, Prime95, and FurMark.",
-        "Troubleshot Windows crashes, driver conflicts, and hardware problems."
+        "Explored Source-style bunny hopping and surfing, RPG leveling, and spell systems.",
+        "Worked on FPS, MOBA, and tile-based prototypes, along with editor tools."
       ]
     }
   ],
@@ -312,55 +289,224 @@ export const INITIAL_RESUME_DATA: ResumeData = {
     "location": "Bloomsburg, PA",
     "year": "September 2020",
     "notes": ""
-  }
+  },
+  "portfolioProjects": [
+    {
+      "id": "forge-stuck",
+      "title": "Forge Stuck!!!",
+      "roleSubtitle": "Minecraft compatibility bridge",
+      "period": "In development",
+      "stack": [
+        "Minecraft",
+        "Forge 1.20.1",
+        "NeoForge 1.21.1"
+      ],
+      "summary": "An experimental bridge aimed at running Forge 1.20.1 mods on NeoForge 1.21.1. The idea grew out of Infinity Redux, my FTB Infinity remake, when I ran into the split between modern modding versions.",
+      "accomplishments": [
+        "Working toward compatibility across the two Minecraft versions and mod loaders.",
+        "Started to bring older Forge mods into a modern pack without waiting for every mod to move to the same version.",
+        "Still in development; full mod compatibility is the goal, not a finished feature."
+      ]
+    },
+    {
+      "id": "ozone-inspired-pack",
+      "title": "Project Atmos",
+      "roleSubtitle": "Expert modpack & KubeJS scripting",
+      "period": "In development",
+      "stack": [
+        "Minecraft",
+        "KubeJS",
+        "JavaScript",
+        "Modpack development"
+      ],
+      "summary": "My love letter to Project Ozone 2: Kappa Mode, built around the progression and feel that made the original pack memorable.",
+      "accomplishments": [
+        "Writing KubeJS JavaScript to tune recipes, progression, and how the mods fit together.",
+        "Recreated missing mods as Quantum Flux: Reforged and Tinkers\u2019 Auto Anvil to support the pack.",
+        "Iterating on the pack\u2019s balance and feel as development continues."
+      ]
+    },
+    {
+      "id": "infinity-redux",
+      "title": "Infinity Redux",
+      "roleSubtitle": "FTB Infinity remake",
+      "period": "In development",
+      "stack": [
+        "Minecraft",
+        "Modpack development"
+      ],
+      "summary": "A remake of FTB Infinity for modern Minecraft. Working on it exposed the split between modding versions and led to the idea for Forge Stuck!!!.",
+      "accomplishments": [
+        "Reworking the FTB Infinity modpack experience for modern Minecraft.",
+        "Working through gaps where the mods needed for the pack target different Minecraft versions."
+      ]
+    },
+    {
+      "id": "quantumflux-reforged",
+      "title": "Quantum Flux: Reforged",
+      "roleSubtitle": "Minecraft mod remake",
+      "period": "Published alpha",
+      "stack": [
+        "Minecraft",
+        "Forge 1.20.1",
+        "Forge Energy"
+      ],
+      "summary": "A remake of QuantumFlux for Minecraft 1.20.1, created to bring its machines and wireless energy systems into a modern modpack.",
+      "accomplishments": [
+        "Recreated energy generation, storage, and wireless power features inspired by the original mod.",
+        "Added machine tiers, configurable energy input/output faces, and wireless channels.",
+        "Published on CurseForge with Forge Energy, JEI, and Curios support."
+      ],
+      "demoUrl": "https://www.curseforge.com/minecraft/mc-mods/quantumflux-reforged"
+    },
+    {
+      "id": "tinkers-auto-anvil",
+      "title": "Tinkers\u2019 Auto Anvil",
+      "roleSubtitle": "Minecraft automation addon",
+      "period": "Published alpha",
+      "stack": [
+        "Minecraft",
+        "Forge 1.20.1",
+        "Tinkers\u2019 Construct"
+      ],
+      "summary": "A modern remake inspired by TiCAutoToolStation, adding an automatic anvil for Tinkers\u2019 Construct.",
+      "accomplishments": [
+        "Built an anvil that accepts tools and materials through hoppers and pipes.",
+        "Recreated the idea for modern Tinkers\u2019 Construct without using the original mod\u2019s code.",
+        "Published on CurseForge for Minecraft 1.20.1."
+      ],
+      "demoUrl": "https://www.curseforge.com/minecraft/mc-mods/tinkers-auto-anvil"
+    },
+    {
+      "id": "dynamic-tree-physics-patches",
+      "title": "Dynamic Tree Physics Patches",
+      "roleSubtitle": "Community addon & patches",
+      "period": "Published",
+      "stack": [
+        "Minecraft",
+        "Mod compatibility"
+      ],
+      "summary": "Community patches and tweaks for Dynamic Tree Physics, published as a separate addon.",
+      "accomplishments": [
+        "Created patches for an existing community mod rather than a standalone replacement.",
+        "Published the addon on CurseForge for other players and pack authors."
+      ],
+      "demoUrl": "https://www.curseforge.com/minecraft/mc-mods/dynamic-tree-physics-patches"
+    },
+    {
+      "id": "slate-compat",
+      "title": "Slate Compatibility",
+      "roleSubtitle": "Community UI compatibility addon",
+      "period": "Published",
+      "stack": [
+        "Minecraft",
+        "Forge 1.20.1",
+        "UI compatibility"
+      ],
+      "summary": "An addon that brings Slate-style interfaces to other inventory and menu mods.",
+      "accomplishments": [
+        "Added Slate-themed compatibility for Legendary Inventory, Trash Slot, and FancyMenu.",
+        "Published on CurseForge as an addon requiring Slate Core."
+      ],
+      "demoUrl": "https://www.curseforge.com/minecraft/mc-mods/slate-compat"
+    },
+    {
+      "id": "custom-engine",
+      "title": "Standalone C# MMO Prototype",
+      "roleSubtitle": "C# client & server prototype",
+      "period": "Unfinished prototype",
+      "stack": [
+        "C#",
+        "Custom networking",
+        "SQL",
+        "Password hashing"
+      ],
+      "summary": "A standalone C# version of my tile-based game prototype, designed around an MMO client and its own server.",
+      "accomplishments": [
+        "Built custom network packets and a separate server for the game.",
+        "Worked with SQL for database management.",
+        "Experimented with SHA-256 hashing and salts for password storage in the prototype."
+      ]
+    },
+    {
+      "id": "indie-games-ai",
+      "title": "Unity Gameplay Prototypes",
+      "roleSubtitle": "Movement, RPG systems & editor tools",
+      "period": "Unfinished prototypes",
+      "stack": [
+        "C#",
+        "Unity",
+        "Gameplay systems",
+        "Editor tools"
+      ],
+      "summary": "A collection of unfinished Unity projects exploring specific gameplay ideas, from Source-style movement to RPG leveling and spells.",
+      "accomplishments": [
+        "Explored Counter-Strike-style bunny hopping and surfing movement.",
+        "Worked on RPG leveling and spell systems, plus MOBA, FPS, and tile-based prototypes.",
+        "Built editor tools alongside the gameplay experiments."
+      ]
+    },
+    {
+      "id": "ai-assisted-fps",
+      "title": "AI-Assisted Tactical FPS",
+      "roleSubtitle": "Prompting, iteration & project direction",
+      "period": "In development",
+      "stack": [
+        "AI-assisted development",
+        "Game prototyping",
+        "GitHub"
+      ],
+      "summary": "An AI-assisted project exploring a Counter-Strike-style shooter with ideas for modern features and different utility types.",
+      "accomplishments": [
+        "Directed development through prompts and repeated iteration with AI tools.",
+        "Exploring 128-tick servers and unique utility types as project goals.",
+        "Part of my broader AI-assisted workflow across code, mods, art, and icons."
+      ]
+    }
+  ]
 };
 
 export const BLOG_POSTS: BlogPost[] = [];
 
 
 export const ATS_KEYWORDS: Record<string, string[]> = {
-  gamedev: [
-    'C#',
-    'Unity',
-    'Godot',
-    'Game Engine Architecture',
-    'Socket Networking',
-    'TCP / UDP',
-    'Entity Component System (ECS)',
-    'AI State Machines',
-    'Game Design Documents (GDD)',
-    'Mechanics Balancing',
-    'Git',
+  "gamedev": [
+    "C#",
+    "Unity",
+    "Minecraft",
+    "KubeJS",
+    "JavaScript",
+    "SQL",
+    "GitHub",
+    "Editor tools",
+    "network"
   ],
-  hardware: [
-    'Custom PC Assembly',
-    'Hardware Diagnostics',
-    'BIOS / UEFI Flashing',
-    'Windows 10 / 11 Administration',
-    'Thermal Optimization',
-    'Stress Testing (Prime95/MemTest)',
-    'Component Troubleshooting',
-    'Small Engine Maintenance',
+  "hardware": [
+    "PC assembly",
+    "Hardware diagnostics",
+    "BIOS",
+    "UEFI",
+    "Windows",
+    "Stress testing",
+    "Troubleshooting"
   ],
-  equipment: [
-    'Commercial Riding Mowers',
-    'Zero-Turn Operation',
-    'Mini Excavator',
-    'Mini Skid Steer',
-    'Rototiller',
-    'Preventative Maintenance',
-    'Hydraulic Inspection',
-    'Workplace Safety Protocols',
+  "equipment": [
+    "Commercial mowers",
+    "Zero-turn",
+    "Mini excavators",
+    "Mini skid steers",
+    "Routine maintenance",
+    "Equipment checks"
   ],
-  hybrid: [
-    'C#',
-    'Game Engine Architecture',
-    'Socket Server',
-    'Custom PC Assembly',
-    'Windows OS Diagnostics',
-    'Commercial Equipment Operations',
-    'Mini Excavator & Skid Steer',
-    'Game Design Documents',
-    'Preventative Maintenance',
-  ],
+  "hybrid": [
+    "C#",
+    "Unity",
+    "Minecraft",
+    "KubeJS",
+    "JavaScript",
+    "SQL",
+    "GitHub",
+    "PC assembly",
+    "Routine maintenance"
+  ]
 };

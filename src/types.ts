@@ -55,6 +55,7 @@ export interface ResumeData {
   summaryByPersona: Record<Persona, string>;
   skillsByPersona: Record<Persona, SkillGroup[]>;
   projects: ProjectItem[];
+  portfolioProjects?: ProjectItem[];
   experience: ExperienceItem[];
   education: EducationItem;
 }
