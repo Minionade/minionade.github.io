@@ -269,11 +269,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         >
           {(['home', 'resume', 'projects', 'art', 'blog'] as NavTab[]).map(tab => {
             const Icon = {home: Home, resume: FileText, projects: FolderCode, art: Palette, blog: NotebookPen}[tab];
-            return <a key={tab} href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
+            return <React.Fragment key={tab}>
+              {tab !== 'home' && <span aria-hidden="true" className="w-0.5 h-0.5 rounded-full bg-current opacity-35 shrink-0" />}
+              <a href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
               aria-current={activeTab === tab ? 'page' : undefined}
               className={`inline-flex items-center justify-center gap-1.5 px-2 py-2 whitespace-nowrap rounded-md transition-colors ${activeTab === tab ? (isDarkMode ? 'bg-slate-700 text-white' : 'bg-stone-200 text-stone-950') : 'hover:bg-black/5'}`}>
               <Icon aria-hidden="true" className="w-3.5 h-3.5 shrink-0" /><span>{tab === 'resume' ? 'Resume' : tab === 'art' ? 'Art' : tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
-            </a>;
+            </a></React.Fragment>;
           })}
           {/* ATS Scanner - Visible only when owner is logged in and not in preview */}
           {showAdminTools && (
@@ -381,11 +383,13 @@ export const Navbar: React.FC<NavbarProps> = ({
       >
           {(['home', 'resume', 'projects', 'art', 'blog'] as NavTab[]).map(tab => {
             const Icon = {home: Home, resume: FileText, projects: FolderCode, art: Palette, blog: NotebookPen}[tab];
-            return <a key={tab} href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
+            return <React.Fragment key={tab}>
+              {tab !== 'home' && <span aria-hidden="true" className="w-0.5 h-0.5 rounded-full bg-current opacity-35 shrink-0" />}
+              <a href={`#${tab}`} onClick={e => {e.preventDefault(); setActiveTab(tab);}}
               aria-current={activeTab === tab ? 'page' : undefined}
               className={`inline-flex items-center justify-center gap-1.5 px-2 py-2 whitespace-nowrap rounded-md transition-colors ${activeTab === tab ? (isDarkMode ? 'bg-slate-700 text-white' : 'bg-stone-200 text-stone-950') : 'hover:bg-black/5'}`}>
               <Icon aria-hidden="true" className="w-3.5 h-3.5 shrink-0" /><span>{tab === 'resume' ? 'Resume' : tab === 'art' ? 'Art' : tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
-            </a>;
+            </a></React.Fragment>;
           })}
 
       </div>
