@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ArrowRight, ChevronDown } from 'lucide-react';
+import { artworkHref } from '../utils/routes';
 import grassBlock from '../assets/images/home-grass-block.webp';
 import crescentHammer from '../assets/images/home-crescent-hammer.webp';
 import { ArtworkItem, ResumeData } from '../types';
@@ -149,7 +150,7 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
               <a href="#art" className={`text-xs inline-flex items-center gap-1 hover:underline ${accent}`}>View all <ArrowUpRight className="w-3.5 h-3.5" /></a>
             </div>
             {artworks.length > 0 ? <div className="grid grid-cols-2 gap-4">
-              {[...artworks].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))).slice(0, 2).map(art => <a key={art.id} href="#art" className="min-w-0 group">
+              {[...artworks].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))).slice(0, 2).map(art => <a key={art.id} href={artworkHref(art.id)} className="min-w-0 group">
                 <div className={`aspect-square rounded-lg overflow-hidden border ${border} ${isDarkMode ? 'bg-slate-900/40' : 'bg-stone-200/40'}`}>
                   <img src={art.imageUrl} alt={art.title} loading="lazy" decoding="async" className={`w-full h-full object-contain p-2 ${getArtworkCategories(art).includes('pixel-art') ? 'image-pixelated' : ''}`} />
                 </div>

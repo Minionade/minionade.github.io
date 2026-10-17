@@ -3,6 +3,7 @@ import { ArtworkItem, BlogPost, Persona, ProjectItem, ResumeData, ThemeId } from
 import { BLOG_POSTS as DEFAULT_POSTS, INITIAL_RESUME_DATA as DEFAULT_RESUME } from './data/initialData';
 import { INITIAL_ARTWORKS as DEFAULT_ARTWORKS } from './data/artData';
 import { ARTWORK_STORAGE_KEY, loadArtworkData } from './utils/artworkStorage';
+import { parseHashRoute } from './utils/routes';
 import { LandingPage } from './components/LandingPage';
 import { SocialLinks } from './components/SocialLinks';
 import { Navbar, NavTab } from './components/Navbar';
@@ -32,15 +33,16 @@ try { syncPublished = sessionStorage.getItem('trevor_sync_published') === 'true'
 
 export default function App() {
   const [activeTab, updateActiveTab] = useState<NavTab>('home');
+  const [requestedArtworkId, setRequestedArtworkId] = useState<string | undefined>();
   const setActiveTab = (tab: NavTab) => { window.location.hash = tab; };
 
   useEffect(() => {
     const syncRoute = () => {
-      const route = window.location.hash.slice(1) || 'home';
-      const tab = route.startsWith('resume-') ? 'resume' : route;
-      updateActiveTab(['home', 'resume', 'projects', 'art', 'blog'].includes(tab) ? tab as NavTab : 'home');
+      const route = parseHashRoute(window.location.hash);
+      updateActiveTab(route.tab);
+      setRequestedArtworkId(route.artworkId);
       requestAnimationFrame(() => {
-        if (route.startsWith('resume-')) document.getElementById(route)?.scrollIntoView({ block: 'start' });
+        if (route.sectionId) document.getElementById(route.sectionId)?.scrollIntoView({ block: 'start' });
         else window.scrollTo(0, 0);
       });
     };
@@ -621,6 +623,7 @@ export default function App() {
           <div className="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto no-print">
             <ArtPortfolioSection
               artworks={artworks}
+              requestedArtworkId={requestedArtworkId}
               onUpdateArtworks={handleUpdateArtworks}
               onResetArtworks={handleResetArtworks}
               isOwner={showAdminTools}

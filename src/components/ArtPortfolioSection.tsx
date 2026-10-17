@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { artworkHref } from '../utils/routes';
 import { TagFilter } from './TagFilter';
 import { ArtworkItem } from '../types';
 import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
@@ -22,6 +23,7 @@ import { ConfirmModal } from './ConfirmModal';
 
 interface ArtPortfolioSectionProps {
   artworks: ArtworkItem[];
+  requestedArtworkId?: string;
   onUpdateArtworks: (artworks: ArtworkItem[]) => void;
   onResetArtworks: () => void;
   isOwner: boolean;
@@ -30,13 +32,16 @@ interface ArtPortfolioSectionProps {
 
 export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
   artworks,
+  requestedArtworkId,
   onUpdateArtworks,
   onResetArtworks,
   isOwner,
   isDarkMode,
 }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedArtwork, setSelectedArtwork] = useState<ArtworkItem | null>(null);
+  const selectedArtwork = artworks.find(art => art.id === requestedArtworkId) || null;
+  const openArtwork = (art: ArtworkItem) => { window.location.hash = artworkHref(art.id); };
+  const closeArtwork = () => { window.location.hash = 'art'; };
   const [editingArtwork, setEditingArtwork] = useState<ArtworkItem | null>(null);
   const [artworkToDelete, setArtworkToDelete] = useState<ArtworkItem | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -75,7 +80,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
     if (!artworkToDelete) return;
     onUpdateArtworks(artworks.filter((a) => a.id !== artworkToDelete.id));
     if (selectedArtwork?.id === artworkToDelete.id) {
-      setSelectedArtwork(null);
+      closeArtwork();
     }
     setArtworkToDelete(null);
   };
@@ -240,7 +245,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
           {filteredArtworks.map((item) => (
             <div
               key={item.id}
-              onClick={() => setSelectedArtwork(item)}
+              onClick={() => openArtwork(item)}
               className={`group rounded-2xl border overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer ${
                 isDarkMode
                   ? 'bg-[#181d28] border-slate-700/80 hover:border-blue-500/60 shadow-lg shadow-black/20'
@@ -361,8 +366,8 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
         artwork={selectedArtwork}
         artworks={filteredArtworks}
         isOpen={Boolean(selectedArtwork)}
-        onClose={() => setSelectedArtwork(null)}
-        onSelectArtwork={(art) => setSelectedArtwork(art)}
+        onClose={closeArtwork}
+        onSelectArtwork={openArtwork}
         isDarkMode={isDarkMode}
       />
 

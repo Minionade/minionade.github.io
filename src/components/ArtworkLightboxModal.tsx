@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArtworkItem } from '../types';
 import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
 import {
@@ -36,19 +36,32 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
   onSelectArtwork,
   isDarkMode,
 }) => {
-  const [zoomLevel, setZoomLevel] = useState<'fit' | '1x' | '2x'>('fit');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const imageTriggerRef = useRef<HTMLButtonElement>(null);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen || !artwork) return;
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') { e.preventDefault(); if (isExpanded) setIsExpanded(false); else onClose(); }
       if (e.key === 'ArrowRight') handleNext();
       if (e.key === 'ArrowLeft') handlePrev();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, artwork, artworks]);
+  }, [isOpen, artwork, artworks, isExpanded, onClose, onSelectArtwork]);
+
+  useEffect(() => {
+    if (!isOpen) { setIsExpanded(false); return; }
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previous; };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isExpanded) return;
+    return () => imageTriggerRef.current?.focus();
+  }, [isExpanded]);
 
   if (!isOpen || !artwork) return null;
 
@@ -79,9 +92,11 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
   const isAiAssisted = Boolean(artwork.promptNotes);
 
   return (
+    <>
     <div
       className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200"
       onClick={onClose}
+      aria-hidden={isExpanded || undefined}
     >
       <div
         className={`relative w-full max-w-5xl rounded-2xl border shadow-2xl overflow-hidden flex flex-col max-h-[92vh] ${
@@ -146,15 +161,16 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
             </button>
 
             {/* Artwork Frame */}
-            <div className="relative max-w-full max-h-[60vh] flex items-center justify-center rounded-lg overflow-hidden shadow-2xl border border-white/10 bg-black/40">
+            <button ref={imageTriggerRef} type="button" onClick={() => setIsExpanded(true)} aria-label={`Enlarge ${artwork.title}`} title="Open large image preview" className="group relative max-w-full max-h-[60vh] flex items-center justify-center rounded-lg overflow-hidden shadow-2xl border border-white/10 bg-black/40 cursor-zoom-in focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-400">
               <img
                 src={artwork.imageUrl}
                 alt={artwork.title}
                 className="max-h-[55vh] max-w-full object-contain"
               />
-
-
-            </div>
+              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-lg bg-black/80 text-white px-2.5 py-1.5 text-xs">
+                <Maximize2 aria-hidden="true" className="w-3.5 h-3.5" />Enlarge
+              </span>
+            </button>
 
             <div className="mt-3 flex items-center justify-between w-full text-xs text-slate-400 px-2">
               <span>
@@ -298,5 +314,37 @@ export const ArtworkLightboxModal: React.FC<ArtworkLightboxModalProps> = ({
         </div>
       </div>
     </div>
+    {isExpanded && <div role="dialog" aria-modal="true" aria-label={`Large preview of ${artwork.title}`}
+      className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center"
+      onClick={event => { if (event.target === event.currentTarget) setIsExpanded(false); }}
+      onKeyDown={event => {
+        if (event.key !== 'Tab') return;
+        const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('button'));
+        const first = buttons[0], last = buttons[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }}>
+      <div className="w-[90vw] h-[90dvh] flex flex-col gap-3 text-white">
+        <div className="flex items-center justify-between gap-4 min-h-11 shrink-0">
+          <p className="text-sm font-medium truncate">{artwork.title}</p>
+          <button type="button" autoFocus onClick={() => setIsExpanded(false)} aria-label="Close large image preview"
+            className="flex items-center justify-center min-w-11 min-h-11 rounded-lg bg-white/10 hover:bg-white/20 focus-visible:outline-2">
+            <X aria-hidden="true" className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="relative flex-1 min-h-0">
+          <img src={artwork.imageUrl} alt={artwork.title} className="w-full h-full object-contain" />
+          <button type="button" onClick={handlePrev} aria-label="Previous artwork"
+            className="absolute left-0 top-1/2 -translate-y-1/2 flex min-w-11 min-h-11 items-center justify-center rounded-full bg-black/70 hover:bg-black/90 text-white">
+            <ChevronLeft aria-hidden="true" className="w-5 h-5" />
+          </button>
+          <button type="button" onClick={handleNext} aria-label="Next artwork"
+            className="absolute right-0 top-1/2 -translate-y-1/2 flex min-w-11 min-h-11 items-center justify-center rounded-full bg-black/70 hover:bg-black/90 text-white">
+            <ChevronRight aria-hidden="true" className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </div>}
+    </>
   );
 };
