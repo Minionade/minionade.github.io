@@ -1,8 +1,56 @@
-import React from 'react';
-import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight, ArrowRight, ChevronDown } from 'lucide-react';
 import { ArtworkItem, ResumeData } from '../types';
 
 export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; artworks: ArtworkItem[]; isDarkMode: boolean }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [activeSlice, setActiveSlice] = useState(0);
+  const sliceNames = ['Introduction', 'My work', 'Portfolios', 'Beyond the code', 'Contact & links'];
+  const scrollToSlice = (index: number) => {
+    const target = index === 4 ? document.getElementById('site-footer')
+      : rootRef.current?.querySelectorAll<HTMLElement>('[data-landing-slice]')[index];
+    target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+  };
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const header = document.querySelector('header');
+    const previousHeight = html.style.getPropertyValue('--landing-header-height');
+    const measureHeader = () => html.style.setProperty('--landing-header-height', `${header?.getBoundingClientRect().height || 64}px`);
+    measureHeader();
+    html.classList.add('landing-scroll');
+    const resize = new ResizeObserver(measureHeader);
+    if (header) resize.observe(header);
+    const sections = Array.from(rootRef.current?.querySelectorAll<HTMLElement>('[data-landing-slice]') || []);
+    const footer = document.getElementById('site-footer');
+    const slices = footer ? [...sections, footer] : sections;
+    const ratios = new Map<Element, number>();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        ratios.set(entry.target, entry.intersectionRatio);
+        entry.target.toggleAttribute('data-visible', entry.isIntersecting);
+      });
+      const current = slices.reduce((best, slice, index) => (ratios.get(slice) || 0) > (ratios.get(slices[best]) || 0) ? index : best, 0);
+      setActiveSlice(current);
+    }, { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
+    slices.forEach(slice => observer.observe(slice));
+    return () => {
+      observer.disconnect();
+      resize.disconnect();
+      html.classList.remove('landing-scroll');
+      if (previousHeight) html.style.setProperty('--landing-header-height', previousHeight);
+      else html.style.removeProperty('--landing-header-height');
+      footer?.removeAttribute('data-visible');
+    };
+  }, []);
+
+  const nextCue = (index: number) => <button type="button" onClick={() => scrollToSlice(index + 1)}
+    className={`landing-scroll-cue group ${isDarkMode ? 'text-slate-400 hover:text-amber-300' : 'text-stone-600 hover:text-amber-900'}`}
+    aria-label={`Scroll to ${sliceNames[index + 1]}`}>
+    <span className="text-[10px] tracking-[0.15em] uppercase">{index === 0 ? 'Scroll to explore' : sliceNames[index + 1]}</span>
+    <span className="landing-scroll-arrow flex h-8 w-6 items-center justify-center rounded-full border border-current/40"><ChevronDown className="h-4 w-4" /></span>
+    <span className="text-[10px] tabular-nums opacity-60">{index + 1} / {sliceNames.length}</span>
+  </button>;
   const muted = isDarkMode ? 'text-slate-400' : 'text-stone-600';
   const border = isDarkMode ? 'border-slate-700/70' : 'border-stone-300';
   const accent = isDarkMode ? 'text-amber-300' : 'text-amber-900';
@@ -13,8 +61,16 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
     { id: 'indie-games-ai', label: '03 / UNITY', title: 'Gameplay experiments', fallback: 'Movement systems, RPG mechanics, and editor tools.' },
   ];
   return (
-    <div className="max-w-5xl mx-auto px-5 sm:px-8 no-print">
-      <section className={`pt-8 sm:pt-12 pb-8 sm:pb-10 border-b ${border}`}>
+    <div ref={rootRef} className="max-w-5xl mx-auto px-5 sm:px-8 no-print">
+      <nav aria-label="Landing page sections" className={`landing-section-nav hidden md:flex ${isDarkMode ? 'text-slate-400' : 'text-stone-500'}`}>
+        {sliceNames.map((name, index) => <button key={name} type="button" onClick={() => scrollToSlice(index)}
+          aria-label={name} aria-current={activeSlice === index ? 'step' : undefined} title={name}
+          className="flex h-10 w-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2">
+          <span className={`rounded-full border border-current transition-all ${activeSlice === index ? 'h-3 w-3 bg-current' : 'h-1.5 w-1.5'}`} />
+        </button>)}
+      </nav>
+      <section data-landing-slice="0" className={`landing-slice border-b ${border}`}>
+        <div className="landing-slice-content w-full">
         <p className={`text-xs uppercase tracking-[0.2em] font-medium ${accent}`}>Trevor Barrett / Minionade</p>
         <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.12] max-w-3xl">Minecraft mods,<br />games, and experiments.</h1>
         <p className={`mt-4 text-base sm:text-lg leading-relaxed max-w-2xl ${muted}`}>I’m {data.profile.name}, a self-taught developer working on Minecraft mods, C# game prototypes, and AI-assisted projects. I like bringing old ideas into new versions and finding out what I can build next.</p>
@@ -22,8 +78,12 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
           <a href="#resume" className={`inline-flex items-center gap-2 border-b pb-1 ${accent} border-current`}>Explore my résumé <ArrowRight className="w-4 h-4" /></a>
           <a href={`mailto:${data.profile.email}`} className="hover:underline underline-offset-4">Get in touch <ArrowUpRight className="inline w-4 h-4" /></a>
         </div>
+
+        </div>
+        {nextCue(0)}
       </section>
-      <section className="py-7 sm:py-8" aria-labelledby="selected-work-heading">
+      <section data-landing-slice="1" className="landing-slice" aria-labelledby="selected-work-heading">
+        <div className="landing-slice-content w-full">
         <div className="flex flex-wrap items-baseline justify-between gap-3 mb-4">
           <h2 id="selected-work-heading" className="text-xl font-semibold tracking-tight">Selected areas of work</h2>
           <span className={`text-xs ${muted}`}>A closer look, in my résumé</span>
@@ -39,8 +99,12 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
             </a>;
           })}
         </div>
+
+        </div>
+        {nextCue(1)}
       </section>
-      <section className={`border-t ${border} py-7 sm:py-8`} aria-labelledby="portfolio-preview-heading">
+      <section data-landing-slice="2" className={`landing-slice border-t ${border}`} aria-labelledby="portfolio-preview-heading">
+        <div className="landing-slice-content w-full">
         <h2 id="portfolio-preview-heading" className="text-xl font-semibold tracking-tight mb-4">Explore the portfolios</h2>
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           <div className="min-w-0">
@@ -76,8 +140,12 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
             </a>}
           </div>
         </div>
+
+        </div>
+        {nextCue(2)}
       </section>
-      <section className={`border-t ${border} py-7 mb-2 grid sm:grid-cols-[1fr_1.5fr] gap-6`}>
+      <section data-landing-slice="3" className={`landing-slice border-t ${border}`}>
+        <div className="landing-slice-content w-full grid sm:grid-cols-[1fr_1.5fr] gap-6">
         <h2 className="text-xl font-semibold tracking-tight">Beyond the code</h2>
         <div>
           <p className={`text-sm leading-relaxed ${muted}`}>Technical work extends beyond a screen. My experience includes commercial equipment operation, mechanical troubleshooting, and customer-facing roles—bringing practical problem-solving to the systems I build.</p>
@@ -87,6 +155,9 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
             <a className="hover:underline underline-offset-4" href="#resume-education">Education ↗</a>
           </div>
         </div>
+
+        </div>
+        {nextCue(3)}
       </section>
     </div>
   );

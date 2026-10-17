@@ -83,3 +83,66 @@
     scrollbar-gutter: stable;
   }
 }
+
+/* Native scroll snapping is enabled only while Home is mounted. Oversized
+   sections remain freely scrollable on short screens and at larger text sizes. */
+html.landing-scroll {
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: var(--landing-header-height, 64px);
+}
+.landing-slice {
+  position: relative;
+  min-height: calc(100svh - var(--landing-header-height, 64px));
+  display: flex;
+  align-items: center;
+  padding: 2.5rem 0 7rem;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.landing-scroll-cue {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.landing-scroll-arrow { animation: landing-arrow 1.8s ease-in-out infinite; }
+.landing-section-nav {
+  position: fixed;
+  z-index: 20;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: column;
+}
+.landing-slice[data-visible] .landing-slice-content {
+  animation: landing-reveal 550ms ease-out both;
+}
+html.landing-scroll .site-footer {
+  min-height: calc(100svh - var(--landing-header-height, 64px));
+  display: flex;
+  align-items: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+html.landing-scroll .site-footer > div { width: 100%; }
+@keyframes landing-arrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+@keyframes landing-reveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (min-width: 768px) {
+  .landing-slice-content { padding-right: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-scroll-arrow,
+  .landing-slice[data-visible] .landing-slice-content { animation: none; }
+}
