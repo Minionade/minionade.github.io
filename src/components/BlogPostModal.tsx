@@ -9,6 +9,7 @@ interface BlogPostModalProps {
 }
 
 export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose, isDarkMode = false }) => {
+  const accent = isDarkMode ? 'text-amber-300' : 'text-amber-900';
   if (!post) return null;
 
   return (
@@ -27,7 +28,7 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose, isD
           }`}
         >
           <div className="flex items-center gap-2 text-xs">
-            <span className="font-semibold text-blue-400">{post.category}</span>
+            <span className={`font-semibold ${accent}`}>{post.category}</span>
             <span aria-hidden="true" className={isDarkMode ? 'text-slate-500' : 'text-slate-300'}>
               ·
             </span>
@@ -71,7 +72,7 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose, isD
 
           {/* Lead Paragraph */}
           <p
-            className={`text-sm font-medium leading-relaxed italic border-l-2 border-blue-500 pl-3 py-0.5 ${
+            className={`text-sm font-medium leading-relaxed italic border-l-2 border-amber-500 pl-3 py-0.5 ${
               isDarkMode ? 'text-slate-200' : 'text-slate-800'
             }`}
           >
@@ -157,7 +158,7 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose, isD
             onClick={onClose}
             className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
               isDarkMode
-                ? 'bg-blue-600 text-white hover:bg-blue-500'
+                ? 'bg-amber-300 text-slate-950 hover:bg-amber-200'
                 : 'bg-slate-900 text-white hover:bg-slate-800'
             }`}
           >

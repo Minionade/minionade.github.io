@@ -21,6 +21,8 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
   isOwner = false,
   isDarkMode = false,
 }) => {
+  const accent = isDarkMode ? 'text-amber-300' : 'text-amber-900';
+  const groupAccent = isDarkMode ? 'group-hover:text-amber-300' : 'group-hover:text-amber-800';
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [postToEdit, setPostToEdit] = useState<BlogPost | null>(null);
   const [postToDelete, setPostToDelete] = useState<BlogPost | null>(null);
@@ -67,7 +69,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
       {/* Section Header with New Post button for Owner */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-current/15">
         <div className="min-w-0">
-          <div className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">
+          <div className={`text-xs font-semibold uppercase tracking-wider ${accent} mb-1`}>
             Dev Blog & Notes
           </div>
           <h2
@@ -85,7 +87,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
         {isOwner && (
           <button
             onClick={handleCreateNewClick}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-300 hover:bg-amber-200 rounded-lg transition-colors shadow-xs whitespace-nowrap shrink-0 self-start sm:self-auto"
             title="Write a new article"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -94,7 +96,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
         )}
       </div>
 
-      {posts.length > 0 && <TagFilter options={dynamicTags} selected={selectedTags} onChange={setSelectedTags} isDarkMode={isDarkMode} />}
+      {posts.length > 0 && <TagFilter accent="amber" options={dynamicTags} selected={selectedTags} onChange={setSelectedTags} isDarkMode={isDarkMode} />}
 
       {/* Blog Cards Grid or Empty State */}
       {posts.length === 0 ? (
@@ -103,7 +105,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
             isDarkMode ? 'bg-[#242b3b] border-slate-700/80 text-slate-400' : 'bg-white border-slate-200 text-slate-500'
           }`}
         >
-          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-amber-500/10 ${accent} border border-amber-500/20`}>
             <BookOpen className="w-8 h-8" />
           </div>
           <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -116,7 +118,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
           {isOwner && (
             <button
               onClick={handleCreateNewClick}
-              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all"
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl bg-amber-300 hover:bg-amber-200 text-slate-950 shadow-sm transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Add First Post</span>
@@ -135,7 +137,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
             onClick={() => {
               setSelectedTags([]);
             }}
-            className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-500 font-medium"
+            className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-amber-300 text-slate-950 hover:bg-amber-200 font-medium"
           >
             Show All Posts
           </button>
@@ -156,7 +158,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
               {/* Unboxed metadata with typographic separators */}
               <div className={`flex items-center justify-between text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-blue-400">{post.category}</span>
+                  <span className={`font-semibold ${accent}`}>{post.category}</span>
                   <span aria-hidden="true" className={isDarkMode ? 'text-slate-500' : 'text-slate-300'}>·</span>
                   <span>{post.date}</span>
                   <span aria-hidden="true" className={isDarkMode ? 'text-slate-500' : 'text-slate-300'}>·</span>
@@ -173,8 +175,8 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                       onClick={(e) => handleEditClick(e, post)}
                       className={`p-1.5 rounded transition-colors ${
                         isDarkMode
-                          ? 'text-slate-300 hover:text-blue-400 hover:bg-slate-700/60'
-                          : 'text-slate-500 hover:text-blue-600 hover:bg-slate-100'
+                          ? 'text-slate-300 hover:text-amber-300 hover:bg-slate-700/60'
+                          : 'text-slate-500 hover:text-amber-800 hover:bg-slate-100'
                       }`}
                       title="Edit this post"
                     >
@@ -195,7 +197,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
                 )}
               </div>
 
-              <h3 className={`text-lg font-bold group-hover:text-blue-400 transition-colors leading-snug ${
+              <h3 className={`text-lg font-bold ${groupAccent} transition-colors leading-snug ${
                 isDarkMode ? 'text-white' : 'text-slate-900'
               }`}>
                 {post.title}
@@ -209,14 +211,14 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
             <div className={`pt-4 mt-4 border-t flex items-center justify-between ${
               isDarkMode ? 'border-slate-700/60' : 'border-slate-100'
             }`}>
-              <span className={`text-xs font-semibold group-hover:text-blue-400 inline-flex items-center gap-1 transition-colors ${
+              <span className={`text-xs font-semibold ${groupAccent} inline-flex items-center gap-1 transition-colors ${
                 isDarkMode ? 'text-slate-200' : 'text-slate-900'
               }`}>
                 <span>Read post</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </span>
               <BookOpen className={`w-4 h-4 transition-colors ${
-                isDarkMode ? 'text-slate-500 group-hover:text-blue-400' : 'text-slate-300 group-hover:text-blue-400'
+                isDarkMode ? 'text-slate-500 group-hover:text-amber-300' : 'text-slate-300 group-hover:text-amber-800'
               }`} />
             </div>
           </article>

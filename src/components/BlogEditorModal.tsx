@@ -19,6 +19,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
   isDarkMode = false,
   knownTags = [],
 }) => {
+  const accent = isDarkMode ? 'text-amber-300' : 'text-amber-900';
   const isEditing = Boolean(postToEdit);
 
   const [title, setTitle] = useState('');
@@ -177,7 +178,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-blue-600/20 text-blue-400">
+            <div className={`p-1.5 rounded-lg bg-amber-500/15 ${accent}`}>
               <FileText className="w-4 h-4" />
             </div>
             <div>
@@ -212,7 +213,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Designing a Custom C# Game & Dedicated Server Engine"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden ${
                   isDarkMode
                     ? 'bg-slate-950 border-slate-800 text-white'
                     : 'bg-white border-slate-300 text-slate-900'
@@ -228,7 +229,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                 value={subtitle}
                 onChange={(e) => setSubtitle(e.target.value)}
                 placeholder="e.g. Architectural trade-offs of building socket networking from scratch"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden ${
                   isDarkMode
                     ? 'bg-slate-950 border-slate-800 text-white'
                     : 'bg-white border-slate-300 text-slate-900'
@@ -244,7 +245,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="e.g. Minecraft, Java, Development"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden ${
                   isDarkMode
                     ? 'bg-slate-950 border-slate-800 text-white'
                     : 'bg-white border-slate-300 text-slate-900'
@@ -252,7 +253,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
               />
               <datalist id="blog-known-tags">{knownTags.map(tag => <option key={tag} value={tag} />)}</datalist>
               <p id="blog-tags-help" className="mt-1.5 opacity-70">Separate tags with commas. Use an existing tag or create your own.</p>
-              <div className="flex flex-wrap gap-1 mt-2">{[...new Set(category.split(',').map(tag => tag.trim()).filter(Boolean))].map(tag => <span key={tag} className="px-2 py-1 rounded-md text-[11px] bg-blue-500/15 text-blue-400">{tag}</span>)}</div>
+              <div className="flex flex-wrap gap-1 mt-2">{[...new Set(category.split(',').map(tag => tag.trim()).filter(Boolean))].map(tag => <span key={tag} className={`px-2 py-1 rounded-md text-[11px] bg-amber-500/15 ${accent}`}>{tag}</span>)}</div>
             </div>
 
             <div>
@@ -262,7 +263,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 placeholder="e.g. October 2026"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden ${
                   isDarkMode
                     ? 'bg-slate-950 border-slate-800 text-white'
                     : 'bg-white border-slate-300 text-slate-900'
@@ -277,7 +278,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                 value={readingTime}
                 onChange={(e) => setReadingTime(e.target.value)}
                 placeholder="e.g. 6 min read"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden ${
                   isDarkMode
                     ? 'bg-slate-950 border-slate-800 text-white'
                     : 'bg-white border-slate-300 text-slate-900'
@@ -292,7 +293,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
                 placeholder="Brief 1-2 sentence overview shown on blog list cards"
-                className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
+                className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden ${
                   isDarkMode
                     ? 'bg-slate-950 border-slate-800 text-white'
                     : 'bg-white border-slate-300 text-slate-900'
@@ -309,7 +310,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
               value={lead}
               onChange={(e) => setLead(e.target.value)}
               placeholder="Bold opening paragraph introducing the central problem or theme"
-              className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-hidden italic ${
+              className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden italic ${
                 isDarkMode
                   ? 'bg-slate-950 border-slate-800 text-white'
                   : 'bg-white border-slate-300 text-slate-900'
@@ -326,7 +327,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
               <button
                 type="button"
                 onClick={handleAddSection}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-blue-400 bg-blue-950/40 border border-blue-800/60 hover:bg-blue-900/40 rounded-lg transition-colors"
+                className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold ${accent} bg-amber-950/20 border border-amber-700/40 hover:bg-amber-500/20 rounded-lg transition-colors`}
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Section</span>
@@ -352,7 +353,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                       setSections(next);
                     }}
                     placeholder="Section Heading"
-                    className={`font-bold px-2.5 py-1.5 border rounded flex-1 text-xs focus:ring-2 focus:ring-blue-500 ${
+                    className={`font-bold px-2.5 py-1.5 border rounded flex-1 text-xs focus:ring-2 focus:ring-amber-500 ${
                       isDarkMode
                         ? 'bg-slate-900 border-slate-700 text-white'
                         : 'bg-white border-slate-300 text-slate-900'
@@ -424,7 +425,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
                         next[idx].hasCode = e.target.checked;
                         setSections(next);
                       }}
-                      className="rounded text-blue-600 focus:ring-blue-500"
+                      className="rounded text-amber-700 focus:ring-amber-500"
                     />
                     <span className="font-semibold text-slate-300">Include Code Snippet</span>
                   </label>
@@ -531,7 +532,7 @@ export const BlogEditorModal: React.FC<BlogEditorModalProps> = ({
             </button>
             <button
               type="submit"
-              className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-slate-950 bg-amber-300 hover:bg-amber-200 rounded-lg transition-colors shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />
               <span>{isEditing ? 'Save & Update Post' : 'Publish New Blog Post'}</span>
