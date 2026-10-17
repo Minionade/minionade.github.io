@@ -302,6 +302,8 @@ export const ResumeDocument: React.FC<ResumeDocumentProps> = ({
                   <span>{project.stack.join(' · ')}</span>
                 </div>
 
+                {project.summary && <p className={`mt-2 ${fontClasses.body} ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>{project.summary}</p>}
+
                 {/* Project bullet points */}
                 <ul
                   className={`mt-1.5 list-disc pl-4 space-y-1 ${fontClasses.body} ${

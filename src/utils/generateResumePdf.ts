@@ -2,13 +2,13 @@ import { jsPDF } from 'jspdf';
 import { Persona, ResumeData } from '../types';
 import { RESUME_REGULAR, RESUME_BOLD } from '../assets/fonts/resumeFonts';
 
-interface GeneratePdfOptions {
+export interface GeneratePdfOptions {
   data: ResumeData;
   persona: Persona;
   visibleSections?: Record<'summary' | 'skills' | 'projects' | 'experience' | 'education', boolean>;
 }
 
-export const generateResumePdf = ({ data, persona, visibleSections = {
+export const createResumePdf = ({ data, persona, visibleSections = {
   summary: true, skills: true, projects: true, experience: true, education: true,
 } }: GeneratePdfOptions) => {
   const doc = new jsPDF({ unit: 'pt', format: 'letter', putOnlyUsedFonts: true });
@@ -139,5 +139,9 @@ export const generateResumePdf = ({ data, persona, visibleSections = {
     paragraph(`${education.institution} | ${education.location}`, { size: 9, color: muted });
     if (education.notes) paragraph(education.notes);
   }
-  doc.save(`Trevor_Barrett_Resume_${persona}.pdf`);
+  return doc;
+};
+
+export const generateResumePdf = (options: GeneratePdfOptions) => {
+  createResumePdf(options).save(`Trevor_Barrett_Resume_${options.persona}.pdf`);
 };

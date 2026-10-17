@@ -694,11 +694,8 @@ export default function App() {
       <PrintPreviewModal
         isOpen={isPrintPreviewOpen}
         onClose={() => setIsPrintPreviewOpen(false)}
-        onDownloadPdf={handleDownloadPdf}
         data={resumeData}
         persona={currentPersona}
-        theme={theme}
-        fontSize={fontSize}
         visibleSections={visibleSections}
         isDarkMode={isDarkMode}
       />
