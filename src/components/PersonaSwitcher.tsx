@@ -1,6 +1,6 @@
 import React from 'react';
 import { Persona, ThemeId } from '../types';
-import { Copy, Check, CheckCircle, Edit3, SlidersHorizontal } from 'lucide-react';
+import { Copy, Check, CheckCircle, Edit3, SlidersHorizontal, Printer } from 'lucide-react';
 
 interface PersonaSwitcherProps {
   currentPersona: Persona;
@@ -21,6 +21,7 @@ interface PersonaSwitcherProps {
   copied: boolean;
   onOpenAts: () => void;
   onOpenEditor: () => void;
+  onOpenPrintPreview?: () => void;
   isDarkMode?: boolean;
 }
 
@@ -37,6 +38,7 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
   copied,
   onOpenAts,
   onOpenEditor,
+  onOpenPrintPreview,
   isDarkMode = false,
 }) => {
   const personas: { id: Persona; label: string; tag: string }[] = [
@@ -74,13 +76,15 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
       className={`rounded-xl border no-print transition-colors shadow-xs p-3.5 sm:p-4 space-y-3 ${
         isDarkMode
           ? 'bg-[#242b3b] border-slate-700/80 text-slate-100'
-          : 'bg-white border-slate-200 text-slate-900'
+          : 'bg-[#faf8f4] border-[#e2ddd3] text-stone-900'
       }`}
     >
       {/* Row 1: Header / Admin Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-700/40">
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b ${
+        isDarkMode ? 'border-slate-700/40' : 'border-[#e8e3d8]'
+      }`}>
         <div className="flex items-center gap-2">
-          <span className="p-1 rounded bg-blue-500/20 text-blue-400 shrink-0">
+          <span className={`p-1 rounded shrink-0 ${isDarkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-amber-500/20 text-amber-800'}`}>
             <SlidersHorizontal className="w-3.5 h-3.5" />
           </span>
           <span className="text-xs font-bold tracking-tight">Resume Admin Controls</span>
@@ -93,13 +97,28 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
             className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border transition-colors ${
               isDarkMode
                 ? 'text-blue-300 bg-blue-950/40 hover:bg-blue-900/60 border-blue-800/60'
-                : 'text-blue-800 bg-blue-50 hover:bg-blue-100 border-blue-200'
+                : 'text-stone-800 bg-[#eee9df] hover:bg-[#e4ded2] border-[#d8d0c2]'
             }`}
             title="Edit resume text and details"
           >
-            <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+            <Edit3 className="w-3.5 h-3.5 text-blue-500" />
             <span>Edit Resume</span>
           </button>
+
+          {onOpenPrintPreview && (
+            <button
+              onClick={onOpenPrintPreview}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border transition-colors ${
+                isDarkMode
+                  ? 'text-slate-200 bg-[#1e2430] hover:bg-slate-700/70 border-slate-700/70'
+                  : 'text-stone-800 bg-[#eee9df] hover:bg-[#e4ded2] border-[#d8d0c2]'
+              }`}
+              title="Open full print preview and export dialog"
+            >
+              <Printer className="w-3.5 h-3.5 text-stone-600" />
+              <span>Print Preview</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenAts}
@@ -110,7 +129,7 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
             }`}
             title="Audit against ATS keyword scanners"
           >
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
             <span>ATS Scanner</span>
           </button>
 
@@ -119,18 +138,18 @@ export const PersonaSwitcher: React.FC<PersonaSwitcherProps> = ({
             className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${
               isDarkMode
                 ? 'text-slate-200 bg-[#1e2430] hover:bg-slate-700/70 border-slate-700/70'
-                : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border-slate-200'
+                : 'text-stone-700 bg-[#f3efe6] hover:bg-[#e8e2d6] border-[#dad2c4]'
             }`}
             title="Copy plain text formatted for job application boards"
           >
             {copied ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">Copied!</span>
+                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-emerald-600 font-semibold">Copied!</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                <Copy className="w-3.5 h-3.5 text-stone-500" />
                 <span>Copy Text</span>
               </>
             )}

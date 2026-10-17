@@ -119,17 +119,17 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       {/* Dynamic Stack Tags */}
       {dynamicTags.length > 0 && (
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-          <span className="text-[11px] font-semibold text-slate-400 mr-1 shrink-0">Filter by Stack:</span>
+          <span className="text-[11px] font-semibold text-stone-500 dark:text-slate-400 mr-1 shrink-0">Filter by Stack:</span>
           <button
             onClick={() => setSelectedTag(null)}
             className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
               selectedTag === null
                 ? isDarkMode
                   ? 'bg-blue-600 text-white font-bold'
-                  : 'bg-slate-900 text-white font-bold'
+                  : 'bg-stone-900 text-white font-bold'
                 : isDarkMode
                 ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                : 'bg-[#eee9df] text-stone-800 hover:bg-[#e4ded2] border border-[#ded7ca]'
             }`}
           >
             <span>All ({projects.length})</span>
@@ -140,10 +140,12 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
               className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
                 selectedTag === tag
-                  ? 'bg-blue-600 text-white font-bold shadow-xs'
+                  ? isDarkMode
+                    ? 'bg-blue-600 text-white font-bold shadow-xs'
+                    : 'bg-stone-900 text-white font-bold shadow-xs'
                   : isDarkMode
                   ? 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80 border border-slate-700/60'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                  : 'bg-[#eee9df] text-stone-800 hover:bg-[#e4ded2] border border-[#ded7ca]'
               }`}
             >
               <span>{tag}</span>
@@ -172,13 +174,13 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 className={`p-6 rounded-xl border transition-all flex flex-col justify-between ${
                   isDarkMode
                     ? 'bg-[#242b3b] border-slate-700/80 hover:border-slate-600/90 hover:bg-[#2b3346] text-slate-100 shadow-md'
-                    : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm text-slate-900'
+                    : 'bg-[#faf8f4] border-[#ded7ca] hover:border-stone-400 hover:shadow-sm text-stone-900'
                 }`}
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-[#1e2430]' : 'bg-slate-100'}`}>
+                      <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-[#1e2430]' : 'bg-[#eee9df]'}`}>
                         {getProjectIcon(project.id)}
                       </div>
                       <div>

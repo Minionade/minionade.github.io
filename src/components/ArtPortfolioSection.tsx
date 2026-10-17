@@ -324,16 +324,16 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
       {artworks.length === 0 ? (
         <div
           className={`text-center py-20 px-6 rounded-2xl border ${
-            isDarkMode ? 'border-slate-800 bg-[#161a23]' : 'border-slate-200 bg-slate-50'
+            isDarkMode ? 'border-slate-800 bg-[#161a23]' : 'border-[#ded7ca] bg-[#faf8f4]'
           }`}
         >
-          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-amber-500/10 text-amber-500 border border-amber-500/20">
             <Palette className="w-8 h-8" />
           </div>
-          <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>
             No Artwork in Portfolio
           </h3>
-          <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">
             There are currently no artwork pieces published. As artwork or branding pieces are uploaded, dynamic
             tag and category filters will automatically generate here.
           </p>
@@ -350,7 +350,7 @@ export const ArtPortfolioSection: React.FC<ArtPortfolioSectionProps> = ({
       ) : filteredArtworks.length === 0 ? (
         <div
           className={`text-center py-16 rounded-2xl border ${
-            isDarkMode ? 'border-slate-800 bg-[#161a23]' : 'border-slate-200 bg-slate-50'
+            isDarkMode ? 'border-slate-800 bg-[#161a23]' : 'border-[#ded7ca] bg-[#faf8f4]'
           }`}
         >
           <Palette className="w-10 h-10 mx-auto text-slate-500 mb-3" />

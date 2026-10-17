@@ -12,6 +12,7 @@ import { ConfirmModal } from './components/ConfirmModal';
 import { ProjectsSection } from './components/ProjectsSection';
 import { BlogSection } from './components/BlogSection';
 import { ArtPortfolioSection } from './components/ArtPortfolioSection';
+import { PrintPreviewModal } from './components/PrintPreviewModal';
 import { generateResumePdf } from './utils/generateResumePdf';
 import { deployToGitHubPages, DeployResult } from './utils/githubDeployService';
 import { Github, ShieldCheck, CheckCircle2, AlertTriangle, ExternalLink, X } from 'lucide-react';
@@ -59,6 +60,7 @@ export default function App() {
   const [isAtsOpen, setIsAtsOpen] = useState(false);
   const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false);
   const [isLogoutWarningOpen, setIsLogoutWarningOpen] = useState(false);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hasCustomEdits, setHasCustomEdits] = useState(false);
 
@@ -340,14 +342,7 @@ export default function App() {
   };
 
   const handlePrint = () => {
-    if (activeTab !== 'resume') {
-      setActiveTab('resume');
-      setTimeout(() => {
-        window.print();
-      }, 150);
-    } else {
-      window.print();
-    }
+    setIsPrintPreviewOpen(true);
   };
 
   // Save changes and deploy directly to GitHub Pages
@@ -464,7 +459,7 @@ export default function App() {
       className={`min-h-screen flex flex-col font-sans transition-colors ${
         isDarkMode
           ? 'bg-[#1e2430] text-slate-100 selection:bg-blue-600/30 selection:text-blue-200'
-          : 'bg-slate-50 text-slate-900 selection:bg-blue-100 selection:text-blue-900'
+          : 'bg-[#f5f2ec] text-stone-900 selection:bg-amber-200/50 selection:text-stone-900'
       }`}
     >
       {/* Top Navigation Bar */}
@@ -472,7 +467,8 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onDownloadPdf={handleDownloadPdf}
-        onPrint={handlePrint}
+        onPrintPreview={() => setIsPrintPreviewOpen(true)}
+        onPrint={() => setIsPrintPreviewOpen(true)}
         onOpenEditor={() => setIsEditorOpen(true)}
         onOpenAts={() => setIsAtsOpen(true)}
         onOpenGitHubAuth={() => setIsGitHubModalOpen(true)}
@@ -551,6 +547,7 @@ export default function App() {
                 copied={copied}
                 onOpenAts={() => setIsAtsOpen(true)}
                 onOpenEditor={() => setIsEditorOpen(true)}
+                onOpenPrintPreview={() => setIsPrintPreviewOpen(true)}
                 isDarkMode={isDarkMode}
               />
             )}
@@ -605,18 +602,18 @@ export default function App() {
         className={`border-t py-8 px-4 sm:px-6 lg:px-8 text-xs transition-colors no-print ${
           isDarkMode
             ? 'bg-[#181e2b] border-slate-700/80 text-slate-400'
-            : 'bg-white border-slate-200 text-slate-500'
+            : 'bg-[#faf8f4] border-[#ded7ca] text-stone-600'
         }`}
       >
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-300">Trevor Barrett</span>
+            <span className={`font-semibold ${isDarkMode ? 'text-slate-300' : 'text-stone-800'}`}>Trevor Barrett</span>
             <span>•</span>
             <span>Bloomsburg, PA</span>
             <span>•</span>
             <a
               href="mailto:trevorbarrett137@gmail.com"
-              className="hover:underline text-blue-400"
+              className={`hover:underline ${isDarkMode ? 'text-blue-400' : 'text-amber-800'}`}
             >
               trevorbarrett137@gmail.com
             </a>
@@ -625,25 +622,25 @@ export default function App() {
           <div className="flex items-center gap-4 text-xs">
             <button
               onClick={() => setActiveTab('resume')}
-              className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
+              className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-stone-950'}`}
             >
               Resume
             </button>
             <button
               onClick={() => setActiveTab('projects')}
-              className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
+              className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-stone-950'}`}
             >
               Projects
             </button>
             <button
               onClick={() => setActiveTab('art')}
-              className={`transition-colors ${isDarkMode ? 'hover:text-amber-300' : 'hover:text-amber-700'}`}
+              className={`transition-colors ${isDarkMode ? 'hover:text-amber-300' : 'hover:text-amber-800'}`}
             >
               Art Portfolio
             </button>
             <button
               onClick={() => setActiveTab('blog')}
-              className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-slate-900'}`}
+              className={`transition-colors ${isDarkMode ? 'hover:text-white' : 'hover:text-stone-950'}`}
             >
               Blog
             </button>
@@ -652,7 +649,7 @@ export default function App() {
             <button
               onClick={() => setIsGitHubModalOpen(true)}
               className={`inline-flex items-center gap-1.5 transition-colors ${
-                isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
+                isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-stone-500 hover:text-stone-900'
               }`}
               title={isOwner ? `Signed in as @${gitHubUser?.login}` : 'Sign in with GitHub'}
             >
@@ -663,7 +660,7 @@ export default function App() {
                 </>
               ) : (
                 <>
-                  <Github className="w-3.5 h-3.5 text-slate-400" />
+                  <Github className="w-3.5 h-3.5 text-stone-400 dark:text-slate-400" />
                   <span>Sign In</span>
                 </>
               )}
@@ -671,6 +668,19 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Print & Export Preview Modal */}
+      <PrintPreviewModal
+        isOpen={isPrintPreviewOpen}
+        onClose={() => setIsPrintPreviewOpen(false)}
+        onDownloadPdf={handleDownloadPdf}
+        data={resumeData}
+        persona={currentPersona}
+        theme={theme}
+        fontSize={fontSize}
+        visibleSections={visibleSections}
+        isDarkMode={isDarkMode}
+      />
 
       {/* Editor Modal for Resume - OWNER ONLY */}
       <ResumeEditorModal

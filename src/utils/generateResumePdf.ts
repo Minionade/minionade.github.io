@@ -26,7 +26,6 @@ export const generateResumePdf = ({
 }: GeneratePdfOptions) => {
   const { profile, summaryByPersona, skillsByPersona, projects, experience, education } = data;
 
-  // Title tailored per persona
   const getPersonaTitle = () => {
     switch (persona) {
       case 'gamedev':
@@ -41,52 +40,45 @@ export const generateResumePdf = ({
     }
   };
 
+  // US Letter: 612 x 792 pt
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'pt',
-    format: 'letter', // 612 x 792 pt
+    format: 'letter',
   });
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 36; // 0.5 in margins
-  const contentWidth = pageWidth - margin * 2;
-  let y = margin + 12;
+  const pageWidth = 612;
+  const marginX = 30; // 30 pt side margins
+  const contentWidth = pageWidth - marginX * 2; // 552 pt
+  let y = 26; // Start 26 pt from top
 
-  const checkPageBreak = (neededHeight: number) => {
-    if (y + neededHeight > pageHeight - margin) {
-      doc.addPage();
-      y = margin + 16;
-    }
-  };
-
-  // Color Palette (ATS-Friendly Executive Dark Navy / Slate)
-  const primaryColor: [number, number, number] = [15, 23, 42]; // Slate 900
-  const accentColor: [number, number, number] = [30, 64, 175]; // Blue 800
-  const textColor: [number, number, number] = [30, 41, 59]; // Slate 800
-  const mutedColor: [number, number, number] = [100, 116, 139]; // Slate 500
-  const dividerColor: [number, number, number] = [203, 213, 225]; // Slate 300
+  // Executive Typography & Palette
+  const colorDark: [number, number, number] = [15, 23, 42]; // Slate 950
+  const colorAccent: [number, number, number] = [30, 64, 175]; // Navy Blue 800
+  const colorBody: [number, number, number] = [30, 41, 59]; // Slate 800
+  const colorMuted: [number, number, number] = [100, 116, 139]; // Slate 500
+  const colorLine: [number, number, number] = [203, 213, 225]; // Slate 300
 
   // 1. Header: Name & Title
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.setTextColor(...primaryColor);
-  doc.text(profile.name, margin, y);
+  doc.setFontSize(17);
+  doc.setTextColor(...colorDark);
+  doc.text(profile.name.toUpperCase(), marginX, y);
 
-  const titleText = getPersonaTitle().toUpperCase();
+  const titleStr = getPersonaTitle().toUpperCase();
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9.5);
-  doc.setTextColor(...accentColor);
-  const titleWidth = doc.getTextWidth(titleText);
-  doc.text(titleText, pageWidth - margin - titleWidth, y - 2);
+  doc.setFontSize(8.5);
+  doc.setTextColor(...colorAccent);
+  const titleW = doc.getTextWidth(titleStr);
+  doc.text(titleStr, pageWidth - marginX - titleW, y - 1);
 
-  y += 14;
+  y += 12;
 
   // Contact line
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...mutedColor);
-  const contactSegments = [
+  doc.setFontSize(7.5);
+  doc.setTextColor(...colorMuted);
+  const contactParts = [
     profile.location,
     profile.phone,
     profile.email,
@@ -94,232 +86,231 @@ export const generateResumePdf = ({
     profile.portfolio || null,
   ].filter(Boolean) as string[];
 
-  const contactLine = contactSegments.join('   •   ');
-  doc.text(contactLine, margin, y);
+  doc.text(contactParts.join('   •   '), marginX, y);
 
-  y += 10;
-  // Header underline
-  doc.setDrawColor(...primaryColor);
-  doc.setLineWidth(1.2);
-  doc.line(margin, y, pageWidth - margin, y);
-  y += 14;
+  y += 8;
+  // Header rule
+  doc.setDrawColor(...colorAccent);
+  doc.setLineWidth(1.0);
+  doc.line(marginX, y, pageWidth - marginX, y);
+  y += 12;
 
   // Helper for section headings
   const renderSectionHeader = (title: string) => {
-    checkPageBreak(28);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9.5);
-    doc.setTextColor(...primaryColor);
-    doc.text(title.toUpperCase(), margin, y);
+    doc.setFontSize(8);
+    doc.setTextColor(...colorAccent);
+    doc.text(title.toUpperCase(), marginX, y);
 
-    y += 4;
-    doc.setDrawColor(...dividerColor);
-    doc.setLineWidth(0.75);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 9;
+    y += 3;
+    doc.setDrawColor(...colorLine);
+    doc.setLineWidth(0.5);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 8;
   };
 
-  // 2. Professional Profile / Summary
+  // 2. Summary
   if (visibleSections.summary) {
     const summary = summaryByPersona[persona] || summaryByPersona.hybrid;
     if (summary) {
       renderSectionHeader('Professional Profile');
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5);
-      doc.setTextColor(...textColor);
+      doc.setFontSize(7.5);
+      doc.setTextColor(...colorBody);
       const splitSummary = doc.splitTextToSize(summary, contentWidth);
-      checkPageBreak(splitSummary.length * 11);
-      doc.text(splitSummary, margin, y);
-      y += splitSummary.length * 11 + 8;
+      doc.text(splitSummary, marginX, y);
+      y += splitSummary.length * 9.2 + 6;
     }
   }
 
-  // 3. Core Competencies & Technical Skills
+  // 3. Technical Skills (Balanced 2-Column Layout to save vertical space)
   if (visibleSections.skills) {
     const skills = skillsByPersona[persona] || skillsByPersona.hybrid;
     if (skills && skills.length > 0) {
       renderSectionHeader('Core Competencies & Technical Skills');
-      doc.setFontSize(8.5);
 
-      for (const group of skills) {
-        checkPageBreak(12);
+      const colWidth = (contentWidth - 16) / 2;
+      const leftColX = marginX;
+      const rightColX = marginX + colWidth + 16;
+      let leftY = y;
+      let rightY = y;
+
+      skills.forEach((group, idx) => {
+        const isLeft = idx % 2 === 0;
+        const colX = isLeft ? leftColX : rightColX;
+        let currY = isLeft ? leftY : rightY;
+
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...primaryColor);
-        const catLabel = `${group.category}: `;
-        doc.text(catLabel, margin, y);
+        doc.setFontSize(7.5);
+        doc.setTextColor(...colorDark);
+        doc.text(`${group.category}: `, colX, currY);
 
-        const labelWidth = doc.getTextWidth(catLabel);
+        const catW = doc.getTextWidth(`${group.category}: `);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...textColor);
-        const itemsStr = group.items.join('  •  ');
-        const splitItems = doc.splitTextToSize(itemsStr, contentWidth - labelWidth);
+        doc.setTextColor(...colorBody);
 
-        if (splitItems.length === 1) {
-          doc.text(splitItems[0], margin + labelWidth, y);
-          y += 11;
-        } else {
-          doc.text(splitItems[0], margin + labelWidth, y);
-          y += 11;
-          for (let i = 1; i < splitItems.length; i++) {
-            checkPageBreak(11);
-            doc.text(splitItems[i], margin + 10, y);
-            y += 11;
-          }
+        const itemsStr = group.items.join('  •  ');
+        const splitItems = doc.splitTextToSize(itemsStr, colWidth - catW);
+
+        doc.text(splitItems[0], colX + catW, currY);
+        currY += 9;
+
+        for (let i = 1; i < splitItems.length; i++) {
+          doc.text(splitItems[i], colX + 8, currY);
+          currY += 9;
         }
-      }
-      y += 6;
+
+        if (isLeft) {
+          leftY = currY + 1;
+        } else {
+          rightY = currY + 1;
+        }
+      });
+
+      y = Math.max(leftY, rightY) + 5;
     }
   }
 
-  // 4. Engineering & Technical Projects
+  // 4. Engineering & Technical Projects (Top 3 prioritized for exact 1-page fit)
   if (visibleSections.projects && projects && projects.length > 0) {
-    renderSectionHeader('Engineering & Technical Projects');
+    renderSectionHeader('Key Engineering Projects');
 
-    // Sort projects based on persona priority
-    const sortedProjects = [...projects].sort((a, b) => {
-      if (persona === 'gamedev') {
-        if (a.id === 'custom-engine') return -1;
-        if (b.id === 'custom-engine') return 1;
-        if (a.id === 'indie-games-ai') return -1;
+    const sortedProjects = [...projects]
+      .sort((a, b) => {
+        if (persona === 'gamedev') {
+          if (a.id === 'custom-engine') return -1;
+          if (b.id === 'custom-engine') return 1;
+          if (a.id === 'indie-games-ai') return -1;
+        }
+        if (persona === 'hardware') {
+          if (a.id === 'pc-building') return -1;
+          if (b.id === 'pc-building') return 1;
+        }
+        if (persona === 'equipment') {
+          if (a.id === 'equipment-ops') return -1;
+          if (b.id === 'equipment-ops') return 1;
+        }
+        return 0;
+      })
+      .slice(0, 3); // Top 3 selected for single-page presentation
+
+    sortedProjects.forEach((project) => {
+      // Title + Subtitle
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(...colorDark);
+      doc.text(project.title, marginX, y);
+
+      const titleW2 = doc.getTextWidth(project.title);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...colorMuted);
+      doc.text(`  |  ${project.roleSubtitle}`, marginX + titleW2, y);
+
+      // Date right-aligned
+      const periodW = doc.getTextWidth(project.period);
+      doc.text(project.period, pageWidth - marginX - periodW, y);
+      y += 9.5;
+
+      // Tech line
+      if (project.stack && project.stack.length > 0) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(...colorAccent);
+        doc.text('Tech: ', marginX, y);
+
+        const techLabelW = doc.getTextWidth('Tech: ');
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(...colorMuted);
+        const stackStr = project.stack.slice(0, 6).join('  •  ');
+        doc.text(stackStr, marginX + techLabelW, y);
+        y += 8.5;
       }
-      if (persona === 'hardware') {
-        if (a.id === 'pc-building') return -1;
-        if (b.id === 'pc-building') return 1;
-      }
-      return 0;
+
+      // Top 2 impact bullets per project
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...colorBody);
+
+      const topBullets = project.accomplishments.slice(0, 2);
+      topBullets.forEach((bullet) => {
+        const bulletText = `•   ${bullet}`;
+        const splitBullet = doc.splitTextToSize(bulletText, contentWidth - 8);
+        doc.text(splitBullet, marginX + 4, y);
+        y += splitBullet.length * 8.8 + 1;
+      });
+
+      y += 2.5;
     });
 
-    for (const project of sortedProjects) {
-      checkPageBreak(38);
-      // Project title + subtitle
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(...primaryColor);
-      doc.text(project.title, margin, y);
-
-      const titleW = doc.getTextWidth(project.title);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...mutedColor);
-      doc.text(`  |  ${project.roleSubtitle}`, margin + titleW, y);
-
-      // Period on right
-      const periodW = doc.getTextWidth(project.period);
-      doc.text(project.period, pageWidth - margin - periodW, y);
-      y += 10.5;
-
-      // Tech Stack
-      if (project.stack && project.stack.length > 0) {
-        checkPageBreak(12);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(8);
-        doc.setTextColor(...accentColor);
-        doc.text('Technologies: ', margin, y);
-
-        const techLabelW = doc.getTextWidth('Technologies: ');
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...mutedColor);
-        const stackStr = project.stack.join('  •  ');
-        const splitStack = doc.splitTextToSize(stackStr, contentWidth - techLabelW);
-        doc.text(splitStack[0], margin + techLabelW, y);
-        y += 10;
-        for (let i = 1; i < splitStack.length; i++) {
-          checkPageBreak(10);
-          doc.text(splitStack[i], margin + 10, y);
-          y += 10;
-        }
-      }
-
-      // Bullets
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(...textColor);
-      for (const bullet of project.accomplishments) {
-        const bulletText = `•  ${bullet}`;
-        const splitBullet = doc.splitTextToSize(bulletText, contentWidth - 10);
-        checkPageBreak(splitBullet.length * 10);
-        doc.text(splitBullet, margin + 4, y);
-        y += splitBullet.length * 9.5 + 2;
-      }
-      y += 4;
-    }
-    y += 4;
+    y += 3;
   }
 
-  // 5. Professional Work Experience
+  // 5. Professional Experience
   if (visibleSections.experience && experience && experience.length > 0) {
-    renderSectionHeader('Professional Work Experience');
+    renderSectionHeader('Professional Experience');
 
-    for (const exp of experience) {
-      checkPageBreak(36);
+    experience.forEach((exp) => {
+      // Role & Company
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(...primaryColor);
-      doc.text(exp.role, margin, y);
-
-      const roleW = doc.getTextWidth(exp.role);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(...mutedColor);
-      doc.text(`  |  ${exp.company}`, margin + roleW, y);
-
-      const periodW = doc.getTextWidth(exp.period);
-      doc.text(exp.period, pageWidth - margin - periodW, y);
-      y += 10;
-
-      // Location & skills
-      if (exp.location || exp.skillsUsed) {
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(8);
-        doc.setTextColor(...mutedColor);
-        const metaStr = [exp.location, exp.skillsUsed?.join('  •  ')].filter(Boolean).join('  —  ');
-        doc.text(metaStr, margin, y);
-        y += 10;
-      }
-
-      // Highlights
-      doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
-      doc.setTextColor(...textColor);
-      for (const hl of exp.highlights) {
-        const bulletText = `•  ${hl}`;
-        const splitHl = doc.splitTextToSize(bulletText, contentWidth - 10);
-        checkPageBreak(splitHl.length * 10);
-        doc.text(splitHl, margin + 4, y);
-        y += splitHl.length * 9.5 + 2;
-      }
-      y += 4;
-    }
-    y += 4;
+      doc.setTextColor(...colorDark);
+      doc.text(exp.role, marginX, y);
+
+      const roleW2 = doc.getTextWidth(exp.role);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...colorMuted);
+      doc.text(`  |  ${exp.company} (${exp.location})`, marginX + roleW2, y);
+
+      // Period on right
+      const expPeriodW = doc.getTextWidth(exp.period);
+      doc.text(exp.period, pageWidth - marginX - expPeriodW, y);
+      y += 9;
+
+      // 2 clean accomplishment bullets
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...colorBody);
+      const topHighlights = exp.highlights.slice(0, 2);
+      topHighlights.forEach((hl) => {
+        const bulletText = `•   ${hl}`;
+        const splitHl = doc.splitTextToSize(bulletText, contentWidth - 8);
+        doc.text(splitHl, marginX + 4, y);
+        y += splitHl.length * 8.8 + 1;
+      });
+
+      y += 2.5;
+    });
+
+    y += 3;
   }
 
   // 6. Education
   if (visibleSections.education && education) {
     renderSectionHeader('Education & Credentials');
-    checkPageBreak(28);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...primaryColor);
-    doc.text(education.degree, margin, y);
+    doc.setFontSize(8);
+    doc.setTextColor(...colorDark);
+    doc.text(education.degree, marginX, y);
 
-    const degW = doc.getTextWidth(education.degree);
+    const degW2 = doc.getTextWidth(education.degree);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...mutedColor);
-    doc.text(`  |  ${education.institution} (${education.location})`, margin + degW, y);
+    doc.setTextColor(...colorMuted);
+    doc.text(`  |  ${education.institution} (${education.location})`, marginX + degW2, y);
 
-    const yearW = doc.getTextWidth(education.year);
-    doc.text(education.year, pageWidth - margin - yearW, y);
-    y += 10.5;
+    const yearW2 = doc.getTextWidth(education.year);
+    doc.text(education.year, pageWidth - marginX - yearW2, y);
+    y += 9;
 
     if (education.notes) {
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(...textColor);
+      doc.setFontSize(7.5);
+      doc.setTextColor(...colorBody);
       const splitNotes = doc.splitTextToSize(education.notes, contentWidth);
-      doc.text(splitNotes, margin, y);
-      y += splitNotes.length * 9.5;
+      doc.text(splitNotes, marginX, y);
     }
   }
 
-  // Save PDF
+  // Save the 1-page PDF
   const filename = `Trevor_Barrett_Resume_${persona}.pdf`;
   doc.save(filename);
 };
