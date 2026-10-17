@@ -96,7 +96,7 @@ export const generateResumePdf = ({ data, persona, visibleSections = {
   paragraph([data.profile.location, data.profile.phone, data.profile.email,
     data.profile.github?.replace(/^https?:\/\//, '')].filter(Boolean).join(' | '), { size: 8.5, color: muted });
   font(false, 8.5, '#345979');
-  doc.textWithLink('Website: minionade.github.io', margin, y, { url: 'https://minionade.github.io/' });
+  doc.textWithLink('https://minionade.github.io', margin, y, { url: 'https://minionade.github.io' });
   y += leading;
 
 
