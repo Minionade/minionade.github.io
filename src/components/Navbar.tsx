@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className={`group text-left flex items-center gap-2 px-2 py-1.5 sm:px-2.5 rounded-xl border transition-all duration-200 ${
               isDarkMode
                 ? 'bg-gradient-to-r from-slate-900/90 via-slate-800/80 to-slate-900/90 border-slate-700/80 hover:border-blue-500/60 shadow-sm'
-                : 'bg-gradient-to-r from-[#f4eee4] via-[#fdfcf9] to-[#f4eee4] border-[#ded7ca] hover:border-amber-600/50 shadow-xs'
+                : 'bg-gradient-to-r from-[#ddcbb2] via-[#e8d9c2] to-[#ddcbb2] border-[#ded7ca] hover:border-amber-600/50 shadow-xs'
             }`}
             title="Trevor Barrett / Minionade • Systems & Creative Portfolio"
           >

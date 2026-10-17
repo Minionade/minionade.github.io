@@ -242,3 +242,47 @@ html.landing-scroll .landing-slice[data-landing-slice="3"] {
   }
 }
 
+
+/* Screen-only toasted surfaces. Document paper keeps its own print colors. */
+@media screen {
+  [data-color-mode="light"] {
+    --light-surface: #e8dece;
+    --light-chrome: #e1d2bd;
+    --light-control: #ddcbb2;
+    --light-control-hover: #d9c5aa;
+    --light-border: #c4af93;
+    --light-muted: #63513e;
+  }
+
+  [data-color-mode="light"] :is([class~="bg-white"], [class~="bg-slate-50"], [class~="bg-slate-50/50"], [class~="bg-slate-50/80"], [class~="bg-stone-50"], [class~="bg-stone-100"], [class~="bg-neutral-50"], [class~="bg-gray-50"], [class~="bg-[#faf8f4]"], [class~="bg-[#faf8f4]/95"], [class~="bg-[#fdfcf9]"], [class~="bg-[#f3efe6]"]):where(:not(#printable-resume, #printable-resume *)) {
+    background-color: var(--light-surface);
+  }
+
+  [data-color-mode="light"] :is([class~="bg-slate-100"], [class~="bg-slate-200"], [class~="bg-slate-200/40"], [class~="bg-slate-200/80"], [class~="bg-stone-200"], [class~="bg-[#eee9df]"], [class~="bg-[#f0ebe0]"], [class~="bg-[#e8e2d6]"], [class~="bg-[#eae4d8]"]):where(:not(#printable-resume, #printable-resume *)) {
+    background-color: var(--light-control);
+  }
+
+  [data-color-mode="light"] > header[class],
+  [data-color-mode="light"] .site-footer,
+  [data-color-mode="light"] :is([class~="bg-[#f4efe6]"]):where(:not(#printable-resume, #printable-resume *)) {
+    background-color: var(--light-chrome);
+  }
+
+  [data-color-mode="light"] .social-link,
+  [data-color-mode="light"] button[class~="bg-white"] {
+    background-color: var(--light-control);
+  }
+
+  [data-color-mode="light"] :is([class~="hover:bg-white"], [class~="hover:bg-slate-50"], [class~="hover:bg-slate-100"], [class~="hover:bg-slate-200"], [class~="hover:bg-slate-200/60"], [class~="hover:bg-stone-50"], [class~="hover:bg-stone-100"], [class~="hover:bg-stone-200"], [class~="hover:bg-[#e4ded2]"], [class~="hover:bg-[#ede7dc]"]):where(:not(#printable-resume, #printable-resume *)):hover,
+  [data-color-mode="light"] .social-link:hover {
+    background-color: var(--light-control-hover);
+  }
+
+  [data-color-mode="light"] :is([class~="border-slate-100"], [class~="border-slate-200"], [class~="border-slate-300"], [class~="border-stone-200"], [class~="border-stone-300"], [class~="border-[#ded7ca]"], [class~="border-[#e2ddd3]"]):where(:not(#printable-resume, #printable-resume *)) {
+    border-color: var(--light-border);
+  }
+
+  [data-color-mode="light"] :is([class~="text-slate-400"], [class~="text-slate-500"], [class~="text-stone-400"], [class~="text-stone-500"], [class~="text-gray-400"], [class~="text-gray-500"]):where(:not(#printable-resume, #printable-resume *)) {
+    color: var(--light-muted);
+  }
+}
