@@ -201,6 +201,7 @@ html.landing-scroll .landing-slice[data-landing-slice="3"] {
 
 .landing-beyond-content { max-width: 52rem; margin-inline: auto; }
 .landing-beyond-details { margin-top: 2rem; }
+.landing-twitch-embed { margin-top: 1rem; }
 @media (min-width: 768px) {
   .landing-beyond-content {
     display: grid;
@@ -210,6 +211,7 @@ html.landing-scroll .landing-slice[data-landing-slice="3"] {
   }
   .landing-beyond-content h2 { grid-column: 1 / -1; }
   .landing-beyond-details { grid-column: 2; margin-top: 0; }
+  .landing-twitch-embed { grid-column: 1 / -1; }
 }
 
 /* Shade the unused desktop margins without overlaying content or controls. */

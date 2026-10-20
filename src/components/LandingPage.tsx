@@ -4,6 +4,7 @@ import { artworkHref } from '../utils/routes';
 import grassBlock from '../assets/images/home-grass-block.webp';
 import { ArtworkItem, ResumeData } from '../types';
 import { getArtworkCategories, formatArtworkCategory } from '../utils/artworkCategories';
+import { TwitchLiveEmbed } from './TwitchLiveEmbed';
 
 export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; artworks: ArtworkItem[]; isDarkMode: boolean }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -178,6 +179,7 @@ export function LandingPage({ data, artworks, isDarkMode }: { data: ResumeData; 
               <a className="inline-flex items-center gap-1.5 hover:underline underline-offset-4" href="#resume-education">Education <ArrowUpRight aria-hidden="true" className="w-4 h-4" /></a>
             </div>
           </div>
+          <TwitchLiveEmbed isDarkMode={isDarkMode} />
         </div>
       </section>
     </div>
