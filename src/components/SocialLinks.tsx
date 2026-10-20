@@ -2,7 +2,7 @@ import React from 'react';
 import { Github, MessageCircle, Flame, Twitch, Twitter, Youtube } from 'lucide-react';
 
 const links = [
-  { name: 'Discord', href: 'https://discord.gg/Znnd6yQtz3', icon: MessageCircle },
+  { name: 'Discord', href: 'https://discord.gg/NnaqJE6U2Y', icon: MessageCircle },
   { name: 'CurseForge', href: 'https://www.curseforge.com/members/minionade/projects', icon: Flame },
   { name: 'GitHub', href: 'https://github.com/Minionade', icon: Github },
   { name: 'Twitch', href: 'https://twitch.tv/minionade', icon: Twitch },
